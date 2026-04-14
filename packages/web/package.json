@@ -1,0 +1,42 @@
+{
+  "name": "@philosophy-explorer/web",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "gen:types": "openapi-typescript ../api/specs/openapi.json -o src/lib/api-types.ts"
+  },
+  "dependencies": {
+    "@dagrejs/dagre": "^3.0.0",
+    "@tanstack/react-query": "^5.69.0",
+    "@tanstack/react-router": "^1.114.0",
+    "@xyflow/react": "^12.10.2",
+    "openapi-fetch": "^0.13.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.9",
+    "@tanstack/react-query-devtools": "^5.69.0",
+    "@tanstack/router-devtools": "^1.114.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^22.13.9",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^26.0.0",
+    "openapi-typescript": "^7.8.0",
+    "tailwindcss": "^4.0.9",
+    "typescript": "^5.8.2",
+    "vite": "^6.3.2",
+    "vitest": "^3.0.8"
+  }
+}

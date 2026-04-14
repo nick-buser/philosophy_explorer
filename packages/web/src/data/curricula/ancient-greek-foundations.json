@@ -1,0 +1,289 @@
+{
+  "id": "ancient-greek-foundations",
+  "slug": "ancient-greek-foundations",
+  "title": "Ancient Greek Foundations of Philosophy",
+  "tagline": "From the Presocratics to the Stoics — the texts that invented Western philosophy.",
+  "description": "A sequenced path through the formative period of Western philosophy, from the cosmological puzzles of the Presocratics to Plato's theory of Forms, Aristotle's systematic philosophy, and the practical wisdom of the Hellenistic schools. Covers roughly 600 BCE to 180 CE.",
+  "level": "beginner",
+  "estimatedDuration": "8–14 months",
+  "stages": [
+    {
+      "id": "orientation",
+      "title": "Orientation",
+      "order": 1,
+      "description": "Secondary literature to read first. These surveys provide historical and philosophical context that will make the primary texts far more intelligible."
+    },
+    {
+      "id": "presocratic",
+      "title": "Presocratic Origins",
+      "order": 2,
+      "description": "The first philosophers asked: what is the fundamental nature of reality? Their answers — logos, flux, Being, atoms — set the problems Plato and Aristotle inherited."
+    },
+    {
+      "id": "socratic",
+      "title": "The Socratic Turn",
+      "order": 3,
+      "description": "Plato's early dialogues dramatize Socratic method: rigorous cross-examination of moral concepts. These are short, accessible, and essential before the longer middle dialogues."
+    },
+    {
+      "id": "platonic",
+      "title": "Platonic Metaphysics",
+      "order": 4,
+      "description": "The middle and late dialogues develop the Theory of Forms, the immortality of the soul, and Plato's political philosophy. These are the summit of the Platonic corpus."
+    },
+    {
+      "id": "aristotelian",
+      "title": "The Aristotelian System",
+      "order": 5,
+      "description": "Aristotle systematically rewrote nearly every branch of philosophy in response to Plato. Logic first, then ethics, then the metaphysics that grounds both."
+    },
+    {
+      "id": "hellenistic",
+      "title": "Hellenistic Schools",
+      "order": 6,
+      "description": "After Aristotle, philosophy turned toward practical guidance for living. Epicurus and the Stoics offer complementary answers to the question of the good life."
+    },
+    {
+      "id": "synthesis",
+      "title": "Modern Syntheses",
+      "order": 7,
+      "description": "Contemporary scholars who show why ancient ethics still matters. Best read after working through Aristotle."
+    }
+  ],
+  "items": [
+    {
+      "id": "guthrie-history",
+      "stageId": "orientation",
+      "type": "secondary",
+      "title": "A History of Greek Philosophy, Vol. 1–2",
+      "author": "W.K.C. Guthrie",
+      "composedYear": 1962,
+      "description": "The definitive scholarly history of Greek philosophy from Thales to the Socratics. Provides indispensable historical context for reading both the Presocratics and Plato.",
+      "note": "You don't need to read all six volumes. Vol. 1 (Presocratics) and Vol. 4 (Plato, earlier period) are the most useful entry points."
+    },
+    {
+      "id": "heraclitus-fragments",
+      "stageId": "presocratic",
+      "type": "primary",
+      "title": "Fragments",
+      "workSlug": "fragments-heraclitus",
+      "authorSlug": "heraclitus",
+      "author": "Heraclitus",
+      "composedYear": -500,
+      "description": "~125 surviving fragments articulating universal flux, the unity of opposites, and the Logos as the rational principle governing all change. The foundational challenge to any philosophy of permanence.",
+      "note": "Read with a facing-Greek edition if possible. The Kahn translation and commentary (1979) is excellent. These fragments are short but dense — read slowly."
+    },
+    {
+      "id": "parmenides-on-nature",
+      "stageId": "presocratic",
+      "type": "primary",
+      "title": "On Nature",
+      "workSlug": "on-nature-parmenides",
+      "authorSlug": "parmenides",
+      "author": "Parmenides",
+      "composedYear": -480,
+      "description": "Survives in fragments. The Way of Truth argues that genuine Being is one, unchanging, and indivisible — directly opposing Heraclitus. The Way of Seeming offers a cosmology as 'merely plausible.' The ur-text of Western metaphysics.",
+      "note": "The poem is difficult. Read Heraclitus first so Parmenides' direct opposition registers. The McKirahan translation in 'Philosophy Before Socrates' is reliable."
+    },
+    {
+      "id": "plato-apology",
+      "stageId": "socratic",
+      "type": "primary",
+      "title": "Apology",
+      "authorSlug": "plato",
+      "author": "Plato",
+      "composedYear": -399,
+      "description": "Plato's account of Socrates' trial and defence. Introduces the Socratic mission, the examined life, and the equation of virtue with knowledge. Only 35 pages — the best entry point to Plato.",
+      "note": "Read this before anything else by Plato. The G.M.A. Grube translation (Hackett) is standard."
+    },
+    {
+      "id": "plato-euthyphro",
+      "stageId": "socratic",
+      "type": "primary",
+      "title": "Euthyphro",
+      "authorSlug": "plato",
+      "author": "Plato",
+      "composedYear": -399,
+      "description": "A brisk Socratic dialogue on the definition of piety. Famous for the Euthyphro dilemma: is the pious loved by the gods because it is pious, or is it pious because it is loved? A masterclass in Socratic refutation.",
+      "note": "Companion to the Apology — set on the day Socrates arrives at court. About 20 pages. Introduces Socratic 'What is X?' questions."
+    },
+    {
+      "id": "plato-meno",
+      "stageId": "socratic",
+      "type": "primary",
+      "title": "Meno",
+      "authorSlug": "plato",
+      "author": "Plato",
+      "composedYear": -385,
+      "description": "Can virtue be taught? Meno is the crucial hinge between the early and middle periods: it introduces the Theory of Recollection (all learning is remembering) and points toward the Forms. The slave-boy geometry proof is one of philosophy's most famous passages.",
+      "note": "This is the bridge dialogue. Reading it carefully will make Phaedo and the Republic click."
+    },
+    {
+      "id": "plato-phaedo",
+      "stageId": "platonic",
+      "type": "primary",
+      "title": "Phaedo",
+      "workSlug": "phaedo",
+      "authorSlug": "plato",
+      "author": "Plato",
+      "composedYear": -385,
+      "description": "Set on the day of Socrates' death. Argues for the immortality of the soul through the Theory of Recollection and the Theory of Forms. Presents the 'affinity argument' and the final proof from the Form of Life. A pivotal middle-period dialogue.",
+      "note": "Contains the first full statement of the Theory of Forms. Read Meno first for the Theory of Recollection which Phaedo presupposes."
+    },
+    {
+      "id": "plato-symposium",
+      "stageId": "platonic",
+      "type": "primary",
+      "title": "Symposium",
+      "workSlug": "symposium",
+      "authorSlug": "plato",
+      "author": "Plato",
+      "composedYear": -385,
+      "description": "Seven speeches on Eros (love), culminating in Socrates' account of the 'Ladder of Beauty' — the ascent from love of a particular body to love of the Form of Beauty itself. Plato's most literary work and his clearest account of philosophical aspiration.",
+      "note": "Can be read alongside Phaedo. The Diotima speech in the Symposium is the aesthetic counterpart to Phaedo's metaphysical argument for Forms."
+    },
+    {
+      "id": "annas-intro-republic",
+      "stageId": "platonic",
+      "type": "secondary",
+      "title": "An Introduction to Plato's Republic",
+      "author": "Julia Annas",
+      "composedYear": 1981,
+      "description": "The standard philosophical guide to the Republic. Covers the tripartite soul, justice, the Form of the Good, and the critique of poetry. More philosophically rigorous than most introductions.",
+      "note": "Read this before or alongside the Republic itself. Annas is clear and critical — she helps you see where Plato's arguments succeed and where they strain."
+    },
+    {
+      "id": "plato-republic",
+      "stageId": "platonic",
+      "type": "primary",
+      "title": "Republic",
+      "workSlug": "republic",
+      "authorSlug": "plato",
+      "author": "Plato",
+      "composedYear": -380,
+      "description": "Plato's masterwork on justice, the ideal city, the philosopher-king, and the Form of the Good. Contains the Allegory of the Cave, the divided line, the tripartite soul, and a sustained critique of democracy. The central text of the Western philosophical tradition.",
+      "note": "Don't rush. Budget 4–6 weeks. The Grube/Reeve (Hackett) or Shorey (Loeb) translations are most used. Books II–IV on justice and VII on the Cave are the core; don't skip Books VIII–IX on the decline of the soul."
+    },
+    {
+      "id": "barnes-aristotle",
+      "stageId": "aristotelian",
+      "type": "secondary",
+      "title": "Aristotle: A Very Short Introduction",
+      "author": "Jonathan Barnes",
+      "composedYear": 2000,
+      "description": "A brisk, philosophically sharp overview of Aristotle's life, method, and major doctrines by the foremost Aristotle scholar in the Anglophone tradition.",
+      "note": "Under 100 pages. Read before the Organon to orient yourself in Aristotle's project."
+    },
+    {
+      "id": "aristotle-organon",
+      "stageId": "aristotelian",
+      "type": "primary",
+      "title": "Organon (Categories & Posterior Analytics)",
+      "workSlug": "organon",
+      "authorSlug": "aristotle",
+      "author": "Aristotle",
+      "composedYear": -350,
+      "description": "The Categories introduces Aristotle's ten-fold classification of what there is (substance, quantity, quality, etc.) — essential for understanding his metaphysics. The Posterior Analytics explains his theory of scientific knowledge and demonstration.",
+      "note": "You don't need all six works of the Organon for this curriculum. Focus on Categories (short, critical) and dip into Posterior Analytics I. The Prior Analytics (formal syllogistic) can be skipped on a first pass."
+    },
+    {
+      "id": "aristotle-ethics",
+      "stageId": "aristotelian",
+      "type": "primary",
+      "title": "Nicomachean Ethics",
+      "workSlug": "nicomachean-ethics",
+      "authorSlug": "aristotle",
+      "author": "Aristotle",
+      "composedYear": -350,
+      "description": "Aristotle's systematic account of the good life, virtue, practical wisdom (phronesis), friendship, and eudaimonia (human flourishing). The most influential work in ancient ethics and the foundation of virtue ethics.",
+      "note": "Books I, II, VI, and X are the essential spine. The Irwin (Hackett) translation has excellent notes. Book X's discussion of the contemplative life is in tension with Books I–IX — sit with that tension."
+    },
+    {
+      "id": "aristotle-metaphysics",
+      "stageId": "aristotelian",
+      "type": "primary",
+      "title": "Metaphysics",
+      "workSlug": "metaphysics",
+      "authorSlug": "aristotle",
+      "author": "Aristotle",
+      "composedYear": -350,
+      "description": "Aristotle's investigation of 'Being qua Being' — substance, form, matter, actuality, potentiality, and the Unmoved Mover. Books VII–IX (on substance) and XII (on the divine intellect) are the philosophical summit.",
+      "note": "This is the hardest text in the curriculum. Read Categories and NE Ethics first. Books I and II are historiographical — skip to VII for the core. Ross's older translation is available free; Bostock (Clarendon) is the best philosophical commentary."
+    },
+    {
+      "id": "epicurus-letter",
+      "stageId": "hellenistic",
+      "type": "primary",
+      "title": "Letter to Menoeceus",
+      "authorSlug": "epicurus",
+      "author": "Epicurus",
+      "composedYear": -300,
+      "description": "A four-page summary of Epicurean ethics: the gods do not concern themselves with us, death is not to be feared, pleasure (understood as the absence of pain and anxiety) is the highest good. The most accessible entry point to Epicureanism.",
+      "note": "Short (4 pages) but perfectly compressed. The Bailey translation in 'Epicurus: The Extant Remains' is standard. Pair with the Vatican Sayings and Principal Doctrines."
+    },
+    {
+      "id": "marcus-meditations",
+      "stageId": "hellenistic",
+      "type": "primary",
+      "title": "Meditations",
+      "workSlug": "meditations",
+      "authorSlug": "marcus-aurelius",
+      "author": "Marcus Aurelius",
+      "composedYear": 161,
+      "description": "A private philosophical journal by a Roman emperor. Applies Stoic principles — living according to nature, the dichotomy of control, the brevity of life — to practical daily life. The most personal expression of Stoicism we have.",
+      "note": "The Gregory Hays (Modern Library) translation is highly readable. Can be dipped into non-linearly. Read Books II–IV carefully; they contain the core Stoic practice."
+    },
+    {
+      "id": "nussbaum-fragility",
+      "stageId": "synthesis",
+      "type": "secondary",
+      "title": "The Fragility of Goodness",
+      "workSlug": "fragility-of-goodness",
+      "authorSlug": "martha-nussbaum",
+      "author": "Martha Nussbaum",
+      "composedYear": 1986,
+      "description": "A philosophical reading of Greek tragedy and Plato on moral luck, vulnerability, and the relationship between ethics and literature. Argues that the good life is constitutively vulnerable — Aristotle against the Platonic flight from contingency.",
+      "note": "Demanding but rewarding. Best after both Plato's Republic and Aristotle's NE Ethics. The chapters on the Symposium and Plato's 'ascent' are particularly illuminating."
+    },
+    {
+      "id": "macintyre-after-virtue",
+      "stageId": "synthesis",
+      "type": "secondary",
+      "title": "After Virtue",
+      "workSlug": "after-virtue",
+      "authorSlug": "alasdair-macintyre",
+      "author": "Alasdair MacIntyre",
+      "composedYear": 1981,
+      "description": "Diagnoses the fragmentation of modern moral discourse as a consequence of abandoning the Aristotelian teleological framework. Proposes a return to virtue ethics embedded in living traditions. Made Aristotelian ethics central to contemporary moral philosophy.",
+      "note": "Read Chapters 1–9 for the diagnosis of modernity, then 14–18 for the positive Aristotelian proposal. Chapter 15 on the virtues and Chapter 18 on the Aristotelian tradition are the heart of the book."
+    }
+  ],
+  "dependencies": [
+    { "from": "guthrie-history", "to": "heraclitus-fragments", "note": "Historical context before the primary texts" },
+    { "from": "guthrie-history", "to": "parmenides-on-nature" },
+    { "from": "heraclitus-fragments", "to": "parmenides-on-nature", "note": "Parmenides directly opposes Heraclitean flux" },
+    { "from": "parmenides-on-nature", "to": "plato-phaedo", "note": "Plato's Theory of Forms is a response to Parmenides' monism" },
+    { "from": "heraclitus-fragments", "to": "plato-meno", "note": "Flux doctrine motivates Plato's search for stable definitions" },
+    { "from": "plato-apology", "to": "plato-euthyphro", "note": "Same dramatic context; Euthyphro occurs just before the trial" },
+    { "from": "plato-apology", "to": "plato-meno", "note": "Establish Socratic method before the bridge dialogue" },
+    { "from": "plato-euthyphro", "to": "plato-meno", "note": "Both probe definition of a virtue; Meno generalises the puzzle" },
+    { "from": "plato-meno", "to": "plato-phaedo", "note": "Recollection doctrine first appears in Meno; Phaedo assumes it" },
+    { "from": "plato-meno", "to": "plato-symposium", "note": "Meno's positive account of virtue as knowledge prepares Symposium's ascent" },
+    { "from": "plato-phaedo", "to": "plato-republic", "note": "Theory of Forms fully assumed throughout the Republic" },
+    { "from": "plato-symposium", "to": "plato-republic", "note": "The Form of Beauty in Symposium completes the picture of Forms in Republic" },
+    { "from": "annas-intro-republic", "to": "plato-republic", "note": "Read secondary prep before the long primary text" },
+    { "from": "plato-republic", "to": "aristotle-organon", "note": "Aristotle's Categories directly respond to Platonic Forms" },
+    { "from": "plato-republic", "to": "aristotle-ethics", "note": "Aristotle's ethics is in dialogue with Plato's conception of the good throughout" },
+    { "from": "barnes-aristotle", "to": "aristotle-organon", "note": "Orient in Aristotle's project before the logical works" },
+    { "from": "aristotle-organon", "to": "aristotle-metaphysics", "note": "Categories are the propaedeutic to first philosophy" },
+    { "from": "aristotle-ethics", "to": "aristotle-metaphysics", "note": "NE Ethics presupposes the hylomorphic account of human nature" },
+    { "from": "plato-republic", "to": "epicurus-letter", "note": "Epicurus' rejection of political life responds to Plato's philosopher-king ideal" },
+    { "from": "aristotle-ethics", "to": "marcus-meditations", "note": "Stoic ethical concepts develop in direct awareness of Aristotle's eudaimonism" },
+    { "from": "epicurus-letter", "to": "marcus-meditations", "note": "The Stoics and Epicureans are the twin poles of Hellenistic ethics; read together" },
+    { "from": "aristotle-ethics", "to": "nussbaum-fragility", "note": "Nussbaum's central argument is an Aristotelian critique of Platonic detachment" },
+    { "from": "plato-republic", "to": "nussbaum-fragility", "note": "Nussbaum directly engages the Republic's treatment of tragedy and love" },
+    { "from": "aristotle-ethics", "to": "macintyre-after-virtue", "note": "After Virtue is a defence of Aristotelian ethics; NE Ethics is its subject" }
+  ],
+  "justification": "This sequence is designed around the actual argumentative dependencies between texts rather than chronological order alone. The Presocratics come first not out of historical piety but because Plato's Theory of Forms is unintelligible without understanding the problems it solves: Heraclitean flux (how can there be stable knowledge if everything changes?) and Parmenidean monism (how can there be genuine plurality?). The early Platonic dialogues establish Socratic method before the reader encounters the demanding middle-period works. Meno is strategically placed as the hinge: it introduces the Theory of Recollection that Phaedo and the Republic presuppose. Within Aristotle, the Organon precedes the Metaphysics because Aristotle's technical vocabulary — substance, predication, the categories — is developed in his logical works and then applied in first philosophy. The NE Ethics is placed before the Metaphysics because Aristotle's ethics is more accessible and because understanding his concept of eudaimonia and human teleology makes the hylomorphic metaphysics more legible. The Hellenistic schools close the curriculum as a natural reflection on what the preceding metaphysics and ethics means for practical life. The modern syntheses (Nussbaum and MacIntyre) are placed last because they offer the most philosophically sophisticated retrospective on why the ancient texts remain live options — they are best read when you can assess their arguments against your own encounter with the primary texts.",
+  "createdAt": "2026-04-14T00:00:00Z"
+}

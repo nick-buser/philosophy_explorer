@@ -1,0 +1,29 @@
+# philosophy-explorer
+
+Philosophy notes, conceptualizations, and visualizations across thinkers and works.
+
+## Stack
+
+- API: Hono 4 + Drizzle ORM + Postgres + OpenAPI/Zod
+- Web: Vite + React 19 + TanStack Router + TanStack Query + Tailwind v4
+
+## Development
+
+```bash
+npm install
+cp packages/api/.env.example packages/api/.env
+# Edit packages/api/.env — set DATABASE_URL
+npm run db:generate && npm run db:migrate && npm run db:seed
+npm run dev:api   # http://localhost:3001, docs at /api/doc
+npm run dev:web   # http://localhost:3000
+```
+
+## API contract workflow
+
+After any route schema change:
+
+```bash
+npm run gen:spec   # regenerate packages/api/specs/openapi.json (API must be running)
+npm run gen:types  # regenerate packages/web/src/lib/api-types.ts from spec
+# commit both files
+```

@@ -1,0 +1,66 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Philosophy Explorer API",
+    "version": "0.0.1"
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Health check — reports DB connectivity and env var presence",
+        "responses": {
+          "200": {
+            "description": "Server is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "db": { "type": "string" },
+                    "env": {
+                      "type": "object",
+                      "properties": {
+                        "DATABASE_URL": { "type": "boolean" },
+                        "ALLOWED_ORIGINS": { "type": "boolean" }
+                      },
+                      "required": ["DATABASE_URL", "ALLOWED_ORIGINS"]
+                    }
+                  },
+                  "required": ["status", "db", "env"]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "error": { "type": "string" },
+                    "env": {
+                      "type": "object",
+                      "properties": {
+                        "DATABASE_URL": { "type": "boolean" },
+                        "ALLOWED_ORIGINS": { "type": "boolean" }
+                      },
+                      "required": ["DATABASE_URL", "ALLOWED_ORIGINS"]
+                    }
+                  },
+                  "required": ["status", "error", "env"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  }
+}
