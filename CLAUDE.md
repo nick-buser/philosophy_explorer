@@ -64,7 +64,36 @@ npm run db:generate   # generates drizzle/sqlite/
 DATABASE_URL=postgresql://... npm run db:generate   # generates drizzle/postgres/
 ```
 
-**Auxiliary graph DB (future — not yet configured):** When deep traversal queries (multi-hop influence chains, entailment graphs) outgrow Postgres recursive CTEs, Neo4j is the planned next layer — as an auxiliary alongside Postgres, not a replacement. Postgres stays the system of record; Neo4j mirrors graph edges for traversal-heavy queries. The pattern would be a `src/db/neo4j.ts` client, separate from this factory. Configure only when the need is concrete.
+## Graph layer
+
+A unified property graph consolidates all entity relationships (philosopher influences,
+school memberships, authorship, curriculum prerequisites) into a single directed graph.
+
+**Architecture:** `packages/api/src/graph/` — `GraphService` interface with a strategy pattern:
+
+| `GRAPH_DATABASE_URL` value | Backend | When |
+|---|---|---|
+| unset or `memory` (default) | graphology in-memory + JSON file | dev, test |
+| `bolt://...` or `neo4j://...` | neo4j-driver via Bolt | staging, prod (future) |
+
+**Data file:** `packages/api/src/data/graph-data.json` — canonical graphology JSON.
+Regenerate after seed data changes: `npm run graph:build`
+
+**Key files:**
+- `src/graph/types.ts` — node labels, edge types, shared data types
+- `src/graph/service.ts` — `GraphService` interface
+- `src/graph/memory-graph.ts` — dev/test implementation (graphology)
+- `src/graph/index.ts` — factory (like `src/db/index.ts`)
+- `src/graph/build-graph.ts` — converts seed data → graph JSON
+- `src/routes/graph.ts` — API endpoints (`/api/graph/*`)
+
+**API endpoints:** `/api/graph/stats`, `/api/graph/node/:key`, `/api/graph/neighbors/:key`,
+`/api/graph/path`, `/api/graph/influence/:slug`, `/api/graph/school/:slug`,
+`/api/graph/curriculum/:slug`, `/api/graph/influence-network`
+
+**Node key format:** `{label}:{slug}` (e.g. `philosopher:immanuel-kant`).
+
+**Design doc:** `docs/graph-layer-design.md`
 
 ## API contract workflow
 
@@ -100,9 +129,9 @@ Web tests: component and hook tests alongside source or in `src/**/__tests__/`.
 
 ## Key decisions
 
-- Postgres + Drizzle for persistence. Domain is graph-shaped; starting with Postgres
-  (recursive CTEs handle 3–5 hop traversals fine). Revisit Neo4j only if deep traversal
-  queries become the bottleneck.
+- Postgres + Drizzle for entity CRUD. The graph layer (graphology in dev, Neo4j in prod)
+  handles relationship traversal. Postgres remains the system of record for writes;
+  the graph is a read-optimized projection.
 - No auth yet — `DEFAULT_USER_ID` placeholder in `src/lib/default-user.ts`.
   When adding auth, replace with `c.get('user').id` from auth middleware.
 - ESM throughout the API. Local imports use `.js` extensions even on `.ts` source files.

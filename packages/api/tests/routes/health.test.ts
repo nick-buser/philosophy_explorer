@@ -2,9 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mocked before app import so the health route picks up the mock on load.
 // vi.mock() is hoisted automatically — declaration order here is just for clarity.
-vi.mock('../../src/db/index.js', () => ({
-  db: { execute: vi.fn() },
-}));
+vi.mock('../../src/db/index.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../src/db/index.js')>();
+  return { ...actual, db: { ...actual.db, execute: vi.fn() } };
+});
 
 import app from '../../src/index.js';
 import { db } from '../../src/db/index.js';

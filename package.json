@@ -19,6 +19,7 @@
     "db:seed":     "npm run db:seed     --workspace=packages/api",
     "db:studio":   "npm run db:studio   --workspace=packages/api",
     "gen:spec":    "npm run gen:spec    --workspace=packages/api",
-    "gen:types":   "npm run gen:types   --workspace=packages/web"
+    "gen:types":   "npm run gen:types   --workspace=packages/web",
+    "graph:build": "npm run graph:build --workspace=packages/api"
   }
 }

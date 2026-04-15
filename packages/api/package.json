@@ -4,32 +4,38 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev":         "tsx watch src/server.ts",
-    "build":       "tsc",
-    "gen:spec":    "tsx src/scripts/gen-spec.ts",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "gen:spec": "tsx src/scripts/gen-spec.ts",
     "db:generate": "drizzle-kit generate",
-    "db:migrate":  "drizzle-kit migrate",
-    "db:seed":     "tsx src/db/seed.ts",
-    "db:studio":   "drizzle-kit studio",
-    "test":        "vitest run",
-    "test:watch":  "vitest"
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx src/db/seed.ts",
+    "db:studio": "drizzle-kit studio",
+    "graph:build": "tsx src/graph/build-graph.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
-    "@libsql/client":   "^0.14.0",
-    "@hono/swagger-ui":  "^0.5.0",
+    "@hono/swagger-ui": "^0.5.0",
     "@hono/zod-openapi": "^0.18.3",
-    "dotenv":            "^16.4.7",
-    "drizzle-orm":       "^0.44.0",
-    "hono":              "^4.7.4",
-    "postgres":          "^3.4.5",
-    "zod":               "^3.24.2"
+    "@libsql/client": "^0.14.0",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.44.0",
+    "graphology": "^0.26.0",
+    "graphology-operators": "^1.6.1",
+    "graphology-shortest-path": "^2.1.0",
+    "graphology-traversal": "^0.3.1",
+    "graphology-types": "^0.24.8",
+    "hono": "^4.7.4",
+    "postgres": "^3.4.5",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/node": "^22.13.9",
     "drizzle-kit": "^0.30.4",
-    "tsx":         "^4.19.3",
-    "typescript":  "^5.8.2",
-    "vitest":      "^3.0.8"
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.8"
   }
 }

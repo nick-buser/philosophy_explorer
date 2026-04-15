@@ -4,6 +4,7 @@ import { cors } from 'hono/cors';
 import healthRoutes from './routes/health.js';
 import philosopherRoutes from './routes/philosophers.js';
 import catalogRoutes from './routes/catalog.js';
+import graphRoutes from './routes/graph.js';
 
 const app = new OpenAPIHono();
 
@@ -21,6 +22,7 @@ app.use('*', cors({ origin: allowedOrigins }));
 app.route('/', healthRoutes);
 app.route('/', philosopherRoutes);
 app.route('/', catalogRoutes);
+app.route('/', graphRoutes);
 
 app.doc('/api/doc/openapi.json', {
   openapi: '3.0.0',
