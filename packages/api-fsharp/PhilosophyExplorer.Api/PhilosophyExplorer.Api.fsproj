@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
+
+  <!-- F# compilation order matters — dependencies must come before dependents -->
+  <ItemGroup>
+    <Compile Include="Domain/Types.fs" />
+    <Compile Include="Domain/Dtos.fs" />
+    <Compile Include="Db/DbFactory.fs" />
+    <Compile Include="Db/Queries.fs" />
+    <Compile Include="Db/Seed.fs" />
+    <Compile Include="Graph/GraphTypes.fs" />
+    <Compile Include="Graph/MemoryGraphService.fs" />
+    <Compile Include="Routes/HealthRoutes.fs" />
+    <Compile Include="Routes/PhilosopherRoutes.fs" />
+    <Compile Include="Routes/CatalogRoutes.fs" />
+    <Compile Include="Routes/GraphRoutes.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.35" />
+    <PackageReference Include="FSharp.SystemTextJson" Version="1.4.36" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.4" />
+    <PackageReference Include="Npgsql" Version="9.0.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.2" />
+    <PackageReference Include="System.Text.Json" Version="10.0.6" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,556 @@
+[
+  {
+    "influencerSlug": "heraclitus",
+    "influencedSlug": "plato",
+    "influenceType": "direct",
+    "description": "Plato absorbed Heraclitean flux for the sensible world, assigning stability only to the Forms."
+  },
+  {
+    "influencerSlug": "parmenides",
+    "influencedSlug": "plato",
+    "influenceType": "direct",
+    "description": "Plato's Parmenides dialogue engages the Eleatic challenge directly; the Forms echo Parmenidean Being."
+  },
+  {
+    "influencerSlug": "democritus",
+    "influencedSlug": "epicurus",
+    "influenceType": "direct",
+    "description": "Epicurus adopted and modified Democritus's atomism, adding the clinamen (swerve) to account for free will."
+  },
+  {
+    "influencerSlug": "socrates",
+    "influencedSlug": "plato",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "plato",
+    "influencedSlug": "aristotle",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "aristotle",
+    "influencedSlug": "plato",
+    "influenceType": "critical",
+    "description": "Aristotle rejected the theory of separated Forms."
+  },
+  {
+    "influencerSlug": "plato",
+    "influencedSlug": "plotinus",
+    "influenceType": "revival",
+    "description": "Plotinus reads Plato as teaching the hierarchy of the One, Intellect, and Soul."
+  },
+  {
+    "influencerSlug": "plotinus",
+    "influencedSlug": "augustine",
+    "influenceType": "direct",
+    "description": "Augustine read the Neoplatonists before his conversion; their metaphysics of the One shaped his theology of God."
+  },
+  {
+    "influencerSlug": "plato",
+    "influencedSlug": "augustine",
+    "influenceType": "indirect"
+  },
+  {
+    "influencerSlug": "aristotle",
+    "influencedSlug": "thomas-aquinas",
+    "influenceType": "direct",
+    "description": "Aquinas's Thomism is an explicit synthesis of Aristotle's metaphysics, physics, and ethics with Christian theology."
+  },
+  {
+    "influencerSlug": "augustine",
+    "influencedSlug": "thomas-aquinas",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "thomas-aquinas",
+    "influencedSlug": "william-of-ockham",
+    "influenceType": "critical",
+    "description": "Ockham's nominalism is a direct challenge to Thomistic realism about universals."
+  },
+  {
+    "influencerSlug": "john-locke",
+    "influencedSlug": "george-berkeley",
+    "influenceType": "direct",
+    "description": "Berkeley radicalizes Locke's empiricism by eliminating material substance entirely."
+  },
+  {
+    "influencerSlug": "john-locke",
+    "influencedSlug": "david-hume",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "george-berkeley",
+    "influencedSlug": "david-hume",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "rene-descartes",
+    "influencedSlug": "baruch-spinoza",
+    "influenceType": "direct",
+    "description": "Spinoza adopts Descartes's geometric method and substance metaphysics, then transforms both."
+  },
+  {
+    "influencerSlug": "rene-descartes",
+    "influencedSlug": "gottfried-leibniz",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "david-hume",
+    "influencedSlug": "immanuel-kant",
+    "influenceType": "direct",
+    "description": "Hume \"awoke Kant from his dogmatic slumber.\""
+  },
+  {
+    "influencerSlug": "jean-jacques-rousseau",
+    "influencedSlug": "immanuel-kant",
+    "influenceType": "direct",
+    "description": "Rousseau's moral philosophy, especially the general will and respect for persons, shaped Kant's ethics."
+  },
+  {
+    "influencerSlug": "immanuel-kant",
+    "influencedSlug": "fichte",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "immanuel-kant",
+    "influencedSlug": "schelling",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "immanuel-kant",
+    "influencedSlug": "hegel",
+    "influenceType": "direct",
+    "description": "Hegel takes the Kantian critical project and argues that the thing-in-itself is an incoherent residue to be dissolved in the Absolute."
+  },
+  {
+    "influencerSlug": "fichte",
+    "influencedSlug": "hegel",
+    "influenceType": "direct",
+    "description": "Fichte's self-positing I and dialectical method are immediate forerunners of Hegel's dialectic."
+  },
+  {
+    "influencerSlug": "schelling",
+    "influencedSlug": "hegel",
+    "influenceType": "direct",
+    "description": "Schelling's identity-philosophy is the immediate stimulus the Phenomenology responds to and surpasses."
+  },
+  {
+    "influencerSlug": "immanuel-kant",
+    "influencedSlug": "arthur-schopenhauer",
+    "influenceType": "direct",
+    "description": "Schopenhauer accepts the Kantian distinction between phenomena and things-in-themselves, identifying the latter with Will."
+  },
+  {
+    "influencerSlug": "immanuel-kant",
+    "influencedSlug": "john-rawls",
+    "influenceType": "direct",
+    "description": "Rawls construes his theory as a Kantian account of justice, grounding it in rational autonomy and the categorical imperative."
+  },
+  {
+    "influencerSlug": "hegel",
+    "influencedSlug": "kierkegaard",
+    "influenceType": "critical",
+    "description": "Kierkegaard's entire project protests the System: it swallows the individual into the universal and leaves no room for the leap of faith."
+  },
+  {
+    "influencerSlug": "hegel",
+    "influencedSlug": "marx",
+    "influenceType": "direct",
+    "description": "Marx inverted Hegel's idealist dialectic — the movement of history is driven by material forces, not Spirit."
+  },
+  {
+    "influencerSlug": "hegel",
+    "influencedSlug": "nietzsche",
+    "influenceType": "critical",
+    "description": "Nietzsche rejected Hegel's teleological view of history."
+  },
+  {
+    "influencerSlug": "hegel",
+    "influencedSlug": "de-beauvoir",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "hegel",
+    "influencedSlug": "sellars",
+    "influenceType": "indirect",
+    "description": "Sellars's attack on the Myth of the Given recapitulates Hegel's critique of sense-certainty."
+  },
+  {
+    "influencerSlug": "hegel",
+    "influencedSlug": "brandom",
+    "influenceType": "indirect",
+    "description": "Brandom explicitly draws on Hegel's Phenomenology for his model of recognition and social normativity."
+  },
+  {
+    "influencerSlug": "hegel",
+    "influencedSlug": "mcdowell",
+    "influenceType": "indirect",
+    "description": "McDowell invokes Hegel's \"second nature\" to resolve the tension between freedom and nature."
+  },
+  {
+    "influencerSlug": "hegel",
+    "influencedSlug": "hans-georg-gadamer",
+    "influenceType": "indirect",
+    "description": "Gadamer's historicism and dialectical model of interpretation inherit Hegelian themes."
+  },
+  {
+    "influencerSlug": "hegel",
+    "influencedSlug": "theodor-adorno",
+    "influenceType": "direct",
+    "description": "Negative Dialectics is in sustained polemic with Hegel's principle of identity."
+  },
+  {
+    "influencerSlug": "hegel",
+    "influencedSlug": "jurgen-habermas",
+    "influenceType": "indirect"
+  },
+  {
+    "influencerSlug": "marx",
+    "influencedSlug": "theodor-adorno",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "marx",
+    "influencedSlug": "walter-benjamin",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "marx",
+    "influencedSlug": "herbert-marcuse",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "marx",
+    "influencedSlug": "jurgen-habermas",
+    "influenceType": "indirect"
+  },
+  {
+    "influencerSlug": "arthur-schopenhauer",
+    "influencedSlug": "nietzsche",
+    "influenceType": "direct",
+    "description": "Nietzsche began as a Schopenhauerian; the will to power is a revision of the Will to Live."
+  },
+  {
+    "influencerSlug": "nietzsche",
+    "influencedSlug": "martin-heidegger",
+    "influenceType": "direct",
+    "description": "Heidegger read Nietzsche as the culmination and exhaustion of Western metaphysics."
+  },
+  {
+    "influencerSlug": "nietzsche",
+    "influencedSlug": "michel-foucault",
+    "influenceType": "direct",
+    "description": "Foucault's genealogical method is explicitly derived from Nietzsche's Genealogy of Morality."
+  },
+  {
+    "influencerSlug": "nietzsche",
+    "influencedSlug": "gilles-deleuze",
+    "influenceType": "direct",
+    "description": "Deleuze's Nietzsche and Philosophy (1962) is one of the most influential interpretations and shapes his own philosophy of difference."
+  },
+  {
+    "influencerSlug": "nietzsche",
+    "influencedSlug": "de-beauvoir",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "franz-brentano",
+    "influencedSlug": "edmund-husserl",
+    "influenceType": "direct",
+    "description": "Brentano's concept of intentionality is the starting point for Husserl's phenomenology."
+  },
+  {
+    "influencerSlug": "edmund-husserl",
+    "influencedSlug": "martin-heidegger",
+    "influenceType": "direct",
+    "description": "Heidegger was Husserl's assistant; Being and Time transforms phenomenological method into fundamental ontology."
+  },
+  {
+    "influencerSlug": "edmund-husserl",
+    "influencedSlug": "jean-paul-sartre",
+    "influenceType": "direct",
+    "description": "Sartre encountered Husserl's phenomenology in Berlin and it became the method of Being and Nothingness."
+  },
+  {
+    "influencerSlug": "edmund-husserl",
+    "influencedSlug": "maurice-merleau-ponty",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "edmund-husserl",
+    "influencedSlug": "emmanuel-levinas",
+    "influenceType": "direct",
+    "description": "Levinas translated Husserl into French and wrote the first French dissertation on his phenomenology."
+  },
+  {
+    "influencerSlug": "martin-heidegger",
+    "influencedSlug": "hans-georg-gadamer",
+    "influenceType": "direct",
+    "description": "Gadamer was Heidegger's student; Truth and Method extends Heideggerian hermeneutics."
+  },
+  {
+    "influencerSlug": "martin-heidegger",
+    "influencedSlug": "jean-paul-sartre",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "martin-heidegger",
+    "influencedSlug": "jacques-derrida",
+    "influenceType": "direct",
+    "description": "Derrida's deconstruction is developed largely through a critical reading of Heidegger on language, presence, and metaphysics."
+  },
+  {
+    "influencerSlug": "martin-heidegger",
+    "influencedSlug": "paul-ricoeur",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "hans-georg-gadamer",
+    "influencedSlug": "paul-ricoeur",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "wilhelm-dilthey",
+    "influencedSlug": "hans-georg-gadamer",
+    "influenceType": "direct",
+    "description": "Gadamer engages Dilthey's hermeneutics throughout Truth and Method, both inheriting and criticizing it."
+  },
+  {
+    "influencerSlug": "gottlob-frege",
+    "influencedSlug": "bertrand-russell",
+    "influenceType": "direct",
+    "description": "Russell read Frege's Grundgesetze and adopted logicism; Russell's paradox then undermined Frege's system."
+  },
+  {
+    "influencerSlug": "gottlob-frege",
+    "influencedSlug": "wittgenstein",
+    "influenceType": "direct",
+    "description": "Wittgenstein went to Cambridge specifically to work with Russell after reading Frege."
+  },
+  {
+    "influencerSlug": "gottlob-frege",
+    "influencedSlug": "rudolf-carnap",
+    "influenceType": "direct",
+    "description": "Carnap attended Frege's lectures and his logical syntax program develops Fregean logic."
+  },
+  {
+    "influencerSlug": "gottlob-frege",
+    "influencedSlug": "michael-dummett",
+    "influenceType": "direct",
+    "description": "Dummett's major scholarly project was interpreting and extending Frege's philosophy of language."
+  },
+  {
+    "influencerSlug": "bertrand-russell",
+    "influencedSlug": "wittgenstein",
+    "influenceType": "direct",
+    "description": "Russell supervised Wittgenstein at Cambridge; the Tractatus develops Russell's logical atomism."
+  },
+  {
+    "influencerSlug": "bertrand-russell",
+    "influencedSlug": "ge-moore",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "bertrand-russell",
+    "influencedSlug": "alfred-whitehead",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "wittgenstein",
+    "influencedSlug": "moritz-schlick",
+    "influenceType": "direct",
+    "description": "The Vienna Circle read the Tractatus as supporting their verificationism."
+  },
+  {
+    "influencerSlug": "wittgenstein",
+    "influencedSlug": "rudolf-carnap",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "wittgenstein",
+    "influencedSlug": "gilbert-ryle",
+    "influenceType": "indirect"
+  },
+  {
+    "influencerSlug": "wittgenstein",
+    "influencedSlug": "pf-strawson",
+    "influenceType": "indirect"
+  },
+  {
+    "influencerSlug": "wittgenstein",
+    "influencedSlug": "gem-anscombe",
+    "influenceType": "direct",
+    "description": "Anscombe was Wittgenstein's student and literary executor; Intention is a Wittgensteinian work."
+  },
+  {
+    "influencerSlug": "wittgenstein",
+    "influencedSlug": "saul-kripke",
+    "influenceType": "direct",
+    "description": "Kripke on Rules and Private Language is an interpretation of — and landmark intervention in — the rule-following sections of the Investigations."
+  },
+  {
+    "influencerSlug": "rudolf-carnap",
+    "influencedSlug": "wvo-quine",
+    "influenceType": "critical",
+    "description": "\"Two Dogmas of Empiricism\" is addressed principally at Carnap's analytic-synthetic distinction."
+  },
+  {
+    "influencerSlug": "moritz-schlick",
+    "influencedSlug": "aj-ayer",
+    "influenceType": "direct",
+    "description": "Ayer visited the Vienna Circle and brought logical positivism to a British audience."
+  },
+  {
+    "influencerSlug": "wvo-quine",
+    "influencedSlug": "donald-davidson",
+    "influenceType": "direct",
+    "description": "Davidson was Quine's student; he inherits naturalism and transforms it with a truth-theoretic semantics."
+  },
+  {
+    "influencerSlug": "wvo-quine",
+    "influencedSlug": "nelson-goodman",
+    "influenceType": "direct",
+    "description": "Quine and Goodman were close colleagues; their joint paper on nominalism is a landmark."
+  },
+  {
+    "influencerSlug": "wvo-quine",
+    "influencedSlug": "hilary-putnam",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "donald-davidson",
+    "influencedSlug": "richard-rorty",
+    "influenceType": "direct",
+    "description": "Rorty draws heavily on Davidson's critique of the scheme-content dualism in his neo-pragmatism."
+  },
+  {
+    "influencerSlug": "ruth-barcan-marcus",
+    "influencedSlug": "saul-kripke",
+    "influenceType": "direct",
+    "description": "Barcan Marcus's quantified modal logic and direct reference anticipate the core of Naming and Necessity."
+  },
+  {
+    "influencerSlug": "saul-kripke",
+    "influencedSlug": "hilary-putnam",
+    "influenceType": "direct",
+    "description": "Kripke's rigid designators directly influenced Putnam's Twin Earth and natural kind terms."
+  },
+  {
+    "influencerSlug": "charles-peirce",
+    "influencedSlug": "william-james",
+    "influenceType": "direct",
+    "description": "James acknowledged Peirce as the founder of pragmatism and popularized the movement."
+  },
+  {
+    "influencerSlug": "william-james",
+    "influencedSlug": "john-dewey",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "john-dewey",
+    "influencedSlug": "george-herbert-mead",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "charles-peirce",
+    "influencedSlug": "ci-lewis",
+    "influenceType": "indirect"
+  },
+  {
+    "influencerSlug": "sellars",
+    "influencedSlug": "brandom",
+    "influenceType": "direct",
+    "description": "Brandom's inferentialism directly develops Sellars's distinction between the space of reasons and the space of causes."
+  },
+  {
+    "influencerSlug": "sellars",
+    "influencedSlug": "mcdowell",
+    "influenceType": "direct",
+    "description": "McDowell's Mind and World is in sustained dialogue with Sellars's \"Empiricism and the Philosophy of Mind.\""
+  },
+  {
+    "influencerSlug": "sellars",
+    "influencedSlug": "richard-rorty",
+    "influenceType": "direct",
+    "description": "Rorty was Sellars's student; Philosophy and the Mirror of Nature develops Sellarsian themes."
+  },
+  {
+    "influencerSlug": "richard-rorty",
+    "influencedSlug": "brandom",
+    "influenceType": "direct",
+    "description": "Brandom was Rorty's student at Princeton."
+  },
+  {
+    "influencerSlug": "jeremy-bentham",
+    "influencedSlug": "john-stuart-mill",
+    "influenceType": "direct",
+    "description": "Mill was educated as a Benthamite but revised utilitarianism to distinguish quality of pleasures."
+  },
+  {
+    "influencerSlug": "john-stuart-mill",
+    "influencedSlug": "peter-singer",
+    "influenceType": "indirect"
+  },
+  {
+    "influencerSlug": "aristotle",
+    "influencedSlug": "gem-anscombe",
+    "influenceType": "revival",
+    "description": "\"Modern Moral Philosophy\" called for return to Aristotelian virtue ethics."
+  },
+  {
+    "influencerSlug": "aristotle",
+    "influencedSlug": "philippa-foot",
+    "influenceType": "revival",
+    "description": "Natural Goodness grounds ethics in Aristotelian natural teleology."
+  },
+  {
+    "influencerSlug": "aristotle",
+    "influencedSlug": "alasdair-macintyre",
+    "influenceType": "revival",
+    "description": "After Virtue diagnoses modernity's loss of the Aristotelian teleological framework."
+  },
+  {
+    "influencerSlug": "aristotle",
+    "influencedSlug": "martha-nussbaum",
+    "influenceType": "revival"
+  },
+  {
+    "influencerSlug": "gem-anscombe",
+    "influencedSlug": "philippa-foot",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "john-rawls",
+    "influencedSlug": "robert-nozick",
+    "influenceType": "critical",
+    "description": "Anarchy, State, and Utopia is written as an explicit libertarian response to A Theory of Justice."
+  },
+  {
+    "influencerSlug": "john-rawls",
+    "influencedSlug": "bernard-williams",
+    "influenceType": "critical",
+    "description": "Williams critiques Rawlsian moral theory for its detachment from actual human motivations."
+  },
+  {
+    "influencerSlug": "john-rawls",
+    "influencedSlug": "derek-parfit",
+    "influenceType": "direct"
+  },
+  {
+    "influencerSlug": "thomas-nagel",
+    "influencedSlug": "david-chalmers",
+    "influenceType": "direct",
+    "description": "Nagel's \"What Is It Like to Be a Bat?\" directly anticipates Chalmers's hard problem."
+  },
+  {
+    "influencerSlug": "jl-austin",
+    "influencedSlug": "john-searle",
+    "influenceType": "direct",
+    "description": "Searle was Austin's student; Speech Acts develops Austinian speech act theory systematically."
+  },
+  {
+    "influencerSlug": "pf-strawson",
+    "influencedSlug": "saul-kripke",
+    "influenceType": "direct"
+  }
+]

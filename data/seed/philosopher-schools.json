@@ -1,0 +1,492 @@
+[
+  {
+    "philosopherSlug": "heraclitus",
+    "schoolSlug": "presocratic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "parmenides",
+    "schoolSlug": "presocratic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "democritus",
+    "schoolSlug": "presocratic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "zeno-of-citium",
+    "schoolSlug": "stoicism",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "socrates",
+    "schoolSlug": "platonism",
+    "role": "associated"
+  },
+  {
+    "philosopherSlug": "plato",
+    "schoolSlug": "platonism",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "aristotle",
+    "schoolSlug": "aristotelianism",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "aristotle",
+    "schoolSlug": "platonism",
+    "role": "student"
+  },
+  {
+    "philosopherSlug": "epicurus",
+    "schoolSlug": "epicureanism",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "marcus-aurelius",
+    "schoolSlug": "stoicism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "plotinus",
+    "schoolSlug": "neoplatonism",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "plotinus",
+    "schoolSlug": "platonism",
+    "role": "associated"
+  },
+  {
+    "philosopherSlug": "augustine",
+    "schoolSlug": "scholasticism",
+    "role": "associated"
+  },
+  {
+    "philosopherSlug": "augustine",
+    "schoolSlug": "neoplatonism",
+    "role": "associated"
+  },
+  {
+    "philosopherSlug": "thomas-aquinas",
+    "schoolSlug": "scholasticism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "thomas-aquinas",
+    "schoolSlug": "aristotelianism",
+    "role": "associated"
+  },
+  {
+    "philosopherSlug": "william-of-ockham",
+    "schoolSlug": "scholasticism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "rene-descartes",
+    "schoolSlug": "rationalism",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "baruch-spinoza",
+    "schoolSlug": "rationalism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "gottfried-leibniz",
+    "schoolSlug": "rationalism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "john-locke",
+    "schoolSlug": "empiricism",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "george-berkeley",
+    "schoolSlug": "empiricism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "david-hume",
+    "schoolSlug": "empiricism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "jeremy-bentham",
+    "schoolSlug": "utilitarianism",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "john-stuart-mill",
+    "schoolSlug": "utilitarianism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "peter-singer",
+    "schoolSlug": "utilitarianism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "immanuel-kant",
+    "schoolSlug": "german-idealism",
+    "role": "associated"
+  },
+  {
+    "philosopherSlug": "fichte",
+    "schoolSlug": "german-idealism",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "schelling",
+    "schoolSlug": "german-idealism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "hegel",
+    "schoolSlug": "german-idealism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "charles-peirce",
+    "schoolSlug": "pragmatism",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "william-james",
+    "schoolSlug": "pragmatism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "john-dewey",
+    "schoolSlug": "pragmatism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "george-herbert-mead",
+    "schoolSlug": "pragmatism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "ci-lewis",
+    "schoolSlug": "pragmatism",
+    "role": "associated"
+  },
+  {
+    "philosopherSlug": "kierkegaard",
+    "schoolSlug": "existentialism",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "nietzsche",
+    "schoolSlug": "existentialism",
+    "role": "associated"
+  },
+  {
+    "philosopherSlug": "jean-paul-sartre",
+    "schoolSlug": "existentialism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "de-beauvoir",
+    "schoolSlug": "existentialism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "martin-heidegger",
+    "schoolSlug": "existentialism",
+    "role": "associated"
+  },
+  {
+    "philosopherSlug": "edmund-husserl",
+    "schoolSlug": "phenomenology",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "martin-heidegger",
+    "schoolSlug": "phenomenology",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "jean-paul-sartre",
+    "schoolSlug": "phenomenology",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "maurice-merleau-ponty",
+    "schoolSlug": "phenomenology",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "emmanuel-levinas",
+    "schoolSlug": "phenomenology",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "paul-ricoeur",
+    "schoolSlug": "phenomenology",
+    "role": "associated"
+  },
+  {
+    "philosopherSlug": "wilhelm-dilthey",
+    "schoolSlug": "hermeneutics",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "hans-georg-gadamer",
+    "schoolSlug": "hermeneutics",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "paul-ricoeur",
+    "schoolSlug": "hermeneutics",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "martin-heidegger",
+    "schoolSlug": "hermeneutics",
+    "role": "associated"
+  },
+  {
+    "philosopherSlug": "theodor-adorno",
+    "schoolSlug": "critical-theory",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "walter-benjamin",
+    "schoolSlug": "critical-theory",
+    "role": "associated"
+  },
+  {
+    "philosopherSlug": "herbert-marcuse",
+    "schoolSlug": "critical-theory",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "jurgen-habermas",
+    "schoolSlug": "critical-theory",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "gottlob-frege",
+    "schoolSlug": "analytic-philosophy",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "bertrand-russell",
+    "schoolSlug": "analytic-philosophy",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "ge-moore",
+    "schoolSlug": "analytic-philosophy",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "alfred-whitehead",
+    "schoolSlug": "analytic-philosophy",
+    "role": "associated"
+  },
+  {
+    "philosopherSlug": "wittgenstein",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "wvo-quine",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "nelson-goodman",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "ruth-barcan-marcus",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "donald-davidson",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "saul-kripke",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "hilary-putnam",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "michael-dummett",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "david-lewis",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "dm-armstrong",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "sellars",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "brandom",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "mcdowell",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "derek-parfit",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "thomas-nagel",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "daniel-dennett",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "david-chalmers",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "tyler-burge",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "timothy-williamson",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "frank-jackson",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "kit-fine",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "gem-anscombe",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "philippa-foot",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "bernard-williams",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "john-rawls",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "robert-nozick",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "john-searle",
+    "schoolSlug": "analytic-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "karl-popper",
+    "schoolSlug": "analytic-philosophy",
+    "role": "associated"
+  },
+  {
+    "philosopherSlug": "moritz-schlick",
+    "schoolSlug": "logical-positivism",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "rudolf-carnap",
+    "schoolSlug": "logical-positivism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "aj-ayer",
+    "schoolSlug": "logical-positivism",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "wittgenstein",
+    "schoolSlug": "logical-positivism",
+    "role": "associated"
+  },
+  {
+    "philosopherSlug": "gilbert-ryle",
+    "schoolSlug": "ordinary-language-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "jl-austin",
+    "schoolSlug": "ordinary-language-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "pf-strawson",
+    "schoolSlug": "ordinary-language-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "hp-grice",
+    "schoolSlug": "ordinary-language-philosophy",
+    "role": "member"
+  },
+  {
+    "philosopherSlug": "wittgenstein",
+    "schoolSlug": "ordinary-language-philosophy",
+    "role": "associated"
+  },
+  {
+    "philosopherSlug": "richard-rorty",
+    "schoolSlug": "neo-pragmatism",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "brandom",
+    "schoolSlug": "neo-pragmatism",
+    "role": "founder"
+  },
+  {
+    "philosopherSlug": "mcdowell",
+    "schoolSlug": "neo-pragmatism",
+    "role": "member"
+  }
+]

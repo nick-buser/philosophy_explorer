@@ -30,11 +30,18 @@ sections are mandatory — the git diff covers what changed.
 
 ## Stack
 
-- `packages/api` — Hono 4 + `@hono/zod-openapi` + Drizzle ORM (port 3001)
+- `packages/api-fsharp/` — **F# 9 + ASP.NET Minimal API** (port 3001)
+  - Dapper for DB queries (raw SQL, works with both SQLite and Postgres)
+  - Swashbuckle for OpenAPI spec generation
+  - Custom in-memory graph service (replaces graphology, loads graph-data.json)
+  - Domain types in `Domain/Types.fs` and DTO types in `Domain/Dtos.fs`
 - `packages/web` — Vite 6 + React 19 SPA (port 3000)
   - **TanStack Router** (code-based — routes in `src/routes/`, assembled in `src/router.tsx`)
   - **TanStack Query 5** (client singleton in `src/lib/query-client.ts`, provider in `__root.tsx`)
   - Tailwind v4, dark-first
+- `data/` — Shared data directory
+  - `data/seed/` — JSON seed files (exported from original TS seed-data.ts)
+  - `data/graph-data.json` — Canonical graphology JSON (the unified graph)
 
 ## Database strategy
 
@@ -42,26 +49,19 @@ Dialect is auto-detected from `DATABASE_URL`. No separate flag needed.
 
 | Value | Dialect | When |
 |---|---|---|
-| `file:./dev.db` (default) | SQLite via libsql | local dev, no Postgres needed |
-| `postgresql://...` | Postgres via postgres-js | staging, production |
+| `file:./dev.db` (default) | SQLite via Microsoft.Data.Sqlite | local dev |
+| `postgresql://...` | Postgres via Npgsql | staging, production |
 
-**Schema:** `src/db/schema/postgres.ts` (Postgres, source of truth) and `src/db/schema/sqlite.ts` (isomorphic SQLite translation). Both produce identical row shapes. TypeScript types are always driven by the Postgres schema.
-
-**Migrations:** `drizzle/postgres/` for Postgres, `drizzle/sqlite/` for SQLite. The active dialect is determined by `DATABASE_URL` at the time `db:generate` and `db:migrate` run. Commit both migration directories.
+**Schema:** Defined in SQL CREATE statements in `Db/Seed.fs` for SQLite dev.
+For Postgres, migrations are managed separately (future ticket).
+Row shapes and column names are identical across both dialects.
+TypeScript client types are driven by the OpenAPI spec generated from F# DTOs.
 
 **Dev workflow (SQLite):**
 ```bash
-cp packages/api/.env.example packages/api/.env   # default uses file:./dev.db
-npm run db:generate && npm run db:migrate && npm run db:seed
-npm run dev:api
-```
-
-**Schema changes require both migration sets:**
-```bash
-# SQLite (dev default)
-npm run db:generate   # generates drizzle/sqlite/
-# Switch to Postgres
-DATABASE_URL=postgresql://... npm run db:generate   # generates drizzle/postgres/
+npm run db:seed     # seeds SQLite dev.db from data/seed/ JSON files
+npm run dev:api     # starts F# API on port 3001
+npm run dev:web     # starts Vite dev server on port 3000
 ```
 
 ## Graph layer
@@ -69,27 +69,23 @@ DATABASE_URL=postgresql://... npm run db:generate   # generates drizzle/postgres
 A unified property graph consolidates all entity relationships (philosopher influences,
 school memberships, authorship, curriculum prerequisites) into a single directed graph.
 
-**Architecture:** `packages/api/src/graph/` — `GraphService` interface with a strategy pattern:
+**Architecture:** `packages/api-fsharp/.../Graph/` — `MemoryGraphService` loads graphology JSON:
 
-| `GRAPH_DATABASE_URL` value | Backend | When |
+| `GRAPH_DATA_PATH` | Backend | When |
 |---|---|---|
-| unset or `memory` (default) | graphology in-memory + JSON file | dev, test |
-| `bolt://...` or `neo4j://...` | neo4j-driver via Bolt | staging, prod (future) |
+| path to graph-data.json (default) | In-memory adjacency lists | dev, test |
+| future: Neo4j via bolt:// | Neo4j driver | staging, prod |
 
-**Data file:** `packages/api/src/data/graph-data.json` — canonical graphology JSON.
-Regenerate after seed data changes: `npm run graph:build`
+**Data file:** `data/graph-data.json` — canonical graphology JSON.
+Regenerate after seed data changes: `npm run graph:build` (uses the original TS build script).
 
-**Key files:**
-- `src/graph/types.ts` — node labels, edge types, shared data types
-- `src/graph/service.ts` — `GraphService` interface
-- `src/graph/memory-graph.ts` — dev/test implementation (graphology)
-- `src/graph/index.ts` — factory (like `src/db/index.ts`)
-- `src/graph/build-graph.ts` — converts seed data → graph JSON
-- `src/routes/graph.ts` — API endpoints (`/api/graph/*`)
+**Key F# files:**
+- `Graph/GraphTypes.fs` — node labels, edge types, shared data types
+- `Graph/MemoryGraphService.fs` — in-memory graph (replaces graphology)
 
-**API endpoints:** `/api/graph/stats`, `/api/graph/node/:key`, `/api/graph/neighbors/:key`,
-`/api/graph/path`, `/api/graph/influence/:slug`, `/api/graph/school/:slug`,
-`/api/graph/curriculum/:slug`, `/api/graph/influence-network`
+**API endpoints:** `/api/graph/stats`, `/api/graph/node/{key}`, `/api/graph/neighbors/{key}`,
+`/api/graph/path`, `/api/graph/influence/{slug}`, `/api/graph/school/{slug}`,
+`/api/graph/curriculum/{slug}`, `/api/graph/influence-network`
 
 **Node key format:** `{label}:{slug}` (e.g. `philosopher:immanuel-kant`).
 
@@ -97,21 +93,25 @@ Regenerate after seed data changes: `npm run graph:build`
 
 ## API contract workflow
 
-After any route schema change:
-1. `npm run gen:spec` — regenerates `packages/api/specs/openapi.json` (API must be running)
-2. `npm run gen:types` — regenerates `packages/web/src/lib/api-types.ts`
-3. Commit both files alongside the route change
+The F# server generates an OpenAPI spec via Swashbuckle. After any route/DTO change:
+1. Start the API: `npm run dev:api`
+2. `npm run gen:spec` — fetches spec from `/swagger/v1/swagger.json` → `packages/specs/openapi.json`
+3. `npm run gen:types` — regenerates `packages/web/src/lib/api-types.ts` from the spec
+4. Commit both files alongside the route change
+
+This maintains type coherence across F# server and TypeScript client by definition:
+F# DTOs → OpenAPI spec → openapi-typescript → TypeScript types.
 
 ## Testing
 
 ```bash
 npm test          # both packages
-npm run test:api  # packages/api (vitest, mocks db)
+npm run test:api  # packages/api-fsharp (dotnet test)
 npm run test:web  # packages/web (vitest + jsdom + testing-library)
 ```
 
-API tests live in `packages/api/tests/`. Pattern: mock `src/db/index.js` via `vi.mock()`,
-then call `app.request()` directly — no running server needed.
+API integration tests should verify the contract at the HTTP boundary — the joint
+between F# server and TypeScript client. Use the running server + curl/fetch assertions.
 
 Web tests: component and hook tests alongside source or in `src/**/__tests__/`.
 
@@ -122,16 +122,26 @@ Web tests: component and hook tests alongside source or in `src/**/__tests__/`.
 
 ## Adding a route (API)
 
-1. Create `packages/api/src/routes/<resource>.ts` with an `OpenAPIHono` instance
-2. Register it in `packages/api/src/index.ts` via `app.route('/', resourceRoutes)`
-3. Add a test in `packages/api/tests/routes/<resource>.test.ts`
-4. Run gen:spec + gen:types and commit the updated spec and types
+1. Add DTO types in `Domain/Dtos.fs` if needed
+2. Create or update a route module in `Routes/<Resource>Routes.fs`
+3. Register it in `Program.fs`
+4. Add to the .fsproj `<Compile>` list in correct order
+5. Run gen:spec + gen:types and commit the updated spec and types
 
 ## Key decisions
 
-- Postgres + Drizzle for entity CRUD. The graph layer (graphology in dev, Neo4j in prod)
-  handles relationship traversal. Postgres remains the system of record for writes;
-  the graph is a read-optimized projection.
-- No auth yet — `DEFAULT_USER_ID` placeholder in `src/lib/default-user.ts`.
-  When adding auth, replace with `c.get('user').id` from auth middleware.
-- ESM throughout the API. Local imports use `.js` extensions even on `.ts` source files.
+- **F# for the backend.** The project's direction toward formal logic layers (syllogistic,
+  Fregean, Kripke semantics) and integration with Lean/Neo4j benefits from ML-family type
+  safety. F#'s discriminated unions, pattern matching, and type inference make modeling
+  logical structures natural. Postgres + Dapper for persistence; in-memory graph for traversal.
+- **Type coherence via OpenAPI codegen.** F# DTOs are the source of truth for wire types.
+  Swashbuckle generates the OpenAPI spec, openapi-typescript generates TS client types.
+  No manual type synchronization needed.
+- **Seed data in JSON.** The original 1900-line TypeScript seed file is exported to JSON
+  files in `data/seed/`. Both the F# seeder and the graph build script consume them.
+- **Graph data preserved.** The 274-node, 382-edge graph-data.json is loaded directly
+  by the F# MemoryGraphService. No graphology dependency needed — pure F# adjacency lists.
+- No auth yet — `DEFAULT_USER_ID` placeholder.
+  When adding auth, add ASP.NET auth middleware.
+- `packages/api/` (the old Hono/TS backend) is retained for reference but is no longer
+  the active backend. The F# server in `packages/api-fsharp/` is the active API.

@@ -1,0 +1,147 @@
+[
+  {
+    "slug": "presocratic-philosophy",
+    "name": "Presocratic Philosophy",
+    "periodStartYear": -600,
+    "periodEndYear": -400,
+    "periodCertainty": "range",
+    "description": "The earliest Greek philosophers, seeking rational explanations of nature without appeal to mythology. Includes the Milesians, Heraclitus, Parmenides, and the Atomists."
+  },
+  {
+    "slug": "platonism",
+    "name": "Platonism",
+    "periodStartYear": -387,
+    "periodCertainty": "circa",
+    "description": "Philosophical tradition stemming from Plato, centered on the theory of Forms, the immortality of the soul, and the nature of knowledge as recollection."
+  },
+  {
+    "slug": "aristotelianism",
+    "name": "Aristotelianism",
+    "periodStartYear": -335,
+    "periodCertainty": "circa",
+    "description": "Tradition derived from Aristotle, emphasizing empirical observation, logic, and the systematic study of nature, ethics, and politics."
+  },
+  {
+    "slug": "stoicism",
+    "name": "Stoicism",
+    "periodStartYear": -301,
+    "periodCertainty": "circa",
+    "description": "School founded by Zeno of Citium, teaching that virtue is the only true good and that one should live in accordance with nature and reason."
+  },
+  {
+    "slug": "epicureanism",
+    "name": "Epicureanism",
+    "periodStartYear": -307,
+    "periodCertainty": "circa",
+    "description": "School founded by Epicurus, holding that the highest good is ataraxia (tranquility) and aponia (absence of pain), achievable through simple pleasures and philosophical friendship."
+  },
+  {
+    "slug": "neoplatonism",
+    "name": "Neoplatonism",
+    "periodStartYear": 245,
+    "periodCertainty": "circa",
+    "description": "Late antique tradition founded by Plotinus, synthesizing Platonic metaphysics with Aristotelian and Stoic elements into a hierarchical emanationist system. Deeply influential on Christian, Jewish, and Islamic philosophy."
+  },
+  {
+    "slug": "scholasticism",
+    "name": "Scholasticism",
+    "periodStartYear": 1000,
+    "periodEndYear": 1400,
+    "periodCertainty": "range",
+    "description": "Medieval philosophical and theological tradition reconciling Christian faith with classical (especially Aristotelian) reason. Associated with the cathedral schools and universities of Europe."
+  },
+  {
+    "slug": "rationalism",
+    "name": "Rationalism",
+    "periodStartYear": 1641,
+    "periodCertainty": "circa",
+    "description": "Early modern tradition holding that reason, rather than sensory experience, is the primary source of knowledge. Associated with Descartes, Spinoza, and Leibniz."
+  },
+  {
+    "slug": "empiricism",
+    "name": "Empiricism",
+    "periodStartYear": 1689,
+    "periodCertainty": "circa",
+    "description": "Tradition holding that knowledge derives primarily from sensory experience. Associated with Locke, Berkeley, and Hume."
+  },
+  {
+    "slug": "utilitarianism",
+    "name": "Utilitarianism",
+    "periodStartYear": 1789,
+    "periodCertainty": "circa",
+    "description": "Ethical theory holding that the right action maximizes overall well-being or happiness. Founded by Bentham, refined by Mill, and extended by Singer."
+  },
+  {
+    "slug": "german-idealism",
+    "name": "German Idealism",
+    "periodStartYear": 1781,
+    "periodEndYear": 1831,
+    "periodCertainty": "range",
+    "description": "Post-Kantian movement arguing that reality is fundamentally mental or conceptually structured. Includes Fichte, Schelling, and Hegel."
+  },
+  {
+    "slug": "existentialism",
+    "name": "Existentialism",
+    "periodStartYear": 1840,
+    "periodCertainty": "circa",
+    "description": "Movement centered on individual existence, freedom, and choice. Associated with Kierkegaard, Nietzsche, Sartre, and de Beauvoir."
+  },
+  {
+    "slug": "pragmatism",
+    "name": "Pragmatism",
+    "periodStartYear": 1878,
+    "periodCertainty": "circa",
+    "description": "American philosophical tradition holding that the meaning of ideas lies in their practical consequences and that inquiry is a tool for resolving genuine doubt. Founded by Peirce; developed by James, Dewey, and Mead."
+  },
+  {
+    "slug": "phenomenology",
+    "name": "Phenomenology",
+    "periodStartYear": 1900,
+    "periodCertainty": "circa",
+    "description": "Philosophical method focused on the first-person structure of experience. Founded by Husserl; extended and transformed by Heidegger, Merleau-Ponty, and Sartre."
+  },
+  {
+    "slug": "analytic-philosophy",
+    "name": "Analytic Philosophy",
+    "periodStartYear": 1900,
+    "periodCertainty": "circa",
+    "description": "Tradition emphasizing clarity, logical analysis, and attention to language. Dominant in Anglophone philosophy since the early twentieth century."
+  },
+  {
+    "slug": "logical-positivism",
+    "name": "Logical Positivism",
+    "periodStartYear": 1922,
+    "periodEndYear": 1960,
+    "periodCertainty": "range",
+    "description": "Vienna Circle movement holding that meaningful statements are either analytic (true by definition) or empirically verifiable. Associated with Schlick, Carnap, and Ayer. Largely dissolved after Quine's \"Two Dogmas.\""
+  },
+  {
+    "slug": "ordinary-language-philosophy",
+    "name": "Ordinary Language Philosophy",
+    "periodStartYear": 1945,
+    "periodEndYear": 1970,
+    "periodCertainty": "range",
+    "description": "Oxford-centred movement holding that philosophical problems arise from misuse of ordinary language and dissolve under careful attention to how words are actually used. Associated with Ryle, Austin, Strawson, and Grice."
+  },
+  {
+    "slug": "hermeneutics",
+    "name": "Hermeneutics",
+    "periodStartYear": 1800,
+    "periodCertainty": "circa",
+    "description": "Theory and practice of interpretation, especially of texts and historical expressions. Developed by Schleiermacher, Dilthey, Heidegger, and Gadamer into a general philosophical account of human understanding."
+  },
+  {
+    "slug": "critical-theory",
+    "name": "Critical Theory",
+    "periodStartYear": 1923,
+    "periodCertainty": "circa",
+    "description": "Tradition associated with the Frankfurt School, synthesizing Hegel, Marx, Freud, and Weber to critique ideology and the conditions for human emancipation. Associated with Horkheimer, Adorno, and Habermas."
+  },
+  {
+    "slug": "neo-pragmatism",
+    "name": "Neo-Pragmatism",
+    "periodStartYear": 1979,
+    "periodCertainty": "circa",
+    "description": "Late-twentieth-century revival and transformation of classical pragmatism, combining it with analytic philosophy of language and Hegelian themes. Associated with Rorty, Brandom, and McDowell."
+  }
+]

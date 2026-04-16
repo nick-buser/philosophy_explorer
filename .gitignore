@@ -6,3 +6,10 @@ dist/
 .env.*.local
 .DS_Store
 .idea/
+
+# .NET / F#
+bin/
+obj/
+*.user
+*.suo
+*.DotSettings.user

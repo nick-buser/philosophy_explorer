@@ -1,0 +1,990 @@
+[
+  {
+    "slug": "heraclitus",
+    "name": "Heraclitus",
+    "bornYear": -535,
+    "bornCertainty": "circa",
+    "diedYear": -475,
+    "diedCertainty": "circa",
+    "nationality": "Greek",
+    "bioShort": "Ephesian philosopher known for the doctrine of universal flux — \"everything flows\" (panta rhei) — and the unity of opposites. His Logos doctrine posits a rational principle governing all change. Survives only in fragments cited by later authors."
+  },
+  {
+    "slug": "parmenides",
+    "name": "Parmenides",
+    "bornYear": -515,
+    "bornCertainty": "circa",
+    "diedYear": -450,
+    "diedCertainty": "circa",
+    "nationality": "Greek",
+    "bioShort": "Eleatic philosopher who argued in verse that Being is one, unchanging, and indivisible — and that plurality and change are illusions arising from the senses. His challenge to Heraclitean flux set the terms for all subsequent Greek metaphysics."
+  },
+  {
+    "slug": "democritus",
+    "name": "Democritus",
+    "bornYear": -460,
+    "bornCertainty": "circa",
+    "diedYear": -370,
+    "diedCertainty": "circa",
+    "nationality": "Greek",
+    "bioShort": "Developed atomic theory alongside Leucippus: all of reality consists of indivisible atoms moving through void. Also wrote extensively on ethics, epistemology, and mathematics, though most works survive only in fragments."
+  },
+  {
+    "slug": "zeno-of-citium",
+    "name": "Zeno of Citium",
+    "bornYear": -334,
+    "bornCertainty": "circa",
+    "diedYear": -262,
+    "diedCertainty": "circa",
+    "nationality": "Greek",
+    "bioShort": "Founder of Stoicism, who taught in the Stoa Poikile (Painted Porch) in Athens. Held that living according to nature and reason, and cultivating virtue as the sole good, is the path to happiness. His writings survive only in fragments."
+  },
+  {
+    "slug": "socrates",
+    "name": "Socrates",
+    "bornYear": -470,
+    "bornCertainty": "circa",
+    "diedYear": -399,
+    "diedCertainty": "exact",
+    "nationality": "Greek",
+    "bioShort": "Athenian philosopher who wrote nothing himself but shaped Western thought through his method of questioning (elenchus). Tried and executed for impiety and corrupting youth."
+  },
+  {
+    "slug": "plato",
+    "name": "Plato",
+    "alsoKnownAs": "Aristocles",
+    "bornYear": -428,
+    "bornCertainty": "circa",
+    "diedYear": -348,
+    "diedCertainty": "circa",
+    "nationality": "Greek",
+    "bioShort": "Student of Socrates and teacher of Aristotle. Founded the Academy in Athens. Developed the theory of Forms and wrote in dialogue form, with Socrates as the central interlocutor."
+  },
+  {
+    "slug": "aristotle",
+    "name": "Aristotle",
+    "bornYear": -384,
+    "bornCertainty": "exact",
+    "diedYear": -322,
+    "diedCertainty": "exact",
+    "nationality": "Greek",
+    "bioShort": "Student of Plato and tutor of Alexander the Great. Founded the Lyceum. His works range across logic, biology, physics, ethics, politics, and poetics."
+  },
+  {
+    "slug": "epicurus",
+    "name": "Epicurus",
+    "bornYear": -341,
+    "bornCertainty": "exact",
+    "diedYear": -270,
+    "diedCertainty": "exact",
+    "nationality": "Greek",
+    "bioShort": "Founder of the Garden school in Athens. Taught that the good life consists in ataraxia and aponia, achieved through friendship, modest pleasures, and freedom from fear."
+  },
+  {
+    "slug": "marcus-aurelius",
+    "name": "Marcus Aurelius",
+    "bornYear": 121,
+    "bornCertainty": "exact",
+    "diedYear": 180,
+    "diedCertainty": "exact",
+    "nationality": "Roman",
+    "bioShort": "Roman Emperor and Stoic philosopher. His private journal, the Meditations, was never intended for publication and remains one of the most direct expressions of Stoic practice."
+  },
+  {
+    "slug": "plotinus",
+    "name": "Plotinus",
+    "bornYear": 204,
+    "bornCertainty": "circa",
+    "diedYear": 270,
+    "diedCertainty": "exact",
+    "nationality": "Roman",
+    "bioShort": "Founder of Neoplatonism. His Enneads (edited by Porphyry) articulate a hierarchical emanationist metaphysics: from the One proceeds Intellect (Nous), then Soul, then Matter. Deeply influential on Augustine and on Islamic and Jewish philosophy."
+  },
+  {
+    "slug": "augustine",
+    "name": "Augustine of Hippo",
+    "alsoKnownAs": "Saint Augustine",
+    "bornYear": 354,
+    "bornCertainty": "exact",
+    "diedYear": 430,
+    "diedCertainty": "exact",
+    "nationality": "Roman",
+    "bioShort": "Bishop of Hippo and the most influential theologian of Western Christianity. Synthesized Neoplatonism with Christian doctrine. His Confessions pioneered the philosophical autobiography; The City of God articulated the theology of history."
+  },
+  {
+    "slug": "thomas-aquinas",
+    "name": "Thomas Aquinas",
+    "alsoKnownAs": "Doctor Angelicus",
+    "bornYear": 1225,
+    "bornCertainty": "exact",
+    "diedYear": 1274,
+    "diedCertainty": "exact",
+    "nationality": "Italian",
+    "bioShort": "Dominican friar and the defining philosopher of Scholasticism. His synthesis of Aristotelian philosophy with Christian theology — Thomism — remains the official philosophical framework of the Catholic Church."
+  },
+  {
+    "slug": "william-of-ockham",
+    "name": "William of Ockham",
+    "alsoKnownAs": "Ockham, Occam",
+    "bornYear": 1287,
+    "bornCertainty": "circa",
+    "diedYear": 1347,
+    "diedCertainty": "circa",
+    "nationality": "English",
+    "bioShort": "Franciscan philosopher and nominalist. \"Ockham's Razor\" (entities should not be multiplied beyond necessity) challenges realism about universals. His nominalism and anti-papal political writings made him a controversial figure."
+  },
+  {
+    "slug": "francis-bacon",
+    "name": "Francis Bacon",
+    "bornYear": 1561,
+    "bornCertainty": "exact",
+    "diedYear": 1626,
+    "diedCertainty": "exact",
+    "nationality": "English",
+    "bioShort": "Statesman and philosopher who championed inductive method and empirical science over Aristotelian scholasticism. His Novum Organum argues for systematic observation and experiment as the basis of natural knowledge."
+  },
+  {
+    "slug": "thomas-hobbes",
+    "name": "Thomas Hobbes",
+    "bornYear": 1588,
+    "bornCertainty": "exact",
+    "diedYear": 1679,
+    "diedCertainty": "exact",
+    "nationality": "English",
+    "bioShort": "Materialist philosopher and political theorist. Leviathan argues that without a sovereign authority, human life would be \"solitary, poor, nasty, brutish, and short,\" grounding political obligation in a social contract."
+  },
+  {
+    "slug": "baruch-spinoza",
+    "name": "Baruch Spinoza",
+    "alsoKnownAs": "Benedictus de Spinoza",
+    "bornYear": 1632,
+    "bornCertainty": "exact",
+    "diedYear": 1677,
+    "diedCertainty": "exact",
+    "nationality": "Dutch",
+    "bioShort": "Rationalist metaphysician who argued that God and Nature are identical (Deus sive Natura) — one infinite substance with infinite attributes. Excommunicated from the Amsterdam Jewish community. His Ethics is written in geometric form."
+  },
+  {
+    "slug": "john-locke",
+    "name": "John Locke",
+    "bornYear": 1632,
+    "bornCertainty": "exact",
+    "diedYear": 1704,
+    "diedCertainty": "exact",
+    "nationality": "English",
+    "bioShort": "Father of classical liberalism and British empiricism. The Essay Concerning Human Understanding argues the mind is a tabula rasa; the Two Treatises ground government in consent and the protection of natural rights."
+  },
+  {
+    "slug": "gottfried-leibniz",
+    "name": "Gottfried Wilhelm Leibniz",
+    "bornYear": 1646,
+    "bornCertainty": "exact",
+    "diedYear": 1716,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Polymath who independently invented the calculus (alongside Newton) and developed a rationalist metaphysics of monads — simple, windowless substances — and pre-established harmony. His theodicy argues this is the best of all possible worlds."
+  },
+  {
+    "slug": "george-berkeley",
+    "name": "George Berkeley",
+    "bornYear": 1685,
+    "bornCertainty": "exact",
+    "diedYear": 1753,
+    "diedCertainty": "exact",
+    "nationality": "Irish",
+    "bioShort": "Idealist philosopher who argued that material substance is a fiction — to be is to be perceived (esse est percipi). Only minds and their ideas exist. His immaterialism was partly a defense of common sense against Lockean skepticism."
+  },
+  {
+    "slug": "rene-descartes",
+    "name": "René Descartes",
+    "bornYear": 1596,
+    "bornCertainty": "exact",
+    "diedYear": 1650,
+    "diedCertainty": "exact",
+    "nationality": "French",
+    "bioShort": "Mathematician and philosopher who sought to rebuild knowledge on indubitable foundations. The cogito argument and mind-body dualism are his most influential contributions."
+  },
+  {
+    "slug": "jean-jacques-rousseau",
+    "name": "Jean-Jacques Rousseau",
+    "bornYear": 1712,
+    "bornCertainty": "exact",
+    "diedYear": 1778,
+    "diedCertainty": "exact",
+    "nationality": "Genevan",
+    "bioShort": "Political philosopher and critic of civilization who argued that humans are naturally good but corrupted by society. The Social Contract (\"Man is born free, and everywhere he is in chains\") and the Discourse on Inequality were formative for the French Revolution and Kant."
+  },
+  {
+    "slug": "david-hume",
+    "name": "David Hume",
+    "bornYear": 1711,
+    "bornCertainty": "exact",
+    "diedYear": 1776,
+    "diedCertainty": "exact",
+    "nationality": "Scottish",
+    "bioShort": "Empiricist philosopher and historian who argued that all knowledge derives from experience. His skepticism about causation and the self profoundly influenced Kant."
+  },
+  {
+    "slug": "immanuel-kant",
+    "name": "Immanuel Kant",
+    "bornYear": 1724,
+    "bornCertainty": "exact",
+    "diedYear": 1804,
+    "diedCertainty": "exact",
+    "nationality": "Prussian",
+    "bioShort": "Central figure of the Enlightenment. The three Critiques attempted a synthesis of rationalism and empiricism, and founded the project of transcendental idealism."
+  },
+  {
+    "slug": "jeremy-bentham",
+    "name": "Jeremy Bentham",
+    "bornYear": 1748,
+    "bornCertainty": "exact",
+    "diedYear": 1832,
+    "diedCertainty": "exact",
+    "nationality": "English",
+    "bioShort": "Founder of utilitarianism and legal reformer. Held that the greatest happiness of the greatest number is the measure of right and wrong. His auto-icon (preserved remains) is displayed at University College London."
+  },
+  {
+    "slug": "john-stuart-mill",
+    "name": "John Stuart Mill",
+    "bornYear": 1806,
+    "bornCertainty": "exact",
+    "diedYear": 1873,
+    "diedCertainty": "exact",
+    "nationality": "English",
+    "bioShort": "The preeminent Victorian philosopher, who refined Benthamite utilitarianism to distinguish quality of pleasures, defended individual liberty against social tyranny, and championed women's suffrage. His Logic systematized inductive method."
+  },
+  {
+    "slug": "arthur-schopenhauer",
+    "name": "Arthur Schopenhauer",
+    "bornYear": 1788,
+    "bornCertainty": "exact",
+    "diedYear": 1860,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Post-Kantian philosopher who argued that behind the phenomenal world lies a blind, striving Will — and that the good life consists in aesthetic contemplation and ascetic denial of the will. Influenced Nietzsche, Wagner, and Freud."
+  },
+  {
+    "slug": "franz-brentano",
+    "name": "Franz Brentano",
+    "bornYear": 1838,
+    "bornCertainty": "exact",
+    "diedYear": 1917,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Philosopher and psychologist who revived the Scholastic concept of intentionality: all mental acts are directed at objects. His Psychology from an Empirical Standpoint directly inspired Husserl's phenomenology."
+  },
+  {
+    "slug": "wilhelm-dilthey",
+    "name": "Wilhelm Dilthey",
+    "bornYear": 1833,
+    "bornCertainty": "exact",
+    "diedYear": 1911,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Philosopher of history and hermeneutics who argued that the human sciences (Geisteswissenschaften) require a distinct method — Verstehen (understanding) — irreducible to natural-scientific explanation. Foundational for Gadamer and Ricoeur."
+  },
+  {
+    "slug": "fichte",
+    "name": "Johann Gottlieb Fichte",
+    "bornYear": 1762,
+    "bornCertainty": "exact",
+    "diedYear": 1814,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Post-Kantian idealist who grounded Kant's system in the self-positing activity of the I (Ich). His Wissenschaftslehre attempts to derive the structure of experience from a single first principle. Hegel saw his position as one-sided subjective idealism."
+  },
+  {
+    "slug": "schelling",
+    "name": "F. W. J. Schelling",
+    "alsoKnownAs": "Friedrich Wilhelm Joseph Schelling",
+    "bornYear": 1775,
+    "bornCertainty": "exact",
+    "diedYear": 1854,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "German Idealist who developed a philosophy of nature and an identity-philosophy treating the Absolute as the indifference point of subject and object. An early collaborator with Hegel; their relationship became strained after Hegel's rise."
+  },
+  {
+    "slug": "hegel",
+    "name": "G. W. F. Hegel",
+    "alsoKnownAs": "Georg Wilhelm Friedrich Hegel",
+    "bornYear": 1770,
+    "bornCertainty": "exact",
+    "diedYear": 1831,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Post-Kantian idealist who developed a dialectical account of history and spirit (Geist). His system — spanning logic, nature, and mind — argues that reality is the self-development of Absolute Spirit coming to know itself through human history, culture, and philosophy. His influence ramifies across Marxism, existentialism, analytic philosophy, critical theory, and hermeneutics."
+  },
+  {
+    "slug": "kierkegaard",
+    "name": "Søren Kierkegaard",
+    "bornYear": 1813,
+    "bornCertainty": "exact",
+    "diedYear": 1855,
+    "diedCertainty": "exact",
+    "nationality": "Danish",
+    "bioShort": "Philosopher and theologian who wrote under multiple pseudonyms to enact rather than merely describe the existential stages of life. His critique of Hegel's System — that it leaves no room for the existing, choosing, suffering individual — is the founding gesture of existentialism."
+  },
+  {
+    "slug": "marx",
+    "name": "Karl Marx",
+    "bornYear": 1818,
+    "bornCertainty": "exact",
+    "diedYear": 1883,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Philosopher, economist, and revolutionary who inverted Hegel's idealist dialectic: the motor of history is not Spirit's self-recognition but the material forces and relations of production. Co-author (with Engels) of the Communist Manifesto; author of Capital."
+  },
+  {
+    "slug": "nietzsche",
+    "name": "Friedrich Nietzsche",
+    "bornYear": 1844,
+    "bornCertainty": "exact",
+    "diedYear": 1900,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Critic of morality, religion, and systematic philosophy. Introduced concepts of the will to power, eternal recurrence, and the Übermensch. Wrote in aphorism and polemic."
+  },
+  {
+    "slug": "gottlob-frege",
+    "name": "Gottlob Frege",
+    "bornYear": 1848,
+    "bornCertainty": "exact",
+    "diedYear": 1925,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Mathematician-logician who founded modern logic and the philosophy of language. His Begriffsschrift (1879) invented quantificational logic; the distinction between Sinn (sense) and Bedeutung (reference) is one of the most productive in analytic philosophy. Russell's paradox undermined his logicist program."
+  },
+  {
+    "slug": "charles-peirce",
+    "name": "Charles Sanders Peirce",
+    "bornYear": 1839,
+    "bornCertainty": "exact",
+    "diedYear": 1914,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Founder of pragmatism (which he later renamed pragmaticism to distinguish it from James's version). Contributed to logic, semiotics, and the philosophy of science. His maxim: the meaning of a concept lies in its conceivable practical effects."
+  },
+  {
+    "slug": "william-james",
+    "name": "William James",
+    "bornYear": 1842,
+    "bornCertainty": "exact",
+    "diedYear": 1910,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Psychologist and philosopher who popularized pragmatism and developed radical empiricism. His Principles of Psychology (1890) founded scientific psychology in America; Pragmatism (1907) made the movement a cultural force. Also wrote on religious experience and the will to believe."
+  },
+  {
+    "slug": "john-dewey",
+    "name": "John Dewey",
+    "bornYear": 1859,
+    "bornCertainty": "exact",
+    "diedYear": 1952,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "The most influential American philosopher of the twentieth century. Developed instrumentalism — knowledge as a tool for solving problems — and applied it to education, democracy, and social reform. His Logic: The Theory of Inquiry is the fullest statement of his naturalism."
+  },
+  {
+    "slug": "george-herbert-mead",
+    "name": "George Herbert Mead",
+    "bornYear": 1863,
+    "bornCertainty": "exact",
+    "diedYear": 1931,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Social philosopher and pragmatist who developed a theory of the self as constituted through social interaction and language. Mind, Self, and Society (compiled from student notes) is the foundational text of symbolic interactionism."
+  },
+  {
+    "slug": "ci-lewis",
+    "name": "C. I. Lewis",
+    "alsoKnownAs": "Clarence Irving Lewis",
+    "bornYear": 1883,
+    "bornCertainty": "exact",
+    "diedYear": 1964,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Pragmatist philosopher who founded modern modal logic and developed conceptualistic pragmatism — the view that the categories we apply to experience are pragmatically chosen frameworks. A crucial bridge between the classical pragmatists and Quine's generation."
+  },
+  {
+    "slug": "bertrand-russell",
+    "name": "Bertrand Russell",
+    "bornYear": 1872,
+    "bornCertainty": "exact",
+    "diedYear": 1970,
+    "diedCertainty": "exact",
+    "nationality": "British",
+    "bioShort": "Co-founder of analytic philosophy and mathematical logic. With Whitehead, wrote Principia Mathematica attempting to ground arithmetic in logic. His theory of descriptions, logical atomism, and prolific popular writings on ethics, education, and politics shaped the twentieth century."
+  },
+  {
+    "slug": "ge-moore",
+    "name": "G. E. Moore",
+    "alsoKnownAs": "George Edward Moore",
+    "bornYear": 1873,
+    "bornCertainty": "exact",
+    "diedYear": 1958,
+    "diedCertainty": "exact",
+    "nationality": "British",
+    "bioShort": "Co-founder of analytic philosophy whose Principia Ethica argued that \"good\" is a simple, non-natural property — defining it in natural terms commits the \"naturalistic fallacy.\" His commonsensism and attention to ordinary language were also highly influential."
+  },
+  {
+    "slug": "alfred-whitehead",
+    "name": "Alfred North Whitehead",
+    "bornYear": 1861,
+    "bornCertainty": "exact",
+    "diedYear": 1947,
+    "diedCertainty": "exact",
+    "nationality": "British",
+    "bioShort": "Mathematician and philosopher who co-authored Principia Mathematica with Russell before developing process philosophy — a metaphysics in which events and processes, not substances, are fundamental. Process and Reality remains his major metaphysical work."
+  },
+  {
+    "slug": "wittgenstein",
+    "name": "Ludwig Wittgenstein",
+    "bornYear": 1889,
+    "bornCertainty": "exact",
+    "diedYear": 1951,
+    "diedCertainty": "exact",
+    "nationality": "Austrian",
+    "bioShort": "Two distinct phases: the Tractatus (logical atomism, picture theory of meaning) and the Investigations (language games, family resemblance, anti-essentialism). Perhaps the most discussed philosopher of the twentieth century."
+  },
+  {
+    "slug": "moritz-schlick",
+    "name": "Moritz Schlick",
+    "bornYear": 1882,
+    "bornCertainty": "exact",
+    "diedYear": 1936,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Founder of the Vienna Circle and the leading figure of logical positivism. Held that philosophy's task is the clarification of meaning via the verification principle. Assassinated on the steps of the University of Vienna by a former student."
+  },
+  {
+    "slug": "rudolf-carnap",
+    "name": "Rudolf Carnap",
+    "bornYear": 1891,
+    "bornCertainty": "exact",
+    "diedYear": 1970,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "The most technically sophisticated member of the Vienna Circle. Developed the program of rational reconstruction, inductive logic, and linguistic frameworks. His distinction between internal and external questions anticipates later debates about ontology. Quine's \"Two Dogmas\" is principally directed against Carnap."
+  },
+  {
+    "slug": "aj-ayer",
+    "name": "A. J. Ayer",
+    "alsoKnownAs": "Alfred Jules Ayer",
+    "bornYear": 1910,
+    "bornCertainty": "exact",
+    "diedYear": 1989,
+    "diedCertainty": "exact",
+    "nationality": "British",
+    "bioShort": "Brought logical positivism to a British audience with Language, Truth and Logic (1936), written at age 24. The verification criterion of meaning — that a statement is meaningful only if it is analytic or empirically verifiable — became a touchstone for and target of subsequent philosophy."
+  },
+  {
+    "slug": "gilbert-ryle",
+    "name": "Gilbert Ryle",
+    "bornYear": 1900,
+    "bornCertainty": "exact",
+    "diedYear": 1976,
+    "diedCertainty": "exact",
+    "nationality": "British",
+    "bioShort": "Oxford philosopher whose Concept of Mind (1949) attacked Descartes's \"ghost in the machine\" by arguing that mind-talk describes dispositions to behave, not a separate mental substance. Coined the term \"category mistake.\""
+  },
+  {
+    "slug": "jl-austin",
+    "name": "J. L. Austin",
+    "alsoKnownAs": "John Langshaw Austin",
+    "bornYear": 1911,
+    "bornCertainty": "exact",
+    "diedYear": 1960,
+    "diedCertainty": "exact",
+    "nationality": "British",
+    "bioShort": "Oxford philosopher who developed speech act theory — the distinction between locutionary, illocutionary, and perlocutionary acts. How to Do Things with Words articulated what we do with language beyond describing the world. Died at 48, leaving much unwritten."
+  },
+  {
+    "slug": "pf-strawson",
+    "name": "P. F. Strawson",
+    "alsoKnownAs": "Peter Frederick Strawson",
+    "bornYear": 1919,
+    "bornCertainty": "exact",
+    "diedYear": 2006,
+    "diedCertainty": "exact",
+    "nationality": "British",
+    "bioShort": "Oxford philosopher who challenged Russell's theory of descriptions, developed a descriptive metaphysics of persons and material bodies, and wrote a landmark critique of Kant. His \"Freedom and Resentment\" (1962) transformed the philosophy of moral responsibility."
+  },
+  {
+    "slug": "hp-grice",
+    "name": "H. P. Grice",
+    "alsoKnownAs": "Herbert Paul Grice",
+    "bornYear": 1913,
+    "bornCertainty": "exact",
+    "diedYear": 1988,
+    "diedCertainty": "exact",
+    "nationality": "British",
+    "bioShort": "Philosopher of language who distinguished what is said from what is implicated (conversational implicature) and articulated the cooperative maxims governing communication. \"Logic and Conversation\" is among the most cited papers in philosophy of language."
+  },
+  {
+    "slug": "edmund-husserl",
+    "name": "Edmund Husserl",
+    "bornYear": 1859,
+    "bornCertainty": "exact",
+    "diedYear": 1938,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Founder of phenomenology. Developed the phenomenological method — bracketing the natural attitude to describe the essential structures of consciousness and its intentional objects. Influenced Heidegger, Merleau-Ponty, Sartre, and Levinas."
+  },
+  {
+    "slug": "martin-heidegger",
+    "name": "Martin Heidegger",
+    "bornYear": 1889,
+    "bornCertainty": "exact",
+    "diedYear": 1976,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Student of Husserl who transformed phenomenology into an analysis of Being and human existence (Dasein). Being and Time (1927) is the most influential continental philosophy work of the century. His Nazi involvement remains deeply controversial."
+  },
+  {
+    "slug": "jean-paul-sartre",
+    "name": "Jean-Paul Sartre",
+    "bornYear": 1905,
+    "bornCertainty": "exact",
+    "diedYear": 1980,
+    "diedCertainty": "exact",
+    "nationality": "French",
+    "bioShort": "Existentialist philosopher, novelist, and playwright. Existence precedes essence: humans have no fixed nature, only radical freedom and the anguish of responsibility. Being and Nothingness (1943) is the systematic statement; \"Existentialism is a Humanism\" popularized the movement."
+  },
+  {
+    "slug": "maurice-merleau-ponty",
+    "name": "Maurice Merleau-Ponty",
+    "bornYear": 1908,
+    "bornCertainty": "exact",
+    "diedYear": 1961,
+    "diedCertainty": "exact",
+    "nationality": "French",
+    "bioShort": "Phenomenologist who argued that perception is fundamentally embodied — the lived body (corps propre) is the primary locus of experience, not the detached Cartesian mind. Phenomenology of Perception (1945) remains the key text in philosophy of embodiment."
+  },
+  {
+    "slug": "emmanuel-levinas",
+    "name": "Emmanuel Levinas",
+    "bornYear": 1906,
+    "bornCertainty": "exact",
+    "diedYear": 1995,
+    "diedCertainty": "exact",
+    "nationality": "French",
+    "bioShort": "Philosopher of ethics and alterity who argued that the encounter with the Other's face issues an infinite, asymmetrical ethical demand prior to all ontology. Totality and Infinity (1961) and Otherwise Than Being (1974) are the major works."
+  },
+  {
+    "slug": "hannah-arendt",
+    "name": "Hannah Arendt",
+    "bornYear": 1906,
+    "bornCertainty": "exact",
+    "diedYear": 1975,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Political philosopher and historian of ideas. The Origins of Totalitarianism, The Human Condition (distinguishing labor, work, and action), and Eichmann in Jerusalem (coining \"the banality of evil\") are her three most influential works."
+  },
+  {
+    "slug": "hans-georg-gadamer",
+    "name": "Hans-Georg Gadamer",
+    "bornYear": 1900,
+    "bornCertainty": "exact",
+    "diedYear": 2002,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Philosopher of hermeneutics whose Truth and Method (1960) argued that understanding is always historically situated, mediated by tradition and language, and irreducible to method. The \"fusion of horizons\" is his model of how past and present meet in interpretation."
+  },
+  {
+    "slug": "paul-ricoeur",
+    "name": "Paul Ricoeur",
+    "bornYear": 1913,
+    "bornCertainty": "exact",
+    "diedYear": 2005,
+    "diedCertainty": "exact",
+    "nationality": "French",
+    "bioShort": "Philosopher who combined phenomenology, hermeneutics, and narrative theory. Time and Narrative argues that human experience is fundamentally temporal and story-shaped; Oneself as Another develops a hermeneutics of personal identity."
+  },
+  {
+    "slug": "michel-foucault",
+    "name": "Michel Foucault",
+    "bornYear": 1926,
+    "bornCertainty": "exact",
+    "diedYear": 1984,
+    "diedCertainty": "exact",
+    "nationality": "French",
+    "bioShort": "Historian of ideas and theorist of power-knowledge. His genealogical analyses of madness, medicine, the prison, and sexuality showed how regimes of truth shape and constrain human subjects. Among the most cited scholars in the humanities."
+  },
+  {
+    "slug": "jacques-derrida",
+    "name": "Jacques Derrida",
+    "bornYear": 1930,
+    "bornCertainty": "exact",
+    "diedYear": 2004,
+    "diedCertainty": "exact",
+    "nationality": "French",
+    "bioShort": "Philosopher who developed deconstruction — a reading practice exposing the hidden binary oppositions and aporias in texts, including philosophical ones. Of Grammatology (1967) and Writing and Difference are foundational. His work generated enormous controversy in Anglophone academia."
+  },
+  {
+    "slug": "jurgen-habermas",
+    "name": "Jürgen Habermas",
+    "bornYear": 1929,
+    "bornCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "The leading second-generation Frankfurt School theorist. The Theory of Communicative Action grounds critical theory in an analysis of communicative rationality and the pragmatics of discourse. Has engaged extensively with analytic philosophy, Rawls, and Rorty."
+  },
+  {
+    "slug": "theodor-adorno",
+    "name": "Theodor W. Adorno",
+    "bornYear": 1903,
+    "bornCertainty": "exact",
+    "diedYear": 1969,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Frankfurt School philosopher, musicologist, and cultural critic. Co-authored Dialectic of Enlightenment with Horkheimer; wrote Negative Dialectics as an extended polemic against identity thinking. His aesthetics remains one of the richest in the twentieth century."
+  },
+  {
+    "slug": "walter-benjamin",
+    "name": "Walter Benjamin",
+    "bornYear": 1892,
+    "bornCertainty": "exact",
+    "diedYear": 1940,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Critic, essayist, and philosopher affiliated with the Frankfurt School. His essays on the aura of art, the flaneur, and messianic historical time are among the most read in twentieth-century cultural theory. Died fleeing the Nazis at the Spanish border."
+  },
+  {
+    "slug": "herbert-marcuse",
+    "name": "Herbert Marcuse",
+    "bornYear": 1898,
+    "bornCertainty": "exact",
+    "diedYear": 1979,
+    "diedCertainty": "exact",
+    "nationality": "German",
+    "bioShort": "Frankfurt School philosopher whose Eros and Civilization synthesized Freud and Marx, and One-Dimensional Man diagnosed late-capitalist society's repression of critical thought. A major intellectual influence on the New Left and 1968 movements."
+  },
+  {
+    "slug": "gilles-deleuze",
+    "name": "Gilles Deleuze",
+    "bornYear": 1925,
+    "bornCertainty": "exact",
+    "diedYear": 1995,
+    "diedCertainty": "exact",
+    "nationality": "French",
+    "bioShort": "Philosopher who developed a philosophy of difference, multiplicity, and becoming against representational and identity-based thinking. Difference and Repetition (1968) and the two volumes of Capitalism and Schizophrenia (with Guattari) are his major works."
+  },
+  {
+    "slug": "de-beauvoir",
+    "name": "Simone de Beauvoir",
+    "bornYear": 1908,
+    "bornCertainty": "exact",
+    "diedYear": 1986,
+    "diedCertainty": "exact",
+    "nationality": "French",
+    "bioShort": "Existentialist philosopher and feminist theorist. The Second Sex established the framework of woman as Other and laid groundwork for second-wave feminism."
+  },
+  {
+    "slug": "wvo-quine",
+    "name": "W. V. O. Quine",
+    "alsoKnownAs": "Willard Van Orman Quine",
+    "bornYear": 1908,
+    "bornCertainty": "exact",
+    "diedYear": 2000,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "The most influential American analytic philosopher of the mid-century. \"Two Dogmas of Empiricism\" demolished the analytic-synthetic distinction and verification theory; Word and Object argued for ontological relativity. His naturalism made epistemology continuous with science."
+  },
+  {
+    "slug": "nelson-goodman",
+    "name": "Nelson Goodman",
+    "bornYear": 1906,
+    "bornCertainty": "exact",
+    "diedYear": 1998,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Philosopher of logic, language, and art. Fact, Fiction, and Forecast posed the \"new riddle of induction\" (grue); Languages of Art developed a symbol-theoretic account of the arts; Ways of Worldmaking advanced a radical irrealism about multiple world-versions."
+  },
+  {
+    "slug": "ruth-barcan-marcus",
+    "name": "Ruth Barcan Marcus",
+    "bornYear": 1921,
+    "bornCertainty": "exact",
+    "diedYear": 2012,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Logician and philosopher who pioneered quantified modal logic and argued for the necessity of identity and direct reference — anticipating by decades many positions Kripke would later make famous. The \"Barcan formula\" is named for her."
+  },
+  {
+    "slug": "donald-davidson",
+    "name": "Donald Davidson",
+    "bornYear": 1917,
+    "bornCertainty": "exact",
+    "diedYear": 2003,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Philosopher of action, mind, and language. \"Truth and Meaning\" proposed truth-theoretic semantics; \"Mental Events\" defended anomalous monism; \"On the Very Idea of a Conceptual Scheme\" argued against the scheme-content dualism that Quine had inherited."
+  },
+  {
+    "slug": "saul-kripke",
+    "name": "Saul Kripke",
+    "bornYear": 1940,
+    "bornCertainty": "exact",
+    "diedYear": 2022,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Logician and philosopher who revolutionized modal logic (Kripke semantics) and the philosophy of language. Naming and Necessity (1972/1980) established rigid designators, a posteriori necessity, and the causal theory of reference. Wittgenstein on Rules challenged the rule-following sections of the Investigations."
+  },
+  {
+    "slug": "hilary-putnam",
+    "name": "Hilary Putnam",
+    "bornYear": 1926,
+    "bornCertainty": "exact",
+    "diedYear": 2016,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Philosopher who passed through functionalism, scientific realism, internal realism, and pragmatism, always changing his mind in public. \"The Meaning of Meaning\" introduced Twin Earth and semantic externalism; his later pragmatism engaged seriously with Wittgenstein, Dewey, and James."
+  },
+  {
+    "slug": "michael-dummett",
+    "name": "Michael Dummett",
+    "bornYear": 1925,
+    "bornCertainty": "exact",
+    "diedYear": 2011,
+    "diedCertainty": "exact",
+    "nationality": "British",
+    "bioShort": "Philosopher of language and logic who argued that anti-realism about a domain follows from an anti-realist semantics based on proof conditions rather than truth conditions. His massive Frege scholarship and his debate with Realism dominated Anglo-American philosophy of language for decades."
+  },
+  {
+    "slug": "david-lewis",
+    "name": "David Lewis",
+    "bornYear": 1941,
+    "bornCertainty": "exact",
+    "diedYear": 2001,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Metaphysician who defended modal realism — the thesis that all possible worlds are equally real, concrete, and spatiotemporally isolated from one another. On the Plurality of Worlds is the systematic statement; his shorter papers on causation, mind, and semantics are among the most technically accomplished in analytic philosophy."
+  },
+  {
+    "slug": "dm-armstrong",
+    "name": "D. M. Armstrong",
+    "alsoKnownAs": "David Malet Armstrong",
+    "bornYear": 1926,
+    "bornCertainty": "exact",
+    "diedYear": 2014,
+    "diedCertainty": "exact",
+    "nationality": "Australian",
+    "bioShort": "Australian metaphysician and leading defender of a naturalist ontology of universals and states of affairs. Universals and Scientific Realism and A World of States of Affairs are the major works. His correspondence theory of truth and views on laws of nature were highly influential."
+  },
+  {
+    "slug": "gem-anscombe",
+    "name": "G. E. M. Anscombe",
+    "alsoKnownAs": "Elizabeth Anscombe",
+    "bornYear": 1919,
+    "bornCertainty": "exact",
+    "diedYear": 2001,
+    "diedCertainty": "exact",
+    "nationality": "British",
+    "bioShort": "Wittgenstein's student and literary executor. Intention (1957) founded the philosophy of action; \"Modern Moral Philosophy\" (1958) coined the term \"consequentialism,\" criticized Kantian ethics, and called for a return to Aristotelian virtue ethics. A committed Catholic philosopher."
+  },
+  {
+    "slug": "philippa-foot",
+    "name": "Philippa Foot",
+    "bornYear": 1920,
+    "bornCertainty": "exact",
+    "diedYear": 2010,
+    "diedCertainty": "exact",
+    "nationality": "British",
+    "bioShort": "Moral philosopher who revived Aristotelian virtue ethics against Humean expressivism and Kantian formalism. Natural Goodness (2001) grounds ethics in a naturalistic account of what is good for living things of a given kind. Invented the trolley problem in a 1967 paper."
+  },
+  {
+    "slug": "bernard-williams",
+    "name": "Bernard Williams",
+    "bornYear": 1929,
+    "bornCertainty": "exact",
+    "diedYear": 2003,
+    "diedCertainty": "exact",
+    "nationality": "British",
+    "bioShort": "Philosopher who subjected moral theory — especially utilitarianism and Kantian ethics — to sustained critique. Ethics and the Limits of Philosophy argues that moral philosophy cannot provide a systematic theory of how to live; Shame and Necessity recovers Greek moral psychology."
+  },
+  {
+    "slug": "john-rawls",
+    "name": "John Rawls",
+    "bornYear": 1921,
+    "bornCertainty": "exact",
+    "diedYear": 2002,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "The most important political philosopher of the twentieth century. A Theory of Justice (1971) revived social contract theory against utilitarianism, using the \"veil of ignorance\" to derive principles of justice as fairness. Political Liberalism later reframed this as a political rather than a comprehensive doctrine."
+  },
+  {
+    "slug": "robert-nozick",
+    "name": "Robert Nozick",
+    "bornYear": 1938,
+    "bornCertainty": "exact",
+    "diedYear": 2002,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Libertarian political philosopher whose Anarchy, State, and Utopia (1974) argued that any state more extensive than a minimal nightwatchman state violates individual rights. Written as an explicit response to Rawls, it remains the most sophisticated defense of libertarianism."
+  },
+  {
+    "slug": "alasdair-macintyre",
+    "name": "Alasdair MacIntyre",
+    "bornYear": 1929,
+    "bornCertainty": "exact",
+    "nationality": "Scottish",
+    "bioShort": "Moral philosopher whose After Virtue (1981) diagnosed the fragmentation of modern moral discourse and proposed a return to Aristotelian virtue ethics embedded in living traditions. A convert to Thomism, he developed this position through Whose Justice? Which Rationality? and Three Rival Versions."
+  },
+  {
+    "slug": "martha-nussbaum",
+    "name": "Martha Nussbaum",
+    "bornYear": 1947,
+    "bornCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Philosopher who developed the capabilities approach to justice and human development alongside Amartya Sen. The Fragility of Goodness recovers Aristotle on luck and ethics; Upheavals of Thought is a major study of the cognitive role of emotions. Writes on classical literature, cosmopolitanism, and the law."
+  },
+  {
+    "slug": "peter-singer",
+    "name": "Peter Singer",
+    "bornYear": 1946,
+    "bornCertainty": "exact",
+    "nationality": "Australian",
+    "bioShort": "Utilitarian moral philosopher whose Animal Liberation (1975) founded the modern animal rights movement by arguing that species membership is morally arbitrary. Practical Ethics applies utilitarian reasoning to global poverty, infanticide, and euthanasia. One of the most publicly influential living philosophers."
+  },
+  {
+    "slug": "charles-taylor",
+    "name": "Charles Taylor",
+    "bornYear": 1931,
+    "bornCertainty": "exact",
+    "nationality": "Canadian",
+    "bioShort": "Philosopher whose Sources of the Self traced the modern identity's constitutive moral frameworks; The Ethics of Authenticity critiques the culture of self-fulfillment; A Secular Age is a monumental account of how the West moved from enchanted to secular conditions. A communitarian critic of Rawlsian liberalism."
+  },
+  {
+    "slug": "john-searle",
+    "name": "John Searle",
+    "bornYear": 1932,
+    "bornCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Philosopher of mind and language. Developed speech act theory beyond Austin; the Chinese Room argument challenged computational functionalism; Intentionality and The Construction of Social Reality address the mind's directedness and the ontology of social institutions."
+  },
+  {
+    "slug": "karl-popper",
+    "name": "Karl Popper",
+    "bornYear": 1902,
+    "bornCertainty": "exact",
+    "diedYear": 1994,
+    "diedCertainty": "exact",
+    "nationality": "Austrian",
+    "bioShort": "Philosopher of science who replaced the verificationist criterion of meaning with falsifiability: a theory is scientific if it can in principle be refuted by observation. The Logic of Scientific Discovery and Conjectures and Refutations are the key texts. The Open Society and Its Enemies attacks Plato, Hegel, and Marx as totalitarian thinkers."
+  },
+  {
+    "slug": "thomas-kuhn",
+    "name": "Thomas Kuhn",
+    "bornYear": 1922,
+    "bornCertainty": "exact",
+    "diedYear": 1996,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Historian and philosopher of science whose Structure of Scientific Revolutions (1962) introduced \"paradigm,\" \"normal science,\" and \"scientific revolution\" into the culture. His arguments for incommensurability between paradigms triggered decades of debate about rationality and relativism."
+  },
+  {
+    "slug": "sellars",
+    "name": "Wilfrid Sellars",
+    "bornYear": 1912,
+    "bornCertainty": "exact",
+    "diedYear": 1989,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Analytic philosopher whose attack on the Myth of the Given and vision of the \"space of reasons\" laid the groundwork for the Pittsburgh neo-Hegelian program. \"Empiricism and the Philosophy of Mind\" (1956) is the pivotal text."
+  },
+  {
+    "slug": "richard-rorty",
+    "name": "Richard Rorty",
+    "bornYear": 1931,
+    "bornCertainty": "exact",
+    "diedYear": 2007,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Philosophy and the Mirror of Nature (1979) attacked the foundations of analytic epistemology and proposed a neo-pragmatist alternative. Later developed a liberal irony combining solidarity with the contingency of all vocabularies. Aimed to heal the rift between the analytic and continental traditions."
+  },
+  {
+    "slug": "brandom",
+    "name": "Robert Brandom",
+    "bornYear": 1950,
+    "bornCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Philosopher of language and inferentialist. Making It Explicit (1994) develops Sellars's and Hegel's normative pragmatics into a systematic theory of conceptual content grounded in social practices of giving and asking for reasons."
+  },
+  {
+    "slug": "mcdowell",
+    "name": "John McDowell",
+    "bornYear": 1942,
+    "bornCertainty": "exact",
+    "nationality": "South African",
+    "bioShort": "Philosopher who draws on Hegel, Aristotle, Wittgenstein, and Evans to argue that conceptual content is unbounded — perception itself is already conceptually shaped. Mind and World (1994) is the central text."
+  },
+  {
+    "slug": "derek-parfit",
+    "name": "Derek Parfit",
+    "bornYear": 1942,
+    "bornCertainty": "exact",
+    "diedYear": 2017,
+    "diedCertainty": "exact",
+    "nationality": "British",
+    "bioShort": "Moral philosopher who argued that personal identity over time is not what matters and that population ethics is a serious problem for any moral theory. Reasons and Persons (1984) and the posthumous On What Matters are among the most ambitious works in recent moral philosophy."
+  },
+  {
+    "slug": "thomas-nagel",
+    "name": "Thomas Nagel",
+    "bornYear": 1937,
+    "bornCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Philosopher known for \"What Is It Like to Be a Bat?\" (1974) — arguing that subjective experience cannot be captured by objective physical description — and The View from Nowhere, which explores the tension between the personal and impersonal standpoints."
+  },
+  {
+    "slug": "daniel-dennett",
+    "name": "Daniel Dennett",
+    "bornYear": 1942,
+    "bornCertainty": "exact",
+    "diedYear": 2024,
+    "diedCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Philosopher of mind and cognitive science who defended heterophenomenology and a deflationary account of consciousness. Consciousness Explained (1991) and Darwin's Dangerous Idea argued for a thoroughly naturalist picture of mind and meaning."
+  },
+  {
+    "slug": "david-chalmers",
+    "name": "David Chalmers",
+    "bornYear": 1966,
+    "bornCertainty": "exact",
+    "nationality": "Australian",
+    "bioShort": "Philosopher of mind who coined the \"hard problem of consciousness\" — why any physical process should give rise to subjective experience at all. The Conscious Mind (1996) defends a form of property dualism; his recent work turns to virtual reality and extended mind."
+  },
+  {
+    "slug": "tyler-burge",
+    "name": "Tyler Burge",
+    "bornYear": 1946,
+    "bornCertainty": "exact",
+    "nationality": "American",
+    "bioShort": "Philosopher of mind and language who developed anti-individualism (social externalism): the contents of mental states are not determined by what is in the head but by the social and physical environment. \"Individualism and the Mental\" is the locus classicus."
+  },
+  {
+    "slug": "timothy-williamson",
+    "name": "Timothy Williamson",
+    "bornYear": 1955,
+    "bornCertainty": "exact",
+    "nationality": "British",
+    "bioShort": "Philosopher known for Knowledge and Its Limits (2000), which argues that knowledge — not justified true belief — is the fundamental epistemic concept, and for a sustained defense of modal logic and metaphysics against anti-metaphysical tendencies in analytic philosophy."
+  },
+  {
+    "slug": "frank-jackson",
+    "name": "Frank Jackson",
+    "bornYear": 1943,
+    "bornCertainty": "exact",
+    "nationality": "Australian",
+    "bioShort": "Philosopher of mind whose \"Mary's Room\" thought experiment — Mary knows all physical facts about color perception but learns something new on seeing red for the first time — poses the knowledge argument against physicalism. Later recanted toward physicalism in From Metaphysics to Ethics."
+  },
+  {
+    "slug": "kit-fine",
+    "name": "Kit Fine",
+    "bornYear": 1946,
+    "bornCertainty": "exact",
+    "nationality": "British",
+    "bioShort": "Philosopher of logic and metaphysics who rehabilitated the notion of essence as real definition — irreducible to modal properties — in \"Essence and Modality\" (1994). His work on ontological dependence, vagueness, and truthmakers has been widely influential."
+  }
+]

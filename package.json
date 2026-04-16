@@ -1,25 +1,20 @@
 {
   "name": "philosophy-explorer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "workspaces": [
-    "packages/api",
     "packages/web"
   ],
   "scripts": {
-    "dev:api":     "npm run dev      --workspace=packages/api",
+    "dev:api":     "cd packages/api-fsharp/PhilosophyExplorer.Api && DATABASE_URL=file:./dev.db GRAPH_DATA_PATH=$(pwd)/../../../data/graph-data.json dotnet run",
     "dev:web":     "npm run dev      --workspace=packages/web",
-    "build:api":   "npm run build    --workspace=packages/api",
+    "build:api":   "cd packages/api-fsharp/PhilosophyExplorer.Api && dotnet build -c Release",
     "build:web":   "npm run build    --workspace=packages/web",
-    "test:api":    "npm run test     --workspace=packages/api",
     "test:web":    "npm run test     --workspace=packages/web",
-    "test":        "npm run test:api && npm run test:web",
-    "db:generate": "npm run db:generate --workspace=packages/api",
-    "db:migrate":  "npm run db:migrate  --workspace=packages/api",
-    "db:seed":     "npm run db:seed     --workspace=packages/api",
-    "db:studio":   "npm run db:studio   --workspace=packages/api",
-    "gen:spec":    "npm run gen:spec    --workspace=packages/api",
-    "gen:types":   "npm run gen:types   --workspace=packages/web",
-    "graph:build": "npm run graph:build --workspace=packages/api"
+    "test:api":    "cd packages/api-fsharp && dotnet test",
+    "test":        "npm run test:api; npm run test:web",
+    "db:seed":     "cd packages/api-fsharp/PhilosophyExplorer.Api && DATABASE_URL=file:./dev.db SEED_DATA_PATH=$(pwd)/../../../data/seed dotnet run -- --seed",
+    "gen:spec":    "bash scripts/gen-spec.sh",
+    "gen:types":   "npm run gen:types   --workspace=packages/web"
   }
 }

@@ -23,30 +23,43 @@ The **why** and **notes for future work** sections are the most valuable parts â
 
 ## API changes always require
 
-1. Update or add route in `packages/api/src/routes/`
-2. Add or update test in `packages/api/tests/routes/`
-3. Run `npm run gen:spec` (API must be running), then `npm run gen:types`
-4. Commit the updated `specs/openapi.json` and `src/lib/api-types.ts` alongside the route
+1. Update or add DTO types in `packages/api-fsharp/.../Domain/Dtos.fs`
+2. Update or add route module in `packages/api-fsharp/.../Routes/`
+3. Register in `Program.fs` and add to `.fsproj` compile order
+4. Run `npm run gen:spec` (API must be running), then `npm run gen:types`
+5. Commit the updated `packages/specs/openapi.json` and `packages/web/src/lib/api-types.ts`
 
 Never leave the spec and generated types out of sync with the actual routes.
 
 ## Schema changes always require
 
-1. Edit `packages/api/src/db/schema.ts`
-2. Run `npm run db:generate` to produce a migration file in `drizzle/`
-3. Commit the migration file â€” never edit existing migrations
-4. Update seed if new required data is needed
+1. Update the CREATE TABLE statements in `Db/Seed.fs`
+2. Update the corresponding domain types in `Domain/Types.fs`
+3. Update DTOs in `Domain/Dtos.fs` if the change affects API responses
+4. Re-run `npm run db:seed` to recreate the dev database
+5. Update seed JSON files in `data/seed/` if new data is needed
+
+## F# project conventions
+
+- **Compilation order matters.** Files in `.fsproj` must be listed in dependency order.
+  Types before queries, queries before routes, routes before Program.fs.
+- **CLIMutable attribute** is required on all types that Dapper deserializes.
+- **JsonPropertyName** attributes on DTO fields ensure camelCase JSON output matching
+  the original TypeScript API exactly.
+- **Nullable<int>** for optional integer columns (SQLite returns these as nullable).
+- **Option.ofObj** to convert nullable strings from Dapper to F# options in DTOs.
 
 ## Testing expectations
 
-- Every new API route gets a test in `packages/api/tests/routes/`
-- Mock `src/db/index.js` via `vi.mock()` for unit-speed route tests
+- Integration tests should hit the running API server and verify response shapes
+- Web tests use vitest + jsdom + testing-library
 - Run `npm test` before declaring work complete
 
 ## Things to avoid
 
 - Committing `.env` files
-- Adding packages without a clear reason tied to the current ticket
+- Adding NuGet packages without a clear reason tied to the current ticket
 - Leaving `TODO` comments without a corresponding GitHub Issue number
 - Regenerating types and not committing them
 - Merging without a `work-history/` entry
+- Breaking the F# compilation order in `.fsproj`
