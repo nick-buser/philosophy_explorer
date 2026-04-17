@@ -2,6 +2,7 @@ import { createRoute, Link } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { rootRoute } from './__root';
+import { LOGIC_SYSTEMS } from '../data/logic-systems';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 // Mirrors the API response shape from GET /api/philosophers/:slug.
@@ -207,6 +208,31 @@ function NoteBlock({ note }: { note: Note }) {
   );
 }
 
+function LogicLabCta({ philosopherSlug }: { philosopherSlug: string }) {
+  const system = LOGIC_SYSTEMS.find(
+    s => s.thinkerSlug === philosopherSlug && s.status === 'available',
+  );
+  if (!system) return null;
+  return (
+    <Link
+      to="/logic/$system"
+      params={{ system: system.slug }}
+      className="block rounded-lg border border-blue-900/40 bg-blue-950/20 p-4 hover:border-blue-700/60 hover:bg-blue-950/40 transition-colors"
+    >
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <div className="text-xs font-semibold tracking-widest uppercase text-blue-300/70">
+            Logic Lab
+          </div>
+          <div className="mt-1 text-gray-100 font-medium">{system.name}</div>
+          <p className="mt-1 text-sm text-gray-400 leading-relaxed">{system.shortDescription}</p>
+        </div>
+        <span className="shrink-0 text-blue-300 text-sm">Open →</span>
+      </div>
+    </Link>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 function PhilosopherDetailPage() {
@@ -296,6 +322,8 @@ function PhilosopherDetailPage() {
             <p className="mt-4 text-gray-300 leading-relaxed">{data.bioShort}</p>
           )}
         </header>
+
+        <LogicLabCta philosopherSlug={data.slug} />
 
         {/* Reading order / context notes */}
         {contextNotes.length > 0 && (

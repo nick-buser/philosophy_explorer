@@ -25,6 +25,12 @@ function RootLayout() {
             >
               Curricula
             </Link>
+            <Link
+              to="/logic"
+              className="text-sm text-gray-500 hover:text-gray-300 transition-colors [&.active]:text-gray-100"
+            >
+              Logic Lab
+            </Link>
           </nav>
         </div>
       </header>
