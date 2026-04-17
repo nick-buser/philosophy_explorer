@@ -6,6 +6,8 @@ import { workDetailRoute } from './routes/works.$slug';
 import { schoolDetailRoute } from './routes/schools.$slug';
 import { curriculaRoute } from './routes/curricula';
 import { curriculumDetailRoute } from './routes/curricula.$slug';
+import { logicIndexRoute } from './routes/logic';
+import { logicSystemRoute } from './routes/logic.$system';
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -14,6 +16,8 @@ const routeTree = rootRoute.addChildren([
   schoolDetailRoute,
   curriculaRoute,
   curriculumDetailRoute,
+  logicIndexRoute,
+  logicSystemRoute,
 ]);
 
 export const router = createRouter({ routeTree });
