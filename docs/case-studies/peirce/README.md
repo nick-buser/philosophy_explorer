@@ -82,6 +82,7 @@ For this project specifically, he is important because:
 | [`secondary-literature.md`](./secondary-literature.md) | Intros, interpretive monographs, reference works, essay collections. |
 | [`existential-graph-scholarship.md`](./existential-graph-scholarship.md) | The modern EG revival (Zeman, Roberts, Shin, Pietarinen, Stjernfelt, Dau, Bellucci). |
 | [`influences-and-context.md`](./influences-and-context.md) | Influences in and out, contemporaries, intellectual positioning. |
+| [`seed-research.md`](./seed-research.md) | Concrete seed-ready compilation (dates, slugs, blurbs, edge citations, concept-summary drafts) for the `DB-001-seed-peirce` ticket. Also carries 2026 scholarship-status updates. |
 
 ---
 
