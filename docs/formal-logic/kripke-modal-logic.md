@@ -282,6 +282,28 @@ isn't enough to design `LogicIR` against without guessing. Revisit
 when system #3 (likely Frege BS or Aristotelian) starts. Tracked
 under `open-questions.md` §2.7.
 
+When `LogicIR` does land, it lands on the F# side per
+[`backend-logic-core.md`](./backend-logic-core.md) — the union, the
+translators between variants, and the canonical normalizer are all
+F# from day one.
+
+### 1b. AST authority — TS-only for phase 1, planned for F# migration
+
+The modal AST, parser, evaluator (when it lands), and frame-validity
+checker are TS-only in phase 1. This is **deliberate debt**, not a
+target-state choice. See
+[`backend-logic-core.md`](./backend-logic-core.md) for the migration
+triggers and mechanics. The strongest forcing functions are:
+
+- The first time the truth badge needs to be honest (computed, not
+  hand-authored).
+- The first time Lean integration ships for any system.
+- The introduction of `LogicIR` (see §1).
+
+Whichever of these fires first should open the F# logic ticket and
+take responsibility for promoting the modal AST to F# via the
+Layer 1 codegen pipeline.
+
 ### 2. CodeMirror reuse — copy first, extract second
 
 `EgEditor.tsx` is 120 lines and has no system-specific logic except
