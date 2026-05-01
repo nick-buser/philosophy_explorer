@@ -198,7 +198,7 @@ function BrowsePage() {
 
   const filteredPhilosophers = useMemo(
     () => !q ? philosophers : philosophers.filter(p =>
-      p.name.toLowerCase().includes(q) ||
+      (p.name ?? '').toLowerCase().includes(q) ||
       (p.nationality ?? '').toLowerCase().includes(q) ||
       (p.bioShort ?? '').toLowerCase().includes(q) ||
       (p.alsoKnownAs ?? '').toLowerCase().includes(q)
@@ -208,18 +208,18 @@ function BrowsePage() {
 
   const filteredWorks = useMemo(
     () => !q ? works : works.filter(w =>
-      w.title.toLowerCase().includes(q) ||
+      (w.title ?? '').toLowerCase().includes(q) ||
       (w.originalTitle ?? '').toLowerCase().includes(q) ||
-      w.philosopherName.toLowerCase().includes(q) ||
+      (w.philosopherName ?? '').toLowerCase().includes(q) ||
       (w.descriptionShort ?? '').toLowerCase().includes(q) ||
-      w.workType.toLowerCase().includes(q)
+      (w.workType ?? '').toLowerCase().includes(q)
     ),
     [works, q],
   );
 
   const filteredSchools = useMemo(
     () => !q ? schools : schools.filter(s =>
-      s.name.toLowerCase().includes(q) ||
+      (s.name ?? '').toLowerCase().includes(q) ||
       (s.description ?? '').toLowerCase().includes(q)
     ),
     [schools, q],

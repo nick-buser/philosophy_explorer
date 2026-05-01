@@ -33,6 +33,7 @@ independently. Each file is first-pass notes, not a committed spec.
 | Formal verification | [`formal-verification.md`](./formal-verification.md) | Lean integration — deep embedding of Begriffsschrift, headless-Lean proof-checking pipeline. |
 | Argument graph | [`argument-graph.md`](./argument-graph.md) | Meta-level graph where formulas are node payloads and edges are inferential relations (Toulmin / Brandomian). |
 | Editor & IR | [`editor-and-ir.md`](./editor-and-ir.md) | Shared intermediate representation across logic systems; structured formula editor; parser strategy. |
+| Backend logic core | [`backend-logic-core.md`](./backend-logic-core.md) | Where the logical core lives (F# vs TS), migration triggers, and the codegen / Fable pipeline. |
 | Open questions | [`open-questions.md`](./open-questions.md) | Unresolved decisions, scope-cut alternatives, risk register. |
 
 **Related:** [`../case-studies/`](../case-studies/) — in-depth case studies on individual thinkers. Charles Sanders Peirce is the first; his existential graphs are the first populated system in the logic explorer.
