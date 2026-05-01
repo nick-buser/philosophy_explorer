@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parseModal } from '../kripke-parser';
-import { renderUnicode } from '../kripke-render';
+import { renderUnicode, renderKatex } from '../kripke-render';
 
 function mustParse(src: string) {
   const r = parseModal(src);
@@ -205,5 +205,30 @@ describe('renderUnicode — round-trip and minimal parens', () => {
     expect(renderUnicode(mustParse('[](p -> q) -> []p -> []q')))
       .toBe('□(p → q) → □p → □q');
     expect(renderUnicode(mustParse('<>p -> []<>p'))).toBe('◇p → □◇p');
+  });
+});
+
+describe('renderKatex — TeX source', () => {
+  it('emits TeX commands for the modal connectives', () => {
+    expect(renderKatex(mustParse('[]p'))).toBe('\\Box p');
+    expect(renderKatex(mustParse('<>p'))).toBe('\\Diamond p');
+    expect(renderKatex(mustParse('!p'))).toBe('\\neg p');
+  });
+
+  it('emits TeX commands for the binary connectives', () => {
+    expect(renderKatex(mustParse('p & q'))).toBe('p \\land q');
+    expect(renderKatex(mustParse('p | q'))).toBe('p \\lor q');
+    expect(renderKatex(mustParse('p -> q'))).toBe('p \\to q');
+    expect(renderKatex(mustParse('p <-> q'))).toBe('p \\leftrightarrow q');
+  });
+
+  it('parenthesizes structurally with \\left ... \\right', () => {
+    expect(renderKatex(mustParse('(p | q) & r')))
+      .toBe('\\left(p \\lor q\\right) \\land r');
+  });
+
+  it('renders K-axiom under right-assoc -> without redundant parens', () => {
+    expect(renderKatex(mustParse('[](p -> q) -> []p -> []q')))
+      .toBe('\\Box \\left(p \\to q\\right) \\to \\Box p \\to \\Box q');
   });
 });
