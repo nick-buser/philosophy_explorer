@@ -209,12 +209,101 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
       'The 1879 concept-script. 2D judgment-and-content strokes with condition strokes for implication and concavities for generality.',
     era: '1879',
     keyPrimitive: 'judgment + content stroke',
-    status: 'stub',
+    status: 'available',
     thinkerSlug: null,
-    history: '',
-    primitives: [],
-    examples: [],
-    readingPointers: [],
+    history:
+      'Gottlob Frege published the *Begriffsschrift* (\u201cconcept-script\u201d) in 1879 as a 2D notation \u201cmodelled on that of arithmetic\u201d for capturing logical structure directly. Frege took the universal quantifier as primitive (a concavity in the content stroke containing a Gothic letter) and built propositional structure from a horizontal content stroke, an attached vertical judgment stroke for assertion, a downward tick for negation, and a vertical condition stroke joining a consequent (top) to an antecedent (bottom). The notation was barely read for two decades \u2014 Russell rediscovered it in 1902 \u2014 and then mostly displaced by the linear Peano\u2013Russell style. Modern revivals trace Wermuth\u2019s `gfnotation` plain-TeX package (TUGboat 2015) and Sperberg-McQueen\u2019s 2023 Balisage paper on keyboarding Frege.',
+    primitives: [
+      {
+        name: 'Content stroke',
+        syntax: '\u2500\u2500 A',
+        description: 'A horizontal stroke binds the symbols that follow into a single conceptual content. Every formula is built around at least one content stroke; nothing else attaches to anything except via this stroke.',
+      },
+      {
+        name: 'Judgment stroke',
+        syntax: '|- A',
+        description: 'A vertical stroke at the left end of the content stroke. Asserts the content as a fact. Without it you have a mere thought; with it, a judgment. The modern turnstile \u22a2 descends from this mark.',
+      },
+      {
+        name: 'Negation tick',
+        syntax: '~A',
+        description: 'A short vertical tick attached to the underside of the content stroke. \u201cThe content does not obtain.\u201d The stroke continues unbroken through the tick.',
+      },
+      {
+        name: 'Condition stroke',
+        syntax: 'A -> B',
+        description: 'A vertical stroke joining two content strokes: the consequent on top, the antecedent below. Encodes material implication, negating only \u201cantecedent holds yet consequent fails.\u201d Nesting handles all propositional structure.',
+      },
+      {
+        name: 'Generality (concavity)',
+        syntax: 'all x. F(x)',
+        description: 'A small concave dip in the content stroke containing a Gothic letter. Universal quantification over the bound variable. Frege took the universal as primitive and derived the existential as \u00ac\u2200\u00ac.',
+      },
+    ],
+    examples: [
+      {
+        slug: 'atom',
+        natural: 'judgment of the atom p',
+        dsl: '|- p',
+      },
+      {
+        slug: 'negation',
+        natural: 'not p',
+        dsl: '|- ~p',
+      },
+      {
+        slug: 'conditional',
+        natural: 'if p then q',
+        dsl: '|- p -> q',
+        note: 'Frege places the consequent on top of the T-junction and the antecedent below \u2014 reading \u201cif (bottom) then (top).\u201d',
+      },
+      {
+        slug: 'double-negation',
+        natural: 'if not-not-p then p (Frege\u2019s axiom 41)',
+        dsl: '|- ~~p -> p',
+        note: 'One half of double-negation elimination, an axiom in Frege\u2019s 1879 system.',
+      },
+      {
+        slug: 'positive-paradox',
+        natural: 'p implies (q implies p) \u2014 Frege\u2019s axiom 1',
+        dsl: '|- p -> (q -> p)',
+        note: 'The first axiom of the *Begriffsschrift*: a true content can be conditionally appended to anything.',
+      },
+      {
+        slug: 'universal-instantiation',
+        natural: 'if F holds for all x, then F holds of a',
+        dsl: '|- (all x. F(x)) -> F(a)',
+        note: 'The standard universal-instantiation pattern, drawn with a concavity dipping into the content stroke.',
+      },
+      {
+        slug: 'transitivity-of-conditional',
+        natural: 'if (p \u2192 q) and (q \u2192 r) then (p \u2192 r), under universal F/G/H',
+        dsl: '|- (all x. F(x) -> G(x)) -> (all x. G(x) -> H(x)) -> (all x. F(x) -> H(x))',
+        note: 'A nested conditional under three concavities \u2014 the kind of layout the Begriffsschrift renders very legibly and the linear notation does not.',
+      },
+    ],
+    readingPointers: [
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Frege\u2019s Logic',
+        href: 'https://plato.stanford.edu/entries/frege-logic/',
+        kind: 'external',
+      },
+      {
+        title: 'Wermuth, Typesetting the Begriffsschrift in plain TeX (TUGboat 2015)',
+        href: 'https://www.tug.org/TUGboat/tb36-3/tb114wermuth.pdf',
+        kind: 'external',
+      },
+      {
+        title: 'Schlimm, On Frege\u2019s Begriffsschrift notation for propositional logic',
+        href: 'https://www.cs.mcgill.ca/~dirk/schlimm2017-begriffsschrift-prefinal.pdf',
+        kind: 'external',
+      },
+      {
+        title: 'Frege, Begriffsschrift (1879, English translation, Information Philosopher)',
+        href: 'https://www.informationphilosopher.com/solutions/philosophers/frege/Frege_Begriffsschrift.pdf',
+        kind: 'external',
+      },
+    ],
   },
   {
     slug: 'aristotelian',
