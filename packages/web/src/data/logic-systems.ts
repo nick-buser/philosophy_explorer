@@ -536,15 +536,127 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
     slug: 'modern-fol',
     name: 'Modern First-Order Logic',
     shortDescription:
-      'Peano / Russell-style linear symbolic notation. \u2200 \u2203 \u00ac \u2227 \u2228 \u2192 with functions and relations.',
+      'Peano / Russell-style linear symbolic notation. \u2200 \u2203 \u00ac \u2227 \u2228 \u2192 \u2194 with predicates, functions, and identity. The default working notation of mathematics and analytic philosophy since the early 20th century.',
     era: '1889 \u2192',
     keyPrimitive: 'quantifier + connective',
-    status: 'stub',
+    status: 'available',
     thinkerSlug: null,
-    history: '',
-    primitives: [],
-    examples: [],
-    readingPointers: [],
+    history:
+      'Giuseppe Peano introduced the modern linear symbolism in his 1889 *Arithmetices principia, nova methodo exposita* \u2014 the small-caps \u2283 for implication, \u2208 for membership, the inverted-A and reversed-E for the quantifiers a few years later. Frege had already given a complete predicate logic (the *Begriffsschrift* 1879) but in a 2D notation that almost no one read; Peano\u2019s linear style spread through Russell and Whitehead\u2019s *Principia Mathematica* (1910\u20131913) and Hilbert\u2019s G\u00f6ttingen school. The metatheoretic story \u2014 G\u00f6del\u2019s 1929 completeness theorem, the 1930 incompleteness theorems, Skolem and Herbrand on substitution, Gentzen on natural deduction and sequent calculus (1934\u20131935), Tarski on truth and definability \u2014 turned classical FOL into the canonical setting for mathematical logic. The semantic-tableau / truth-tree method this lab uses for validity checking traces back to Beth (1955) and Smullyan\u2019s *First-Order Logic* (1968).',
+    primitives: [
+      {
+        name: 'Universal quantifier',
+        syntax: 'forall x. P(x)  (\u2200x.\u00a0P(x))',
+        description: 'Asserts that the body holds for every element of the domain. Wide-scope by default \u2014 `forall x. P(x) -> Q(x)` reads as \u2200x.(P(x)\u2192Q(x)). Use parentheses to force narrow scope.',
+      },
+      {
+        name: 'Existential quantifier',
+        syntax: 'exists x. P(x)  (\u2203x.\u00a0P(x))',
+        description: 'Asserts that the body holds for at least one element. Defined as \u00ac\u2200x.\u00acP(x) classically; in this lab the two are interderivable but kept primitive for readability.',
+      },
+      {
+        name: 'Predicate atom',
+        syntax: 'P(t1, ..., tn)',
+        description: 'A relation or property applied to terms. Zero-arg predicates are propositional letters: `P` is the same shape as `P()`. Argument-free predicates fall in the propositional fragment.',
+      },
+      {
+        name: 'Identity',
+        syntax: 't = u   /   t != u',
+        description: 'First-class equality on terms. The validity checker propagates equality via union-find on the open branch, so symmetry, transitivity, and Leibniz substitution on atomic predicates are handled automatically.',
+      },
+      {
+        name: 'Connectives',
+        syntax: '\u00ac \u2227 \u2228 \u2192 \u2194  (~ & | -> <->)',
+        description: 'The standard truth-functional connectives. Precedence (tightest first): \u00ac, \u2227, \u2228, \u2192 (right-assoc), \u2194 (left-assoc). All examples here are classical \u2014 LEM and double-negation elimination both hold.',
+      },
+      {
+        name: 'Function term',
+        syntax: 'f(t1, ..., tn)',
+        description: 'A function symbol applied to argument terms. Used in the term language alongside variables and constants. Quantifiers bind only first-order variables; `f` is treated as a function name even if it shadows a quantified variable.',
+      },
+    ],
+    examples: [
+      {
+        slug: 'modus-ponens',
+        natural: 'Modus ponens \u2014 (p \u2192 q) \u2227 p \u2192 q',
+        dsl: '(p -> q) & p -> q',
+        note: 'The textbook propositional tautology. Decided by truth-table since it has no quantifiers or predicates with arguments.',
+      },
+      {
+        slug: 'contraposition',
+        natural: 'Contraposition \u2014 (p \u2192 q) \u2194 (\u00acq \u2192 \u00acp)',
+        dsl: '(p -> q) <-> (~q -> ~p)',
+        note: 'A propositional tautology. The classical equivalence; in intuitionistic logic only one direction holds.',
+      },
+      {
+        slug: 'demorgan',
+        natural: 'De Morgan \u2014 \u00ac(p \u2228 q) \u2194 (\u00acp \u2227 \u00acq)',
+        dsl: '~(p | q) <-> (~p & ~q)',
+      },
+      {
+        slug: 'universal-instantiation',
+        natural: 'Universal instantiation \u2014 (\u2200x. P(x)) \u2192 P(a)',
+        dsl: '(forall x. P(x)) -> P(a)',
+        note: 'The basic \u2200-elimination rule, expressed as a tautology. Note the parentheses around the quantifier \u2014 without them, the wide-scope reading would absorb `-> P(a)` into the body.',
+      },
+      {
+        slug: 'existential-generalization',
+        natural: 'Existential generalization \u2014 P(a) \u2192 \u2203x. P(x)',
+        dsl: 'P(a) -> exists x. P(x)',
+      },
+      {
+        slug: 'forall-exists-vs-exists-forall',
+        natural: '(\u2203x.\u2200y.\u00a0R(x,y)) \u2192 (\u2200y.\u2203x.\u00a0R(x,y)) \u2014 quantifier order matters',
+        dsl: '(exists x. forall y. R(x, y)) -> (forall y. exists x. R(x, y))',
+        note: 'The valid direction of quantifier swap. The converse (\u2200y.\u2203x.\u00a0R \u2192 \u2203x.\u2200y.\u00a0R) is *not* valid \u2014 try negating the conclusion to see why.',
+      },
+      {
+        slug: 'drinker-paradox',
+        natural: 'Drinker\u2019s paradox \u2014 \u2203x. (P(x) \u2192 \u2200y. P(y))',
+        dsl: 'exists x. (P(x) -> forall y. P(y))',
+        note: 'Smullyan\u2019s "in every pub, there is someone such that, if they are drinking, everyone is drinking." Classically valid (depends on LEM); fails intuitionistically. Tableau closes via case-analysis on whether \u2200y. P(y) holds.',
+      },
+      {
+        slug: 'identity-reflexivity',
+        natural: 'Reflexivity of identity \u2014 \u2200x. x = x',
+        dsl: 'forall x. x = x',
+        note: 'The defining axiom of identity. Tableau closes it instantly: \u00ac\u2200x.x=x introduces a fresh c with \u00ac(c=c), which closes by reflexivity.',
+      },
+      {
+        slug: 'identity-symmetry',
+        natural: 'Symmetry of identity \u2014 \u2200x \u2200y. (x = y \u2192 y = x)',
+        dsl: 'forall x. forall y. (x = y -> y = x)',
+        note: 'Validated via the union-find equality propagator: from c1 = c2 the closure check derives c2 = c1 automatically.',
+      },
+      {
+        slug: 'invalid-converse-quantifier-swap',
+        natural: 'Invalid \u2014 (\u2200y.\u2203x.\u00a0R(x,y)) \u2192 (\u2203x.\u2200y.\u00a0R(x,y))',
+        dsl: '(forall y. exists x. R(x, y)) -> (exists x. forall y. R(x, y))',
+        note: 'The wrong direction of quantifier swap. Tableau saturates with two distinct skolem witnesses and reports a countermodel \u2014 e.g. the "every person has a mother" / "there is a universal mother" gap.',
+      },
+    ],
+    readingPointers: [
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Classical Logic',
+        href: 'https://plato.stanford.edu/entries/logic-classical/',
+        kind: 'external',
+      },
+      {
+        title: 'Stanford Encyclopedia of Philosophy: First-order Model Theory',
+        href: 'https://plato.stanford.edu/entries/modeltheory-fo/',
+        kind: 'external',
+      },
+      {
+        title: 'Smullyan, First-Order Logic (Springer, 1968 / Dover reprint)',
+        href: 'https://store.doverpublications.com/0486683702.html',
+        kind: 'external',
+      },
+      {
+        title: 'Peano, Arithmetices principia, nova methodo exposita (1889)',
+        href: 'https://archive.org/details/arithmeticespri00peangoog',
+        kind: 'external',
+      },
+    ],
   },
 ];
 
