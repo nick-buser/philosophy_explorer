@@ -1,19 +1,11 @@
 // Command registry for the Frege Begriffsschrift Logic Lab editor.
-// Same shape as eg-commands / kripke-commands: each command has a
-// short-form slug, a human label, and an insertion payload. Surfaced
-// both as toolbar buttons and CodeMirror autocomplete options.
+// Each command surfaces as a toolbar button and a CodeMirror
+// autocomplete option.
 
 import { LOGIC_SYSTEMS } from '../data/logic-systems';
+import type { SlashCommand } from './LogicCmEditor';
 
-export type FregeCommand = {
-  slug: string;
-  label: string;
-  detail?: string;
-  insert: string;
-  cursorOffset?: number;
-};
-
-const structural: FregeCommand[] = [
+const structural: SlashCommand[] = [
   {
     slug: 'judgment',
     label: 'Insert judgment',
@@ -40,7 +32,7 @@ const structural: FregeCommand[] = [
   },
 ];
 
-const examples: FregeCommand[] = LOGIC_SYSTEMS
+const examples: SlashCommand[] = LOGIC_SYSTEMS
   .find(s => s.slug === 'frege-bs')!
   .examples.map(ex => ({
     slug:   `example.${ex.slug}`,
@@ -49,8 +41,8 @@ const examples: FregeCommand[] = LOGIC_SYSTEMS
     insert: ex.dsl,
   }));
 
-export const FREGE_COMMANDS: FregeCommand[] = [...structural, ...examples];
+export const FREGE_COMMANDS: SlashCommand[] = [...structural, ...examples];
 
-export function findFregeCommand(slug: string): FregeCommand | undefined {
+export function findFregeCommand(slug: string): SlashCommand | undefined {
   return FREGE_COMMANDS.find(c => c.slug === slug);
 }
