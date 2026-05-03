@@ -1,7 +1,8 @@
 # Aristotelian Syllogistic — System Design
 
-**Status:** Draft — phase-1 scope, 2026-05-03
-**Implementing ticket:** `FEAT-008-logic-lab-aristotelian-syllogistic`
+**Status:** Phase 1 (FEAT-008) and phase 2 (FEAT-009) shipped, 2026-05-03
+**Implementing tickets:** `FEAT-008-logic-lab-aristotelian-syllogistic`,
+`FEAT-009-logic-lab-aristotelian-phase-2`
 
 The fourth populated system in the Logic Lab, after Peirce EG, Kripke,
 and Frege Begriffsschrift. Term logic with the four categorical
@@ -274,15 +275,90 @@ the FregeBsLab / KripkeLab / PeirceEgLab pattern.
 
 ---
 
+## Phase 2 — what shipped (FEAT-009)
+
+Three additive features layered on the phase-1 lab without any
+behavioural changes when the user leaves the import toggle on its
+default.
+
+### Existential-import toggle
+
+A two-option `Traditional / Boolean` switch in the lab toolbar.
+`checkSyllogism` now accepts an `ImportSetting` argument
+(`'traditional' | 'boolean'`, default `'traditional'`). Under Boolean
+the 9 weakened moods (Barbari, Celaront, Cesaro, Camestrop, Camenop,
+Darapti, Felapton, Fesapo, Bramantip) flip to invalid; the entry is
+still surfaced in the result via `{ valid: false, entry, reason:
+'weakened-under-boolean' }` so the badge can explain the flip rather
+than appear as a generic "not in table" rejection.
+
+### Square of opposition
+
+A second SVG renderer (`AristotelianSquare`) sits alongside the Venn
+diagram. Four corners A/E/I/O at the rectangle's corners; six edges:
+two contradictory diagonals (always active), one contrary edge (top),
+one subcontrary edge (bottom), and two subalternation edges (sides).
+The contrary, subcontrary, and subalternation edges are dimmed and
+dashed under Boolean reading to convey that those relationships drop
+when existential import is removed.
+
+When the editor holds a single categorical proposition, the parsed
+form's corner is highlighted and `deriveTruths(form, importSetting)`
+populates a small T/F/? glyph at each corner showing the truth value
+forced by the asserted proposition. Under Boolean reading only the
+contradictory partner flips; the other two stay `unknown`. Under
+traditional both contraries/subcontraries and subalternation
+contribute, so A-true forces E-false, I-true, O-false (and so on).
+
+### Immediate inferences
+
+A third panel renders the medieval immediate-inference moves for any
+single-proposition input:
+
+| Move | A | E | I | O |
+|------|---|---|---|---|
+| Conversion (swap S↔P) | invalid | simple | simple | invalid |
+| Conversion per accidens | A→I | E→O | — | — |
+| Obversion | simple | simple | simple | simple |
+| Contraposition | simple | per accidens | invalid | simple |
+
+Pure functions (`convert`, `convertPerAccidens`, `obvert`,
+`contrapose`, `allImmediateInferences`) live in
+`aristotelian-immediate.ts`. Predicates produced by obversion and
+contraposition use a `non-X` prefix (toggling on the prefix when
+already present, so double-obversion cancels). The parser does not
+accept `non-X` as a term, but the panel renders the result via
+`formatProposition` for pedagogical purposes only — these are display
+strings, not round-trippable DSL.
+
+The validity tag has three states: `simple` (always valid),
+`per-accidens` (only valid under traditional reading; downgrades to
+`invalid` when the toggle is `boolean`), `invalid` (never valid).
+The panel re-grades per-accidens rows to invalid when the user
+flips the toggle.
+
+### What is still deferred to phase 3+
+
+- **Boundary-straddling ×** for ambiguous particulars in the 3-circle
+  Venn. The validity badge remains the authoritative answer; the
+  diagram is a visual aid.
+- **Multi-word terms.** Parser still expects single identifiers.
+- **Sorites.** Multi-step term-logic chains. Needs an inference-step
+  abstraction the Lab doesn't have yet.
+- **`non-X` round-tripping.** The pretty-printed obverted proposition
+  is display-only — the parser doesn't accept it as a DSL term. Doing
+  so would require a "complement" mark in the AST (e.g. on
+  `CategoricalProposition.predicateNegated`), and the renderers and
+  validity table would need to be taught about it.
+- **`LogicSystemPageChrome` REFAC.** Still flagged from FEAT-008.
+
 ## Open questions
 
-- **Existential import default.** Picked traditional. A future toggle
-  could let the user switch to Boolean reading and watch the 9
-  weakened moods become invalid. Phase 2.
-- **Square of opposition as a separate visualization.** Worth a phase
-  2 ticket; would slot into the same system page as a third panel.
-- **Sorites.** Multi-step chains. Phase 2; needs an inference-step
-  abstraction the Lab doesn't have yet.
-- **Boundary-straddling ×.** Phase 2 if a user asks. The validity
-  badge is the authoritative answer in phase 1; the diagram is a
-  visual aid.
+- **Boundary-straddling ×.** Still phase 3+ if a user asks.
+- **`non-X` round-tripping.** As above — would require AST extension.
+- **Square of opposition for syllogism input.** Currently the square
+  highlights a corner only when the input parses as a single
+  categorical proposition. For syllogism input the square renders
+  passively (no focused corner). A future enhancement could highlight
+  the major / minor / conclusion corners distinctly, but it adds
+  visual noise and the diagram is already busy.

@@ -21,8 +21,14 @@ import { FREGE_COMMANDS, findFregeCommand } from '../logic/frege-commands';
 import { parseAristotelian } from '../logic/aristotelian-parser';
 import { AristotelianRenderer } from '../logic/AristotelianRenderer';
 import { AristotelianEditor } from '../logic/AristotelianEditor';
+import { AristotelianSquare } from '../logic/AristotelianSquare';
 import { ARISTOTELIAN_COMMANDS, findAristotelianCommand } from '../logic/aristotelian-commands';
-import { checkSyllogism } from '../logic/aristotelian-validity';
+import { checkSyllogism, type ImportSetting } from '../logic/aristotelian-validity';
+import {
+  allImmediateInferences,
+  formatProposition,
+  type ImmediateInference,
+} from '../logic/aristotelian-immediate';
 
 export const logicSystemRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -816,6 +822,7 @@ function FregeToolbar({
 function AristotelianLab({ system }: { system: LogicSystem }) {
   const initial = system.examples[0]!;
   const [src, setSrc] = useState<string>(initial.dsl);
+  const [importSetting, setImportSetting] = useState<ImportSetting>('traditional');
 
   function runCommand(slug: string) {
     if (slug.startsWith('example.')) {
@@ -846,7 +853,14 @@ function AristotelianLab({ system }: { system: LogicSystem }) {
 
         <section>
           <SectionHeading>Lab</SectionHeading>
-          <AristotelianLabBody src={src} onSrcChange={setSrc} examples={system.examples} onCommand={runCommand} />
+          <AristotelianLabBody
+            src={src}
+            onSrcChange={setSrc}
+            examples={system.examples}
+            onCommand={runCommand}
+            importSetting={importSetting}
+            onImportChange={setImportSetting}
+          />
         </section>
 
         <section>
@@ -901,18 +915,28 @@ function AristotelianLab({ system }: { system: LogicSystem }) {
 }
 
 function AristotelianLabBody({
-  src, onSrcChange, examples, onCommand,
+  src, onSrcChange, examples, onCommand, importSetting, onImportChange,
 }: {
   src: string;
   onSrcChange: (s: string) => void;
   examples: LogicExample[];
   onCommand: (slug: string) => void;
+  importSetting: ImportSetting;
+  onImportChange: (s: ImportSetting) => void;
 }) {
   const parsed = useMemo(() => parseAristotelian(src), [src]);
+  const focusedForm = parsed.ok && parsed.formula.kind === 'proposition'
+    ? parsed.formula.proposition.form
+    : null;
 
   return (
     <div className="space-y-4">
-      <AristotelianToolbar onCommand={onCommand} examples={examples} />
+      <AristotelianToolbar
+        onCommand={onCommand}
+        examples={examples}
+        importSetting={importSetting}
+        onImportChange={onImportChange}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="rounded-lg border border-gray-800 bg-gray-950 overflow-hidden">
@@ -928,7 +952,10 @@ function AristotelianLabBody({
             <span>Rendering</span>
             <div className="flex items-center gap-2">
               {parsed.ok && parsed.formula.kind === 'syllogism' && (
-                <ValidityBadge syllogism={parsed.formula.syllogism} />
+                <ValidityBadge
+                  syllogism={parsed.formula.syllogism}
+                  importSetting={importSetting}
+                />
               )}
               {parsed.ok ? (
                 <span className="text-emerald-400">parsed</span>
@@ -949,6 +976,35 @@ function AristotelianLabBody({
         </div>
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="rounded-lg border border-gray-800 bg-gray-900/40 flex flex-col">
+          <div className="px-3 py-2 border-b border-gray-800 text-xs text-gray-500 flex items-center justify-between gap-2 flex-wrap">
+            <span>Square of opposition</span>
+            <span className="text-gray-600">
+              {focusedForm
+                ? `focused on ${focusedForm}`
+                : 'enter a single proposition to focus a corner'}
+            </span>
+          </div>
+          <div className="p-4 flex-1 flex items-center justify-center min-h-[260px]">
+            <AristotelianSquare
+              focused={focusedForm}
+              importSetting={importSetting}
+              className="max-h-[300px]"
+            />
+          </div>
+        </div>
+
+        <ImmediateInferencesPanel
+          proposition={
+            parsed.ok && parsed.formula.kind === 'proposition'
+              ? parsed.formula.proposition
+              : null
+          }
+          importSetting={importSetting}
+        />
+      </div>
+
       <p className="text-xs text-gray-500 leading-relaxed">
         Long form: <code className="text-gray-300">All S is P</code>,
         <code className="ml-1 text-gray-300">No S is P</code>,
@@ -958,16 +1014,20 @@ function AristotelianLabBody({
         <code className="ml-1 text-gray-300">Therefore</code>). Compact form:
         <code className="ml-1 text-gray-300">AAA-1/S,M,P</code>.
         Type <code className="text-gray-300">/</code> in the editor for templates and examples.
+        Toggle <span className="text-gray-300">Traditional / Boolean</span> to switch existential-import readings —
+        the 9 weakened moods become invalid under Boolean, and the square's contrary, subcontrary, and subalternation edges drop.
       </p>
     </div>
   );
 }
 
 function AristotelianToolbar({
-  onCommand, examples,
+  onCommand, examples, importSetting, onImportChange,
 }: {
   onCommand: (slug: string) => void;
   examples: LogicExample[];
+  importSetting: ImportSetting;
+  onImportChange: (s: ImportSetting) => void;
 }) {
   const structural = ARISTOTELIAN_COMMANDS.filter(c => !c.slug.startsWith('example.'));
   return (
@@ -998,15 +1058,81 @@ function AristotelianToolbar({
           <option key={ex.slug} value={ex.slug}>{ex.natural}</option>
         ))}
       </select>
+      <div className="mx-2 h-4 w-px bg-gray-800" />
+      <ImportToggle value={importSetting} onChange={onImportChange} />
     </div>
   );
 }
 
-function ValidityBadge({ syllogism }: { syllogism: import('../logic/aristotelian-types').Syllogism }) {
-  const result = checkSyllogism(syllogism);
+function ImportToggle({
+  value, onChange,
+}: {
+  value: ImportSetting;
+  onChange: (s: ImportSetting) => void;
+}) {
+  const options: { id: ImportSetting; label: string; title: string }[] = [
+    {
+      id: 'traditional',
+      label: 'Traditional',
+      title: 'Universal A/E carry existential import — the 9 weakened moods are valid.',
+    },
+    {
+      id: 'boolean',
+      label: 'Boolean',
+      title: 'No existential import — A/E are conditionals; the 9 weakened moods become invalid.',
+    },
+  ];
+  return (
+    <div
+      role="radiogroup"
+      aria-label="Existential import"
+      className="inline-flex rounded border border-gray-800 bg-gray-900 overflow-hidden"
+    >
+      {options.map(opt => {
+        const active = value === opt.id;
+        return (
+          <button
+            key={opt.id}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            onClick={() => onChange(opt.id)}
+            title={opt.title}
+            className={
+              'text-xs px-2.5 py-1.5 transition-colors ' +
+              (active
+                ? 'bg-blue-500/15 text-blue-200'
+                : 'text-gray-400 hover:bg-gray-800 hover:text-gray-200')
+            }
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function ValidityBadge({
+  syllogism, importSetting,
+}: {
+  syllogism: import('../logic/aristotelian-types').Syllogism;
+  importSetting: ImportSetting;
+}) {
+  const result = checkSyllogism(syllogism, importSetting);
   const figLabel = `Fig ${syllogism.figure}`;
   const moodLabel = syllogism.mood;
   if (!result.valid) {
+    if (result.reason === 'weakened-under-boolean' && result.entry) {
+      return (
+        <span
+          className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded font-mono border bg-rose-500/15 text-rose-300 border-rose-500/30"
+          title={`${result.entry.name} is valid only under traditional reading (existential import). Boolean reading marks it invalid.`}
+        >
+          invalid · {result.entry.name} · {moodLabel} · {figLabel} · weakened
+        </span>
+      );
+    }
     return (
       <span
         className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded font-mono border bg-rose-500/15 text-rose-300 border-rose-500/30"
@@ -1033,5 +1159,74 @@ function ValidityBadge({ syllogism }: { syllogism: import('../logic/aristotelian
       {result.entry.name} · {moodLabel} · {figLabel}
       {result.entry.weakened ? ' · weakened' : ''}
     </span>
+  );
+}
+
+function ImmediateInferencesPanel({
+  proposition, importSetting,
+}: {
+  proposition: import('../logic/aristotelian-types').CategoricalProposition | null;
+  importSetting: ImportSetting;
+}) {
+  const inferences = useMemo(
+    () => proposition ? allImmediateInferences(proposition) : [],
+    [proposition],
+  );
+
+  return (
+    <div className="rounded-lg border border-gray-800 bg-gray-900/40 flex flex-col">
+      <div className="px-3 py-2 border-b border-gray-800 text-xs text-gray-500 flex items-center justify-between">
+        <span>Immediate inferences</span>
+        <span className="text-gray-600">conversion · obversion · contraposition</span>
+      </div>
+      <div className="p-4 flex-1 min-h-[260px]">
+        {!proposition ? (
+          <p className="text-sm text-gray-500 italic">
+            Enter a single categorical proposition (A/E/I/O) to see its conversion, obversion, and contraposition.
+          </p>
+        ) : (
+          <ul className="space-y-3">
+            {inferences.map((inf, i) => (
+              <ImmediateInferenceRow key={i} inference={inf} importSetting={importSetting} />
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ImmediateInferenceRow({
+  inference, importSetting,
+}: {
+  inference: ImmediateInference;
+  importSetting: ImportSetting;
+}) {
+  const effectiveValidity =
+    inference.validity === 'per-accidens' && importSetting === 'boolean'
+      ? 'invalid'
+      : inference.validity;
+
+  const tag =
+      effectiveValidity === 'simple'       ? { label: 'valid',          cls: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' }
+    : effectiveValidity === 'per-accidens' ? { label: 'per accidens',   cls: 'bg-amber-500/15 text-amber-300 border-amber-500/30' }
+    :                                        { label: 'invalid',        cls: 'bg-rose-500/15 text-rose-300 border-rose-500/30' };
+
+  return (
+    <li className="space-y-1">
+      <div className="flex items-baseline justify-between gap-3 flex-wrap">
+        <span className="text-sm text-gray-200 font-medium">{inference.label}</span>
+        <span
+          className={'text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded font-mono border ' + tag.cls}
+          title={inference.reason}
+        >
+          {tag.label}
+        </span>
+      </div>
+      <code className="block text-xs px-2 py-1 rounded bg-gray-950 border border-gray-800 text-blue-300 font-mono">
+        {formatProposition(inference.result)}
+      </code>
+      <p className="text-xs text-gray-500 leading-relaxed">{inference.reason}</p>
+    </li>
   );
 }

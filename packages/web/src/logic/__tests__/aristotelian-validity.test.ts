@@ -92,6 +92,57 @@ describe('checkSyllogism — invalid examples', () => {
   });
 });
 
+describe('checkSyllogism — import setting', () => {
+  it('weakened moods are valid under traditional reading (default)', () => {
+    const r = checkSyllogism(syl('AAI-4/A,B,C'));
+    expect(r.valid).toBe(true);
+    if (r.valid) expect(r.entry.name).toBe('Bramantip');
+  });
+
+  it('weakened moods are valid under explicit traditional reading', () => {
+    const r = checkSyllogism(syl('AAI-1/A,B,C'), 'traditional');
+    expect(r.valid).toBe(true);
+  });
+
+  it('weakened moods are invalid under boolean reading', () => {
+    const r = checkSyllogism(syl('AAI-4/A,B,C'), 'boolean');
+    expect(r.valid).toBe(false);
+    if (!r.valid) {
+      expect(r.entry?.name).toBe('Bramantip');
+      expect(r.reason).toBe('weakened-under-boolean');
+    }
+  });
+
+  it('non-weakened moods stay valid under boolean reading', () => {
+    const r = checkSyllogism(syl('AAA-1/A,B,C'), 'boolean');
+    expect(r.valid).toBe(true);
+    if (r.valid) expect(r.entry.name).toBe('Barbara');
+  });
+
+  it('all 9 weakened moods flip to invalid under boolean reading', () => {
+    const weakened = ALL_VALID_ENTRIES.filter(e => e.weakened);
+    expect(weakened.length).toBe(9);
+    for (const e of weakened) {
+      const r = checkSyllogism(syl(`${e.mood}-${e.figure}/A,B,C`), 'boolean');
+      expect(r.valid, `${e.name} (${e.mood}-${e.figure}) should be invalid under boolean`).toBe(false);
+    }
+  });
+
+  it('the 15 non-weakened moods stay valid under boolean reading', () => {
+    const strong = ALL_VALID_ENTRIES.filter(e => !e.weakened);
+    expect(strong.length).toBe(15);
+    for (const e of strong) {
+      const r = checkSyllogism(syl(`${e.mood}-${e.figure}/A,B,C`), 'boolean');
+      expect(r.valid, `${e.name} (${e.mood}-${e.figure}) should be valid under boolean`).toBe(true);
+    }
+  });
+
+  it('not-in-table moods are invalid under both readings', () => {
+    expect(checkSyllogism(syl('AAA-2/A,B,C'), 'traditional').valid).toBe(false);
+    expect(checkSyllogism(syl('AAA-2/A,B,C'), 'boolean').valid).toBe(false);
+  });
+});
+
 describe('checkSyllogism — exhaustive crosscheck', () => {
   it('every entry in ALL_VALID_ENTRIES round-trips through compact-form parse + check', () => {
     for (const e of ALL_VALID_ENTRIES) {
