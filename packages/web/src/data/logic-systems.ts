@@ -312,12 +312,109 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
       'Term logic with four categorical forms (A/E/I/O) and fixed syllogism patterns (Barbara, Celarent, \u2026).',
     era: '~350 BCE \u2192',
     keyPrimitive: 'categorical proposition',
-    status: 'stub',
-    thinkerSlug: null,
-    history: '',
-    primitives: [],
-    examples: [],
-    readingPointers: [],
+    status: 'available',
+    thinkerSlug: 'aristotle',
+    history:
+      'Aristotle systematised term logic in the Prior Analytics (~350 BCE), distinguishing the four categorical proposition forms \u2014 universal affirmative (A), universal negative (E), particular affirmative (I), particular negative (O) \u2014 and the syllogism: two premises sharing a middle term, yielding a conclusion. Aristotle worked out the first three figures; the fourth figure was added later, traditionally credited to Galen and the Peripatetics. Medieval logicians (Boethius, Peter of Spain, the 13th\u201314th-century scholastics) refined the system, codified the 24 valid moods with their mnemonic names (Barbara, Celarent, Darii, Ferio, \u2026), and developed the doctrines of suppositio and consequentia. Term logic remained the standard logic curriculum from antiquity through the early 19th century before being superseded by the Frege \u2192 Russell \u2192 Hilbert tradition of quantified predicate logic.',
+    primitives: [
+      {
+        name: 'Universal affirmative (A)',
+        syntax: 'All S is P',
+        description: 'Every S is also a P. Shaded as: the region of S outside P is empty.',
+      },
+      {
+        name: 'Universal negative (E)',
+        syntax: 'No S is P',
+        description: 'No S is a P. Shaded as: the overlap of S and P is empty.',
+      },
+      {
+        name: 'Particular affirmative (I)',
+        syntax: 'Some S is P',
+        description: 'At least one S is a P. Marked with \u00d7 in the overlap of S and P.',
+      },
+      {
+        name: 'Particular negative (O)',
+        syntax: 'Some S is not P',
+        description: 'At least one S is not a P. Marked with \u00d7 in the part of S outside P.',
+      },
+      {
+        name: 'Syllogism',
+        syntax: 'major / minor / conclusion',
+        description: 'Two premises sharing a middle term M and producing a conclusion that links the remaining terms S and P. The figure (1\u20134) is determined by where M sits in each premise; the mood is the three-letter form sequence (e.g. AAA = Barbara).',
+      },
+    ],
+    examples: [
+      {
+        slug: 'barbara',
+        natural: 'Barbara (AAA-1) \u2014 All men are Mortal; all Greeks are men; therefore all Greeks are Mortal.',
+        dsl: 'All men are Mortal\nAll Greeks are men\nTherefore all Greeks are Mortal',
+        note: 'The textbook syllogism. Both premises universal affirmative (A); conclusion universal affirmative.',
+      },
+      {
+        slug: 'celarent',
+        natural: 'Celarent (EAE-1) \u2014 No fish is Mammal; all trout is fish; therefore no trout is Mammal.',
+        dsl: 'No fish is Mammal\nAll trout is fish\nTherefore no trout is Mammal',
+        note: 'Universal-negative major. Shading shows fish\u2229Mammal and (since trout\u2286fish) trout\u2229Mammal both empty.',
+      },
+      {
+        slug: 'darii',
+        natural: 'Darii (AII-1) \u2014 All philosophers are Wise; some Greeks are philosophers; therefore some Greeks are Wise.',
+        dsl: 'All philosophers are Wise\nSome Greeks are philosophers\nTherefore some Greeks are Wise',
+        note: 'Particular conclusion from one universal and one particular premise. The \u00d7 in the diagram lands at the centre region (S\u2229M\u2229P).',
+      },
+      {
+        slug: 'ferio',
+        natural: 'Ferio (EIO-1) \u2014 No bird is Mammal; some pet is bird; therefore some pet is not Mammal.',
+        dsl: 'No bird is Mammal\nSome pet is bird\nTherefore some pet is not Mammal',
+        note: 'The fourth perfect (Figure-1) syllogism. Universal negative + particular affirmative \u21d2 particular negative.',
+      },
+      {
+        slug: 'cesare',
+        natural: 'Cesare (EAE-2) \u2014 No Mammal is Reptile; all snake is Reptile; therefore no snake is Mammal.',
+        dsl: 'No Mammal is Reptile\nAll snake is Reptile\nTherefore no snake is Mammal',
+        note: 'Figure 2: middle term (Reptile) is predicate of both premises. Reduces to Celarent by converting the major.',
+      },
+      {
+        slug: 'bocardo',
+        natural: 'Bocardo (OAO-3) \u2014 Some cats are not Tame; all cats are Mammal; therefore some Mammal is not Tame.',
+        dsl: 'Some cats are not Tame\nAll cats are Mammal\nTherefore some Mammal is not Tame',
+        note: 'Figure 3: middle term (cats) is subject of both premises. The O-premise is the major \u2014 unusual in textbook ordering, but parser figures out major/minor from term content.',
+      },
+      {
+        slug: 'undistributed-middle',
+        natural: 'Invalid (AAA-2) \u2014 All cats are Mammal; all dogs are Mammal; therefore all dogs are cats.',
+        dsl: 'All cats are Mammal\nAll dogs are Mammal\nTherefore all dogs are cats',
+        note: 'The classic undistributed-middle fallacy. The middle term (Mammal) is never distributed (never used universally) so there\u2019s no guaranteed link between cats and dogs. Diagram shows the conclusion is not forced.',
+      },
+      {
+        slug: 'compact-barbara',
+        natural: 'Compact form \u2014 Barbara as AAA-1 / Greeks, men, Mortal.',
+        dsl: 'AAA-1/Greeks,men,Mortal',
+        note: 'The dense one-line form: mood-figure / S, M, P. Equivalent to the long-form Barbara above. Useful when scanning many syllogisms or generating them programmatically.',
+      },
+    ],
+    readingPointers: [
+      {
+        title: 'Aristotle, Prior Analytics (Stanford Encyclopedia of Philosophy)',
+        href: 'https://plato.stanford.edu/entries/aristotle-logic/',
+        kind: 'external',
+      },
+      {
+        title: 'Square of opposition (SEP)',
+        href: 'https://plato.stanford.edu/entries/square/',
+        kind: 'external',
+      },
+      {
+        title: 'Medieval theories of the syllogism (SEP)',
+        href: 'https://plato.stanford.edu/entries/medieval-syllogism/',
+        kind: 'external',
+      },
+      {
+        title: 'Aristotelian syllogistic \u2014 system design notes',
+        href: 'https://plato.stanford.edu/entries/aristotle-logic/#Syllogistic',
+        kind: 'doc',
+      },
+    ],
   },
   {
     slug: 'modern-fol',
