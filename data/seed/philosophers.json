@@ -134,6 +134,17 @@
     "bioShort": "Franciscan philosopher and nominalist. \"Ockham's Razor\" (entities should not be multiplied beyond necessity) challenges realism about universals. His nominalism and anti-papal political writings made him a controversial figure."
   },
   {
+    "slug": "john-buridan",
+    "name": "John Buridan",
+    "alsoKnownAs": "Jean Buridan, Joannes Buridanus",
+    "bornYear": 1301,
+    "bornCertainty": "circa",
+    "diedYear": 1361,
+    "diedCertainty": "circa",
+    "nationality": "French",
+    "bioShort": "Parisian arts master and the most influential medieval logician of the 14th century. His Tractatus de consequentiis and Summulae de dialectica systematised modal syllogistic, the theory of consequences, and supposition theory. Sceptical nominalist in Ockham's wake; the so-called \"Buridan's ass\" thought experiment is mis-attributed but illustrates his interest in indifferent choice."
+  },
+  {
     "slug": "francis-bacon",
     "name": "Francis Bacon",
     "bornYear": 1561,

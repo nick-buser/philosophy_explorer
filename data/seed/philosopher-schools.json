@@ -85,6 +85,11 @@
     "role": "member"
   },
   {
+    "philosopherSlug": "john-buridan",
+    "schoolSlug": "scholasticism",
+    "role": "member"
+  },
+  {
     "philosopherSlug": "rene-descartes",
     "schoolSlug": "rationalism",
     "role": "founder"

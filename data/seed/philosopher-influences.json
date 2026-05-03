@@ -68,6 +68,18 @@
     "description": "Ockham's nominalism is a direct challenge to Thomistic realism about universals."
   },
   {
+    "influencerSlug": "william-of-ockham",
+    "influencedSlug": "john-buridan",
+    "influenceType": "direct",
+    "description": "Buridan inherits Ockham's nominalism and extends his work on supposition theory and the logic of consequences."
+  },
+  {
+    "influencerSlug": "aristotle",
+    "influencedSlug": "john-buridan",
+    "influenceType": "direct",
+    "description": "Buridan's modal syllogistic is the most consolidated medieval reading of Aristotle's Prior Analytics I.8–22."
+  },
+  {
     "influencerSlug": "john-locke",
     "influencedSlug": "george-berkeley",
     "influenceType": "direct",

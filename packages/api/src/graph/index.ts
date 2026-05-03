@@ -27,7 +27,7 @@ function createGraphService(): GraphService {
     );
   }
 
-  const dataPath = resolve(__dirname, '../data/graph-data.json');
+  const dataPath = resolve(__dirname, '../../../../data/graph-data.json');
   let data: SerializedGraphologyExport | undefined;
   try {
     const raw = readFileSync(dataPath, 'utf-8');

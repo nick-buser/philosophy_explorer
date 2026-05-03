@@ -334,6 +334,17 @@ export const philosophersData: Omit<NewPhilosopher, 'id' | 'createdAt' | 'update
     nationality: 'English',
     bioShort: 'Franciscan philosopher and nominalist. "Ockham\'s Razor" (entities should not be multiplied beyond necessity) challenges realism about universals. His nominalism and anti-papal political writings made him a controversial figure.',
   },
+  {
+    slug: 'john-buridan',
+    name: 'John Buridan',
+    alsoKnownAs: 'Jean Buridan, Joannes Buridanus',
+    bornYear: 1301,
+    bornCertainty: 'circa',
+    diedYear: 1361,
+    diedCertainty: 'circa',
+    nationality: 'French',
+    bioShort: 'Parisian arts master and the most influential medieval logician of the 14th century. His Tractatus de consequentiis and Summulae de dialectica systematised modal syllogistic, the theory of consequences, and supposition theory. Sceptical nominalist in Ockham\'s wake; the so-called "Buridan\'s ass" thought experiment is mis-attributed but illustrates his interest in indifferent choice.',
+  },
 
   // ── Early Modern ─────────────────────────────────────────────────────────────
   {
@@ -1245,6 +1256,7 @@ export const philosopherSchoolsData: PhilosopherSchoolSeed[] = [
   { philosopherSlug: 'thomas-aquinas',      schoolSlug: 'scholasticism',          role: 'member' },
   { philosopherSlug: 'thomas-aquinas',      schoolSlug: 'aristotelianism',        role: 'associated' },
   { philosopherSlug: 'william-of-ockham',   schoolSlug: 'scholasticism',          role: 'member' },
+  { philosopherSlug: 'john-buridan',        schoolSlug: 'scholasticism',          role: 'member' },
 
   // Early Modern
   { philosopherSlug: 'rene-descartes',      schoolSlug: 'rationalism',            role: 'founder' },
@@ -1374,6 +1386,8 @@ export const philosopherInfluencesData: InfluenceSeed[] = [
   { influencerSlug: 'aristotle',         influencedSlug: 'thomas-aquinas',     influenceType: 'direct',   description: 'Aquinas\'s Thomism is an explicit synthesis of Aristotle\'s metaphysics, physics, and ethics with Christian theology.' },
   { influencerSlug: 'augustine',         influencedSlug: 'thomas-aquinas',     influenceType: 'direct' },
   { influencerSlug: 'thomas-aquinas',    influencedSlug: 'william-of-ockham',  influenceType: 'critical', description: 'Ockham\'s nominalism is a direct challenge to Thomistic realism about universals.' },
+  { influencerSlug: 'william-of-ockham', influencedSlug: 'john-buridan',       influenceType: 'direct',   description: 'Buridan inherits Ockham\'s nominalism and extends his work on supposition theory and the logic of consequences.' },
+  { influencerSlug: 'aristotle',         influencedSlug: 'john-buridan',       influenceType: 'direct',   description: 'Buridan\'s modal syllogistic is the most consolidated medieval reading of Aristotle\'s Prior Analytics I.8–22.' },
 
   // Early Modern empiricism chain
   { influencerSlug: 'john-locke',        influencedSlug: 'george-berkeley',    influenceType: 'direct',   description: 'Berkeley radicalizes Locke\'s empiricism by eliminating material substance entirely.' },
