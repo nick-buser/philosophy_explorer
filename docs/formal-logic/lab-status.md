@@ -63,13 +63,11 @@ A/E/I/O to ∀/∃/∧/¬). Requires either a shared core AST or a
 per-direction translation pass. Not a research problem — a
 build-it problem.
 
-### 3. Bundle / route-level code-splitting
+### 3. ~~Bundle / route-level code-splitting~~ — closed in INFRA-004
 
-Flagged since FEAT-005 and unaddressed since. By FEAT-011 the web
-build is ~1.37 MB pre-gzip / ~418 kB gzipped, with six Lab
-systems' code shipped to every other route. The fix is route-level
-code-splitting via TanStack Router's lazy loading; ~half-day
-ticket.
+Route-level code-splitting via TanStack Router's lazy loading shipped
+in INFRA-004 (2026-05-03). Lab systems now load on demand rather
+than shipping to every other route.
 
 ### 4. Browser smoke / interaction testing
 
@@ -144,15 +142,15 @@ are the open design questions; see `formal-verification.md` §3-4.
 ## Recommended sequencing
 
 1. ✅ **A** — done in FEAT-012.
-2. **B** next — wraps the spine; turns six independent systems
+2. ✅ Cross-cutting **3** (code-splitting) — done in INFRA-004.
+3. **B** next — wraps the spine; turns six independent systems
    into a comparison surface.
-3. Cross-cutting **3** (code-splitting) and **4** (browser smoke) —
-   neither is blocking, both should land before the Lab is "done"
-   by external standards.
-4. **C** if and only if natural-deduction proof rendering is the
-   next pedagogical target. Otherwise defer indefinitely; the
-   tableau view from FEAT-012 already shows the proof structure
-   directly.
+4. Cross-cutting **4** (browser smoke) — not blocking, should land
+   before the Lab is "done" by external standards.
+5. Beyond B + browser smoke, see **`lab-roadmap.md`** for the
+   medium- and long-term plan (Peirce Beta, Boolean algebra,
+   natural deduction, intuitionistic logic, engine-derived Kripke,
+   Stoic/many-valued/Indian-Buddhist breadth, Lean integration).
 
 ---
 
