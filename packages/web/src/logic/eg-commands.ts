@@ -8,16 +8,9 @@
 // put it in data/logic-systems.ts::examples instead.
 
 import { LOGIC_SYSTEMS } from '../data/logic-systems';
+import type { SlashCommand } from './LogicCmEditor';
 
-export type EgCommand = {
-  slug: string;                 // "cut", "example.modus-ponens"
-  label: string;                // "Insert cut"
-  detail?: string;              // hint shown in the autocomplete popup
-  insert: string;               // text to insert at the cursor
-  cursorOffset?: number;        // where to place the cursor within `insert` (default: end)
-};
-
-const structural: EgCommand[] = [
+const structural: SlashCommand[] = [
   {
     slug: 'cut',
     label: 'Insert cut',
@@ -46,7 +39,7 @@ const structural: EgCommand[] = [
   },
 ];
 
-const examples: EgCommand[] = LOGIC_SYSTEMS
+const examples: SlashCommand[] = LOGIC_SYSTEMS
   .find(s => s.slug === 'peirce-eg')!
   .examples.map(ex => ({
     slug: `example.${ex.slug}`,
@@ -55,8 +48,8 @@ const examples: EgCommand[] = LOGIC_SYSTEMS
     insert: ex.dsl,
   }));
 
-export const EG_COMMANDS: EgCommand[] = [...structural, ...examples];
+export const EG_COMMANDS: SlashCommand[] = [...structural, ...examples];
 
-export function findCommand(slug: string): EgCommand | undefined {
+export function findCommand(slug: string): SlashCommand | undefined {
   return EG_COMMANDS.find(c => c.slug === slug);
 }

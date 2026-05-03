@@ -1,19 +1,9 @@
-// Command registry for the Kripke Logic Lab editor. Same shape as
-// `eg-commands.ts` (the two will fold into a shared LogicCmEditor in
-// a later REFAC); kept duplicated for phase 1 per
-// docs/formal-logic/kripke-modal-logic.md §Open Q2.
+// Command registry for the Kripke Logic Lab editor.
 
 import { LOGIC_SYSTEMS } from '../data/logic-systems';
+import type { SlashCommand } from './LogicCmEditor';
 
-export type KripkeCommand = {
-  slug: string;
-  label: string;
-  detail?: string;
-  insert: string;
-  cursorOffset?: number;
-};
-
-const structural: KripkeCommand[] = [
+const structural: SlashCommand[] = [
   {
     slug: 'box',
     label: 'Insert □ (necessity)',
@@ -65,7 +55,7 @@ const structural: KripkeCommand[] = [
   },
 ];
 
-const examples: KripkeCommand[] = LOGIC_SYSTEMS
+const examples: SlashCommand[] = LOGIC_SYSTEMS
   .find(s => s.slug === 'kripke')!
   .examples.map(ex => ({
     slug: `example.${ex.slug}`,
@@ -74,8 +64,8 @@ const examples: KripkeCommand[] = LOGIC_SYSTEMS
     insert: ex.dsl,
   }));
 
-export const KRIPKE_COMMANDS: KripkeCommand[] = [...structural, ...examples];
+export const KRIPKE_COMMANDS: SlashCommand[] = [...structural, ...examples];
 
-export function findKripkeCommand(slug: string): KripkeCommand | undefined {
+export function findKripkeCommand(slug: string): SlashCommand | undefined {
   return KRIPKE_COMMANDS.find(c => c.slug === slug);
 }
