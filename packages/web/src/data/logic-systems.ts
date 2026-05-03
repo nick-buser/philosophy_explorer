@@ -417,6 +417,122 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
     ],
   },
   {
+    slug: 'medieval',
+    name: 'Medieval Modal Syllogistic',
+    shortDescription:
+      'Aristotle\u2019s assertoric term logic extended with necessity (\u25a1) and possibility (\u25c7). The medievals built de re vs de dicto, the modal mood-figure tables, sorites chains, and the theory of consequences on this base.',
+    era: '13th\u201314th c.',
+    keyPrimitive: 'modal proposition',
+    status: 'available',
+    thinkerSlug: 'john-buridan',
+    history:
+      'Aristotle treated modal syllogistic in Prior Analytics I.8\u201322, mixing necessity, possibility, and assertoric premises across the four figures \u2014 but his treatment is famously inconsistent on which mixed moods are valid. Aquinas, Robert Kilwardby, and Albert the Great worked through the material in the 13th century; the 14th-century logicians (Ockham, Buridan, Albert of Saxony) produced the most consolidated medieval accounts. Buridan\u2019s Tractatus de consequentiis (c. 1335) and Summulae de dialectica (c. 1340) systematise modal syllogistic, the theory of consequences (formal vs material), and supposition theory. The de re / de dicto distinction \u2014 in sensu diviso vs in sensu composito \u2014 is the key conceptual move: a modal operator can bind the predicate inside the proposition (de re) or the proposition as a whole (de dicto), and the validity of mixed-mode moods turns on which reading is in force.',
+    primitives: [
+      {
+        name: 'Necessity (de dicto)',
+        syntax: 'Necessarily, all S is P',
+        description: 'The whole proposition is necessary. \u25a1\u2200x(Sx \u2192 Px) in modern notation.',
+      },
+      {
+        name: 'Necessity (de re)',
+        syntax: 'All S is necessarily P',
+        description: 'Each S is necessarily P. \u2200x(Sx \u2192 \u25a1Px) in modern notation. Distinct from de dicto in modal contexts where the assignment of necessity matters.',
+      },
+      {
+        name: 'Possibility (de dicto)',
+        syntax: 'Possibly, some S is P',
+        description: 'It is possible that some S is P. \u25c7\u2203x(Sx \u2227 Px).',
+      },
+      {
+        name: 'Possibility (de re)',
+        syntax: 'Some S is possibly P',
+        description: 'There is some S that is possibly P. \u2203x(Sx \u2227 \u25c7Px).',
+      },
+      {
+        name: 'Modal mood',
+        syntax: 'L X L \u00b7 figure 1',
+        description: 'A 3-letter pattern over {X assertoric, L necessity, M possibility} \u2014 one letter per (major, minor, conclusion). Validity depends on the underlying assertoric mood, the figure, and the modal reading. The contested case Barbara LXL-1 is valid de re (Aristotle) but invalid de dicto (Buridan).',
+      },
+      {
+        name: 'Sorites',
+        syntax: 'A \u2192 B \u2192 C \u2192 D',
+        description: 'A multi-step term-logic chain where each adjacent pair is a syllogism (canonically Barbara). Aristotelian sorites threads predicate \u2192 next subject; Goclenian sorites threads subject \u2192 next predicate (premise order reversed).',
+      },
+    ],
+    examples: [
+      {
+        slug: 'necessity-barbara',
+        natural: 'Necessity Barbara (LLL-1) \u2014 Necessarily, all M is P; necessarily, all S is M; therefore necessarily all S is P.',
+        dsl: 'Necessarily, all M is P\nNecessarily, all S is M\nTherefore necessarily all S is P',
+        note: 'All-necessity moods are valid in any figure where the underlying assertoric mood is valid. Both readings agree.',
+      },
+      {
+        slug: 'lxl-de-re',
+        natural: 'Barbara LXL-1 (de re reading) \u2014 Necessarily, all M is P; all S is M; therefore necessarily all S is P.',
+        dsl: 'Necessarily, all M is P\nAll S is M\nTherefore necessarily all S is P',
+        note: 'Aristotle\u2019s contested mixed mood. Valid de re (the necessity flows from the major to the conclusion). Invalid de dicto \u2014 Buridan and Theophrastus held the conclusion follows the weaker premise (peiorem semper sequitur conclusio).',
+      },
+      {
+        slug: 'lxx-de-dicto',
+        natural: 'Barbara LXX-1 (de dicto reading) \u2014 the same premises but with an assertoric conclusion.',
+        dsl: 'Necessarily, all M is P\nAll S is M\nTherefore all S is P',
+        note: 'Theophrastus / Buridan\u2019s reading: with one assertoric premise the conclusion can only be assertoric. Valid de dicto, invalid under the de re rule (which would force a necessity conclusion).',
+      },
+      {
+        slug: 'possibility-celarent',
+        natural: 'Possibility Celarent (MMM-1) \u2014 Possibly, no M is P; possibly, all S is M; therefore possibly no S is P.',
+        dsl: 'Possibly, no M is P\nPossibly, all S is M\nTherefore possibly no S is P',
+        note: 'All-possibility moods are valid wherever the assertoric mood is valid; the modal layer just propagates.',
+      },
+      {
+        slug: 'aristotelian-sorites',
+        natural: 'Aristotelian sorites \u2014 four Barbara steps chained.',
+        dsl: 'All A is B\nAll B is C\nAll C is D\nAll D is E\nTherefore all A is E',
+        note: 'Each adjacent pair shares a term in the subject\u2192predicate pattern. Decomposes into 3 Barbara steps; valid iff every step is.',
+      },
+      {
+        slug: 'goclenian-sorites',
+        natural: 'Goclenian sorites \u2014 same chain walked tail-to-head.',
+        dsl: 'All D is E\nAll C is D\nAll B is C\nAll A is B\nTherefore all A is E',
+        note: 'Goclenian premise order: each line\u2019s predicate matches the previous line\u2019s subject. Same fused conclusion as the Aristotelian form, just walked in reverse.',
+      },
+      {
+        slug: 'invalid-modal-figure-2',
+        natural: 'Invalid (LXL-2 de re) \u2014 mixed-mode mood outside figure 1.',
+        dsl: 'Necessarily, all P is M\nAll S is M\nTherefore necessarily all S is P',
+        note: 'Phase 1 cuts mixed-mode moods to figure 1 only. Buridan would say the conclusion does not follow even there \u2014 the necessity does not transmit through figure 2 reliably. Marked invalid (pattern-not-supported).',
+      },
+      {
+        slug: 'compact-modal-barbara',
+        natural: 'Compact modal Barbara \u2014 LLL-1 / de-re / S, M, P.',
+        dsl: 'LLL-1/de-re/S,M,P',
+        note: 'Compact form. Mode letters X (assertoric) / L (necessity) / M (possibility) per premise/conclusion, then figure, reading suffix, and S,M,P term assignment.',
+      },
+    ],
+    readingPointers: [
+      {
+        title: 'Medieval theories of the syllogism (SEP)',
+        href: 'https://plato.stanford.edu/entries/medieval-syllogism/',
+        kind: 'external',
+      },
+      {
+        title: 'John Buridan (SEP)',
+        href: 'https://plato.stanford.edu/entries/buridan/',
+        kind: 'external',
+      },
+      {
+        title: 'Medieval theories of modality (SEP)',
+        href: 'https://plato.stanford.edu/entries/modality-medieval/',
+        kind: 'external',
+      },
+      {
+        title: 'De re / de dicto (SEP)',
+        href: 'https://plato.stanford.edu/entries/prop-attitude-reports/dere.html',
+        kind: 'external',
+      },
+    ],
+  },
+  {
     slug: 'modern-fol',
     name: 'Modern First-Order Logic',
     shortDescription:

@@ -180,7 +180,11 @@ function buildGraph() {
 
 const graph = buildGraph();
 
-const outPath = resolve(__dirname, '../data/graph-data.json');
+// Canonical graph-data.json lives at the repo root in data/. The
+// active F# server reads from there via GRAPH_DATA_PATH (see CLAUDE.md
+// §Graph layer). __dirname here is packages/api/src/graph, so four
+// levels up reaches the repo root.
+const outPath = resolve(__dirname, '../../../../data/graph-data.json');
 const exported = graph.export();
 writeFileSync(outPath, JSON.stringify(exported, null, 2));
 
