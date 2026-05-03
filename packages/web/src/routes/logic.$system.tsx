@@ -18,6 +18,11 @@ import { parseFrege } from '../logic/frege-parser';
 import { FregeRenderer } from '../logic/FregeRenderer';
 import { FregeEditor } from '../logic/FregeEditor';
 import { FREGE_COMMANDS, findFregeCommand } from '../logic/frege-commands';
+import { parseAristotelian } from '../logic/aristotelian-parser';
+import { AristotelianRenderer } from '../logic/AristotelianRenderer';
+import { AristotelianEditor } from '../logic/AristotelianEditor';
+import { ARISTOTELIAN_COMMANDS, findAristotelianCommand } from '../logic/aristotelian-commands';
+import { checkSyllogism } from '../logic/aristotelian-validity';
 
 export const logicSystemRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -65,6 +70,10 @@ function LogicSystemPage() {
 
   if (system.slug === 'frege-bs') {
     return <FregeBsLab system={system} />;
+  }
+
+  if (system.slug === 'aristotelian') {
+    return <AristotelianLab system={system} />;
   }
 
   return <PeirceEgLab system={system} />;
@@ -797,5 +806,232 @@ function FregeToolbar({
         ))}
       </select>
     </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Aristotelian Lab — fourth populated system. Term logic with Venn
+// diagrams; the only system that ships a validity check.
+
+function AristotelianLab({ system }: { system: LogicSystem }) {
+  const initial = system.examples[0]!;
+  const [src, setSrc] = useState<string>(initial.dsl);
+
+  function runCommand(slug: string) {
+    if (slug.startsWith('example.')) {
+      const ex = system.examples.find(e => e.slug === slug.slice('example.'.length));
+      if (ex) setSrc(ex.dsl);
+      return;
+    }
+    const cmd = findAristotelianCommand(slug);
+    if (!cmd) return;
+    setSrc(cmd.insert);
+  }
+
+  return (
+    <main className="min-h-screen py-12">
+      <div className="max-w-5xl mx-auto px-6 space-y-12">
+
+        <Link to="/logic" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+          ← Logic Lab
+        </Link>
+
+        <header>
+          <div className="flex items-baseline gap-3 flex-wrap">
+            <h1 className="text-3xl font-bold text-gray-100">{system.name}</h1>
+            <span className="text-sm text-gray-500">{system.era}</span>
+          </div>
+          <p className="mt-3 text-gray-400 leading-relaxed max-w-3xl">{system.shortDescription}</p>
+        </header>
+
+        <section>
+          <SectionHeading>Lab</SectionHeading>
+          <AristotelianLabBody src={src} onSrcChange={setSrc} examples={system.examples} onCommand={runCommand} />
+        </section>
+
+        <section>
+          <SectionHeading>History</SectionHeading>
+          <p className="text-gray-300 leading-relaxed">{system.history}</p>
+        </section>
+
+        <section>
+          <SectionHeading>Primitives</SectionHeading>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {system.primitives.map(p => (
+              <div key={p.name} className="rounded-lg border border-gray-800 bg-gray-900/50 p-4">
+                <div className="flex items-baseline justify-between gap-3">
+                  <h3 className="text-gray-100 font-medium">{p.name}</h3>
+                  <code className="text-xs px-1.5 py-0.5 rounded bg-gray-950 border border-gray-800 text-blue-300 font-mono">
+                    {p.syntax}
+                  </code>
+                </div>
+                <p className="mt-2 text-sm text-gray-400 leading-relaxed">{p.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {system.readingPointers.length > 0 && (
+          <section>
+            <SectionHeading>Further reading</SectionHeading>
+            <ul className="space-y-2">
+              {system.readingPointers.map(r => (
+                <li key={r.href} className="text-sm">
+                  {r.kind === 'case-study' ? (
+                    <Link to={r.href} className="text-blue-300 hover:text-blue-200">{r.title}</Link>
+                  ) : (
+                    <a
+                      href={r.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-blue-300 hover:text-blue-200"
+                    >
+                      {r.title} ↗
+                    </a>
+                  )}
+                  <span className="ml-2 text-xs text-gray-600">({r.kind})</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </div>
+    </main>
+  );
+}
+
+function AristotelianLabBody({
+  src, onSrcChange, examples, onCommand,
+}: {
+  src: string;
+  onSrcChange: (s: string) => void;
+  examples: LogicExample[];
+  onCommand: (slug: string) => void;
+}) {
+  const parsed = useMemo(() => parseAristotelian(src), [src]);
+
+  return (
+    <div className="space-y-4">
+      <AristotelianToolbar onCommand={onCommand} examples={examples} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="rounded-lg border border-gray-800 bg-gray-950 overflow-hidden">
+          <div className="px-3 py-2 border-b border-gray-800 text-xs text-gray-500 flex items-center justify-between">
+            <span>DSL · type <code className="text-gray-400">/</code> for commands</span>
+            <span className="text-gray-600">term logic</span>
+          </div>
+          <AristotelianEditor value={src} onChange={onSrcChange} className="min-h-[220px]" />
+        </div>
+
+        <div className="rounded-lg border border-gray-800 bg-gray-900/40 flex flex-col">
+          <div className="px-3 py-2 border-b border-gray-800 text-xs text-gray-500 flex items-center justify-between gap-2 flex-wrap">
+            <span>Rendering</span>
+            <div className="flex items-center gap-2">
+              {parsed.ok && parsed.formula.kind === 'syllogism' && (
+                <ValidityBadge syllogism={parsed.formula.syllogism} />
+              )}
+              {parsed.ok ? (
+                <span className="text-emerald-400">parsed</span>
+              ) : (
+                <span className="text-amber-400">parse error</span>
+              )}
+            </div>
+          </div>
+          <div className="p-6 flex-1 flex items-center justify-center min-h-[220px] overflow-auto">
+            {parsed.ok ? (
+              <AristotelianRenderer formula={parsed.formula} className="max-h-[360px]" />
+            ) : (
+              <div className="text-sm text-amber-300/80 font-mono">
+                {parsed.error.message}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <p className="text-xs text-gray-500 leading-relaxed">
+        Long form: <code className="text-gray-300">All S is P</code>,
+        <code className="ml-1 text-gray-300">No S is P</code>,
+        <code className="ml-1 text-gray-300">Some S is P</code>,
+        <code className="ml-1 text-gray-300">Some S is not P</code>.
+        Syllogisms are three lines (the conclusion may be prefixed
+        <code className="ml-1 text-gray-300">Therefore</code>). Compact form:
+        <code className="ml-1 text-gray-300">AAA-1/S,M,P</code>.
+        Type <code className="text-gray-300">/</code> in the editor for templates and examples.
+      </p>
+    </div>
+  );
+}
+
+function AristotelianToolbar({
+  onCommand, examples,
+}: {
+  onCommand: (slug: string) => void;
+  examples: LogicExample[];
+}) {
+  const structural = ARISTOTELIAN_COMMANDS.filter(c => !c.slug.startsWith('example.'));
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {structural.map(c => (
+        <button
+          key={c.slug}
+          type="button"
+          onClick={() => onCommand(c.slug)}
+          className="text-xs px-2.5 py-1.5 rounded border border-gray-800 bg-gray-900 text-gray-300 hover:bg-gray-800 hover:text-gray-100 transition-colors font-mono"
+          title={c.detail}
+        >
+          /{c.slug}
+        </button>
+      ))}
+      <div className="mx-2 h-4 w-px bg-gray-800" />
+      <select
+        className="text-xs px-2.5 py-1.5 rounded border border-gray-800 bg-gray-900 text-gray-300 hover:bg-gray-800 hover:text-gray-100 transition-colors max-w-[280px]"
+        onChange={e => {
+          const slug = e.target.value;
+          if (slug) onCommand(`example.${slug}`);
+          e.target.value = '';
+        }}
+        defaultValue=""
+      >
+        <option value="" disabled>Insert example…</option>
+        {examples.map(ex => (
+          <option key={ex.slug} value={ex.slug}>{ex.natural}</option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+function ValidityBadge({ syllogism }: { syllogism: import('../logic/aristotelian-types').Syllogism }) {
+  const result = checkSyllogism(syllogism);
+  const figLabel = `Fig ${syllogism.figure}`;
+  const moodLabel = syllogism.mood;
+  if (!result.valid) {
+    return (
+      <span
+        className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded font-mono border bg-rose-500/15 text-rose-300 border-rose-500/30"
+        title={`${moodLabel}-${syllogism.figure} is not in the valid-mood table`}
+      >
+        invalid · {moodLabel} · {figLabel}
+      </span>
+    );
+  }
+  return (
+    <span
+      className={
+        'text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded font-mono border ' +
+        (result.entry.weakened
+          ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+          : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30')
+      }
+      title={
+        result.entry.weakened
+          ? `${result.entry.name} — valid under traditional reading (existential import)`
+          : `${result.entry.name} — valid`
+      }
+    >
+      {result.entry.name} · {moodLabel} · {figLabel}
+      {result.entry.weakened ? ' · weakened' : ''}
+    </span>
   );
 }
