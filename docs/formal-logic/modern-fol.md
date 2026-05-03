@@ -1,7 +1,9 @@
 # Modern First-Order Logic — System Design
 
-**Status:** Phase 1 (FEAT-011) in progress, 2026-05-03
-**Implementing ticket:** `FEAT-011-logic-lab-modern-fol`
+**Status:** Phase 2 (FEAT-012) in progress, 2026-05-03 — proof-tree
++ truth-table visualisation added
+**Implementing tickets:** `FEAT-011-logic-lab-modern-fol`,
+`FEAT-012-logic-lab-truth-tables-trees`
 
 The sixth populated system in the Logic Lab. Modern classical first-
 order logic in Peano/Russell linear notation — the canonical working
@@ -52,9 +54,11 @@ the other Labs can't display the same way:
   automatically. Phase 1 examples are chosen to avoid this; phase 2
   would need full congruence closure to lift the limitation.
 - **Natural-deduction or sequent-calculus proof rendering.** The Lab
-  reports validity but does not present a proof. A future phase could
-  add a proof-tree view (and pair it with the Frege-style chained
-  axiom rendering already shipped).
+  reports validity and renders the *semantic-tableau* proof tree
+  (FEAT-012) but does not translate it into Fitch / Lemmon-style
+  natural-deduction lines. The closed tableau already constitutes a
+  refutation of ¬φ, hence a proof of φ; rendering it as ND would be a
+  separate translation. See `lab-status.md` §C.
 - **A "compare-with-Frege" toggle** that takes the same AST and
   renders it in both notations. Mentioned in
   `logic-explorer-tab.md` §Comparison view; on the deferred list.
@@ -158,26 +162,46 @@ system-data test enforces that.
 
 ### Visualisation
 
-Linear KaTeX rendering of the parsed formula in the rendering panel,
-alongside a validity badge. The badge shows:
+Three coordinated panels:
 
-- `valid · truth-table` (green) — propositional tautology
-- `valid · tableau` (green) — FOL formula that closed all branches
-- `invalid · …` (red) — counterexample available, expanded into a
-  countermodel panel below
-- `unknown · budget exhausted` (amber) — tableau ran out of steps;
-  the user can simplify or lengthen the formula
+1. **Linear KaTeX rendering** of the parsed formula in the rendering
+   pane, alongside a validity badge. The badge shows:
 
-The countermodel panel handles both shapes:
+   - `valid · truth-table` (green) — propositional tautology
+   - `valid · tableau` (green) — FOL formula that closed all branches
+   - `invalid · …` (red) — counterexample available, expanded into a
+     countermodel panel below
+   - `unknown · budget exhausted` (amber) — tableau ran out of steps;
+     the user can simplify or lengthen the formula
 
-- **Propositional valuation** — atom names with T/F values.
-- **First-order model** — domain (the constants on the open branch),
-  atomic positive facts, atomic negative facts, equalities,
-  inequalities. Each list is de-duplicated and sorted for stability.
+   The countermodel panel handles both shapes:
+   - **Propositional valuation** — atom names with T/F values.
+   - **First-order model** — domain (the constants on the open
+     branch), atomic positive facts, atomic negative facts,
+     equalities, inequalities. Each list is de-duplicated and
+     sorted for stability.
 
-Multi-letter predicate names like `Even` render in upright math
-(`\mathrm{Even}`) so they look like predicates rather than products
-of variables; single-letter names stay math-italic (`P`, `Q`).
+   Multi-letter predicate names like `Even` render in upright math
+   (`\mathrm{Even}`) so they look like predicates rather than products
+   of variables; single-letter names stay math-italic (`P`, `Q`).
+
+2. **Truth table** (FEAT-012) — for the propositional fragment only.
+   Lemmon-style: leftmost columns are the atoms (sorted), next
+   columns are subformulas in evaluation order, rightmost is the
+   input formula (highlighted). One row per valuation of the atoms,
+   2^n total. Falsifying rows are tinted rose. Header carries a
+   `tautology` / `contradiction` / `contingent` badge derived from
+   the main column.
+
+3. **Truth tree** (FEAT-012) — for the first-order fragment only.
+   Renders the Smullyan semantic tableau as an indented vertical
+   tree. Each node carries its rule class (α / β / γ / δ), the
+   formula(s) it added, and (for γ/δ) the term used. Closed leaves
+   show ⊗ + the closure witness; open leaves show the extracted
+   countermodel inline; budget-exhausted leaves show ⌛. β-children
+   are tagged `left` / `right` so the split is unambiguous. The
+   tree is built by `fol-tableau-tree.ts:buildTableauTree`, which
+   shares its rule library with `checkValidity`.
 
 ---
 
@@ -188,7 +212,9 @@ of variables; single-letter names stay math-italic (`P`, `Q`).
 | `packages/web/src/logic/fol-types.ts` | FolFormula and FolTerm AST; `isPropositional`, `freeVars`, `substitute` helpers. |
 | `packages/web/src/logic/fol-parser.ts` | Recursive-descent parser, ASCII + Unicode. Wide-scope quantifiers; var/const determined by binder scope. |
 | `packages/web/src/logic/fol-render.ts` | Pretty-printer (Unicode and KaTeX), wide-scope-aware parenthesization via `rightOpen` flag. |
-| `packages/web/src/logic/fol-validity.ts` | Two-tier validity check: truth-table (propositional) + bounded tableau (FOL) with union-find equality propagation. |
+| `packages/web/src/logic/fol-validity.ts` | Verdict-only API: truth-table for propositional, delegates FOL to `fol-tableau-tree.ts` and converts the verdict + countermodel shape. |
+| `packages/web/src/logic/fol-tableau-tree.ts` | (FEAT-012) Tableau engine that retains the proof tree. Same rule library as the legacy `checkTableau` but each rule application produces explicit `TableauNode`s. `ruleLabel` / `ruleClass` display helpers co-located. |
+| `packages/web/src/logic/fol-truth-table.ts` | (FEAT-012) Lemmon-style truth-table builder for the propositional fragment. |
 | `packages/web/src/logic/fol-commands.ts` | Slash-command registry: connectives, quantifiers, identity, parens, examples. |
 | `packages/web/src/logic/FolEditor.tsx` | LogicCmEditor wrapper. |
 | `packages/web/src/data/logic-systems.ts` | `modern-fol` descriptor (status flipped from `stub` to `available`). |
@@ -208,10 +234,17 @@ of variables; single-letter names stay math-italic (`P`, `Q`).
   the textbook sense, but is fine for the shipped examples. A more
   principled strategy (e.g. fair iterative deepening) would lift the
   `unknown` rate on hard formulas.
-- **Proof rendering.** A natural-deduction tree built from the
-  closed tableau would be a strong addition. The closing structure
-  is already there in the branch transcript — exposing it as a
-  proof tree is a renderer concern.
+- **Proof rendering.** Resolved in FEAT-012 — the semantic tableau
+  is now rendered as a truth-tree panel (and the propositional
+  fragment as a Lemmon-style truth table). What remains: a
+  natural-deduction translation of the closed tableau into Fitch /
+  Lemmon-style numbered lines. The tree → ND translation is a
+  separate proof-theoretic problem; tracked in `lab-status.md` §C.
+- **Manual / step-through tableau mode.** The `fol-tableau-tree.ts`
+  engine has pure `pickWork` and `expand` primitives, so a "next
+  step" UI driven by user clicks would be ~50 LOC plus a frontier
+  state model. Not in FEAT-012's scope; tracked in `lab-status.md`
+  §A as phase-2 polish.
 - **Frege ↔ FOL bridge.** Both notations encode the same fragment.
   A shared core AST (intersection of `FregeFormula` and
   `FolFormula`) plus a translation layer would let the
