@@ -4,11 +4,22 @@ import type { Figure, Mood, Syllogism } from './aristotelian-types';
 //
 // 24 valid mood-figure pairs, keyed `{mood}-{figure}` → traditional name
 // + a `weakened` flag for the 9 moods that depend on existential
-// import (the universal A/E carrying "exists at least one S"). Phase 1
-// adopts the traditional reading where existential import holds, so
-// weakened moods are listed as valid; the UI can annotate them.
+// import (the universal A/E carrying "exists at least one S").
+//
+// Two readings are supported via `ImportSetting`:
+//   'traditional' — universal A/E carry existential import; the 9
+//                   weakened moods are valid. This was Aristotle's and
+//                   the medievals' reading and remains the default.
+//   'boolean'     — universal A/E do NOT carry existential import; the
+//                   9 weakened moods are invalid. This is the modern
+//                   post-Boole reading where "All S is P" is a
+//                   conditional with no existence claim about S.
 //
 // See docs/formal-logic/aristotelian-syllogistic.md §Validity.
+
+export type ImportSetting = 'traditional' | 'boolean';
+
+export const DEFAULT_IMPORT: ImportSetting = 'traditional';
 
 export type ValidEntry = {
   name: string;
@@ -53,12 +64,26 @@ const ENTRIES: Partial<Record<Key, ValidEntry>> = {
 
 export type ValidityResult =
   | { valid: true;  entry: ValidEntry }
-  | { valid: false };
+  | { valid: false; entry?: ValidEntry; reason?: 'weakened-under-boolean' };
 
-export function checkSyllogism(s: Syllogism): ValidityResult {
+// Check a syllogism for validity under the given import setting.
+// Defaults to 'traditional' for backwards compatibility with phase 1.
+//
+// Under 'boolean':
+//   - The 9 weakened moods are reported as invalid, but we still surface
+//     the entry + a 'weakened-under-boolean' reason so the UI can explain
+//     why a syllogism that would be valid traditionally has flipped.
+export function checkSyllogism(
+  s: Syllogism,
+  importSetting: ImportSetting = DEFAULT_IMPORT,
+): ValidityResult {
   const key = `${s.mood}-${s.figure}` as Key;
   const entry = ENTRIES[key];
-  return entry ? { valid: true, entry } : { valid: false };
+  if (!entry) return { valid: false };
+  if (importSetting === 'boolean' && entry.weakened) {
+    return { valid: false, entry, reason: 'weakened-under-boolean' };
+  }
+  return { valid: true, entry };
 }
 
 export function lookupByMoodFigure(mood: Mood, figure: Figure): ValidEntry | undefined {
