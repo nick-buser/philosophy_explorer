@@ -12,6 +12,7 @@ const AristotelianLab = lazy(() => import('../logic/labs/AristotelianLab'));
 const MedievalLab = lazy(() => import('../logic/labs/MedievalLab'));
 const ModernFolLab = lazy(() => import('../logic/labs/ModernFolLab'));
 const BooleanAlgebraLab = lazy(() => import('../logic/labs/BooleanAlgebraLab'));
+const NaturalDeductionLab = lazy(() => import('../logic/labs/NaturalDeductionLab'));
 
 export const Route = createLazyRoute('/logic/$system')({
   component: LogicSystemPage,
@@ -58,6 +59,7 @@ function LogicSystemPage() {
     slug === 'medieval'     ? MedievalLab :
     slug === 'modern-fol'   ? ModernFolLab :
     slug === 'boolean'      ? BooleanAlgebraLab :
+    slug === 'natural-deduction' ? NaturalDeductionLab :
     PeirceEgLab;
 
   return (
