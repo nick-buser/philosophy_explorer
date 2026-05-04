@@ -658,6 +658,142 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
       },
     ],
   },
+  {
+    slug: 'boolean',
+    name: 'Boolean Algebra',
+    shortDescription:
+      'The algebraic-logic lineage: Boole → De Morgan → Jevons → Schröder. Propositions as algebra over {0, 1} with · (AND), + (OR), and complement. Truth-table, Karnaugh-map, and lattice (Hasse) views together exhibit the same content as algebra, geography, and order.',
+    era: '1847–1890s',
+    keyPrimitive: 'algebra over {0, 1}',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'George Boole’s *Mathematical Analysis of Logic* (1847) and *Laws of Thought* (1854) recast term logic as algebra over classes (or, dually, propositions): · for intersection / conjunction, + for union / disjunction, and 1 − x for complement, with x·x = x and x + x = x as the laws that distinguish it from ordinary arithmetic. Augustus De Morgan’s *Formal Logic* (1847) supplied the dualisation laws ¬(x·y) = ¬x + ¬y and ¬(x + y) = ¬x · ¬y. William Stanley Jevons’s logic piano (1869) and *Principles of Science* (1874) mechanised the calculus and added the inclusive-or convention. Charles Sanders Peirce contributed the truth-table-style analysis and connectives (1880, 1885); Ernst Schröder’s three-volume *Vorlesungen über die Algebra der Logik* (1890–1905) was the mature synthesis the early model theorists (Löwenheim, Skolem) actually read. The 20th-century reframing as the algebra of two-element lattices and the equivalence with switching circuits (Shannon 1937) made Boolean algebra the working notation of digital logic; the Karnaugh map (1953) and Quine–McCluskey procedure (1952–1956) added the canonical visualisation and minimisation algorithm. Frege’s *Begriffsschrift* (1879) was, by the way, the *competing* notation — his specific complaint against the Boolean tradition was that it obscures quantification.',
+    primitives: [
+      {
+        name: 'Constants',
+        syntax: '0, 1',
+        description: 'The two truth values — false / empty class and true / universal class. Often written ⊥ / ⊤ in logical contexts.',
+      },
+      {
+        name: 'Variables',
+        syntax: 'x, y, z, …',
+        description: 'Single-letter atoms. Each ranges over {0, 1}.',
+      },
+      {
+        name: 'Conjunction (AND)',
+        syntax: 'x · y, xy',
+        description: 'Algebraic notation uses the dot or juxtaposition; the lab also accepts &, ∧, *. Idempotent (x·x = x), commutative, associative.',
+      },
+      {
+        name: 'Disjunction (OR)',
+        syntax: 'x + y',
+        description: 'Algebraic + binds looser than juxtaposition. The lab also accepts |, ∨. Idempotent, commutative, associative.',
+      },
+      {
+        name: 'Complement (NOT)',
+        syntax: '¬x, x′',
+        description: 'Postfix prime is the canonical Boolean-algebra spelling; the lab also accepts ~x, !x, ¬x. Involutive: (x′)′ = x.',
+      },
+      {
+        name: 'Implication',
+        syntax: 'x -> y',
+        description: 'Definable as x′ + y; included so propositional examples render naturally.',
+      },
+      {
+        name: 'Biconditional',
+        syntax: 'x <-> y',
+        description: 'Definable as x·y + x′·y′. Useful as a top-level operator when comparing two formulas.',
+      },
+    ],
+    examples: [
+      {
+        slug: 'and',
+        natural: 'x and y',
+        dsl: 'x y',
+        note: 'Juxtaposition is conjunction. Equivalent to x·y or x & y.',
+      },
+      {
+        slug: 'or',
+        natural: 'x or y',
+        dsl: 'x + y',
+      },
+      {
+        slug: 'demorgan',
+        natural: 'De Morgan: ¬(x·y) = ¬x + ¬y',
+        dsl: '~(x y) <-> ~x + ~y',
+        note: 'A tautology; the truth-table view shows every row evaluates to 1 and the K-map shows the whole grid filled.',
+      },
+      {
+        slug: 'absorption',
+        natural: 'absorption: x + x·y = x',
+        dsl: 'x + x y <-> x',
+      },
+      {
+        slug: 'distributivity',
+        natural: 'distributivity: x·(y + z) = x·y + x·z',
+        dsl: 'x (y + z) <-> x y + x z',
+      },
+      {
+        slug: 'consensus',
+        natural: 'consensus: x·y + ¬x·z + y·z = x·y + ¬x·z',
+        dsl: 'x y + ~x z + y z <-> x y + ~x z',
+        note: 'The y·z term is redundant. The K-map shows the y·z group entirely covered by the other two prime implicants.',
+      },
+      {
+        slug: 'majority',
+        natural: 'majority of three: at least two of x, y, z',
+        dsl: 'x y + x z + y z',
+        note: 'Classic three-variable function; the K-map view exhibits three overlapping pairs.',
+      },
+      {
+        slug: 'parity-3',
+        natural: 'odd-parity of three: x XOR y XOR z',
+        dsl: '(x ^ y) ^ z',
+        note: 'XOR is associative; on the K-map the four 1-cells form a checkerboard with no adjacencies, the canonical "irreducible" pattern.',
+      },
+      {
+        slug: 'four-var',
+        natural: 'four-variable example with reducible groups',
+        dsl: 'a b c + a b ~c + a ~b c d',
+        note: 'Reduces to a·b + a·c·d after K-map minimisation. The Hasse view colours the upper set of all 16-cube vertices satisfying the formula.',
+      },
+      {
+        slug: 'tautology',
+        natural: 'excluded middle: x + ¬x',
+        dsl: 'x + ~x',
+        note: 'A constant: every K-map cell is 1, the truth column is all 1s, the Hasse view is the whole lattice.',
+      },
+      {
+        slug: 'contradiction',
+        natural: 'non-contradiction: x · ¬x',
+        dsl: 'x ~x',
+        note: 'A constant: every K-map cell is 0, the truth column is all 0s, the Hasse view is empty.',
+      },
+    ],
+    readingPointers: [
+      {
+        title: 'Stanford Encyclopedia of Philosophy: The Algebra of Logic Tradition',
+        href: 'https://plato.stanford.edu/entries/algebra-logic-tradition/',
+        kind: 'external',
+      },
+      {
+        title: 'Stanford Encyclopedia of Philosophy: George Boole',
+        href: 'https://plato.stanford.edu/entries/boole/',
+        kind: 'external',
+      },
+      {
+        title: 'Boole, An Investigation of the Laws of Thought (1854)',
+        href: 'https://www.gutenberg.org/ebooks/15114',
+        kind: 'external',
+      },
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Boolean Algebra',
+        href: 'https://plato.stanford.edu/entries/boolalg-math/',
+        kind: 'external',
+      },
+    ],
+  },
 ];
 
 export function findLogicSystem(slug: string): LogicSystem | undefined {
