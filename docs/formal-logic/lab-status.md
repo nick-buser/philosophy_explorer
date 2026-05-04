@@ -1,15 +1,15 @@
 # Logic Lab — Status & Roadmap
 
-**Last shipped:** FEAT-012 (`feat/FEAT-012-logic-lab-truth-tables-trees`),
-2026-05-03 — truth-table view (propositional) and truth-tree /
-semantic-tableau view (FOL) added to the Modern FOL Lab. Both pull
-from the FEAT-011 validity engine; no new algorithm.
-**Previously:** FEAT-011 — modern first-order logic in Peano/Russell
-notation with truth-table + bounded semantic-tableau validity.
-**Status:** six systems populated. Spine of historically-major
-notation systems is now complete; remaining work is cross-cutting
-(comparison view, code-splitting, proof-as-natural-deduction)
-rather than "another system."
+**Last shipped:** Boolean algebra (`feat/logic-lab-boolean-algebra`),
+2026-05-03 — Boolean expressions as a 7th system, with truth-table,
+Karnaugh-map, Hasse-lattice, simplification-trace, and DNF / CNF /
+ANF panels.
+**Previously:** INFRA-004 — route-level code-splitting; FEAT-012 —
+truth-table + truth-tree views in Modern FOL.
+**Status:** seven systems populated. The historical spine now
+includes the algebraic-logic lineage (Boole → De Morgan → Schröder)
+that earlier reviews flagged as the largest content gap. Cross-cutting
+work continues per `lab-roadmap.md`.
 
 This doc is a snapshot, not a spec. Per-system design lives in
 the matching `docs/formal-logic/<system>.md` file; per-ticket
@@ -27,10 +27,11 @@ detail lives in `work-history/FEAT-###.md`.
 | Aristotelian syllogistic | `aristotelian` | FEAT-008 + FEAT-009 | mood/figure validity; existential-import toggle; square + immediate inferences | square-of-opposition diagram, Venn |
 | Medieval modal syllogistic + sorites | `medieval` | FEAT-010 | de re / de dicto modal validity; sorites chain validation | modal-aware Venn + sorites chain |
 | Modern first-order logic | `modern-fol` | FEAT-011 + FEAT-012 | two-tier: truth-table (propositional) + bounded semantic tableau (FOL) with union-find equality | KaTeX formula + countermodel panel + Lemmon-style truth table (propositional) + indented truth-tree / tableau view (FOL) |
+| Boolean algebra | `boolean` | `feat/logic-lab-boolean-algebra` | truth-table classification + rule-based simplifier + Quine–McCluskey prime implicants | KaTeX algebraic formula + Karnaugh map (≤ 4 vars, prime-implicant cover) + Hasse / lattice diagram (≤ 4 vars) + truth table + DNF / CNF / ANF + step-trace simplifier |
 
-Six systems × ~10 examples each, ~80 example inputs total.
+Seven systems × ~10 examples each, ~90 example inputs total.
 Slash-command editor (`LogicCmEditor`) and shared chrome reused
-across all six. Test count after FEAT-011: **384/384 passing.**
+across all seven. Test count after Boolean: **463/463 passing.**
 
 ---
 
