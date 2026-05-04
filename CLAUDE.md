@@ -4,18 +4,32 @@
 
 **Never commit directly to main.** All work goes on a branch.
 
-Branch naming: `type/PREFIX-###-short-description`
-- `feat/FEAT-012-add-thinker-search`
-- `fix/BUG-003-health-route-timeout`
-- `infra/INFRA-001-api-vitest-setup`
+Branch naming: `type/short-description` (slug only — the numeric
+component was dropped after FEAT-012, see `lab-roadmap.md` §"Note on
+ticket numbering").
+- `feat/logic-lab-natural-deduction`
+- `fix/health-route-timeout`
+- `infra/api-vitest-setup`
+
+The `type/` prefix is one of the ticket-prefix values below
+(lower-cased). Older branches use the legacy
+`type/PREFIX-###-short-description` form (e.g.
+`feat/FEAT-011-logic-lab-modern-fol`); leave existing branches alone,
+use the slug-only form for new work.
 
 Merge into main via PR. Squash or merge — either is fine; just keep the commit message meaningful.
 
 ## Work-history docs
 
-Before merging any branch, create `work-history/PREFIX-###.md` for that ticket.
-See `work-history/README.md` for the format. The **why** and **notes for future work**
-sections are mandatory — the git diff covers what changed.
+Before merging any branch, create a work-history doc for that ticket:
+- New (slug) tickets → `work-history/<branch-slug-without-type>.md`
+  (e.g. `work-history/feat-natural-deduction.md`)
+- Legacy (numbered) tickets → `work-history/PREFIX-###.md`
+  (e.g. `work-history/FEAT-011.md`)
+
+See `work-history/README.md` for the format. The **why** and
+**notes for future work** sections are mandatory — the git diff
+covers what changed.
 
 ## Ticket prefixes (GitHub Issues)
 
