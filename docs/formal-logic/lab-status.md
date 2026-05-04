@@ -1,15 +1,18 @@
 # Logic Lab — Status & Roadmap
 
-**Last shipped:** Boolean algebra (`feat/logic-lab-boolean-algebra`),
-2026-05-03 — Boolean expressions as a 7th system, with truth-table,
-Karnaugh-map, Hasse-lattice, simplification-trace, and DNF / CNF /
-ANF panels.
-**Previously:** INFRA-004 — route-level code-splitting; FEAT-012 —
+**Last shipped:** Natural deduction
+(`feat/logic-lab-natural-deduction`), 2026-05-04 — Gentzen / Jaśkowski
+ND for the propositional fragment, with a backward-chaining prover, a
+Fitch-style line-numbered renderer, a Gentzen-tree renderer, and a
+classical / intuitionistic rule-set toggle.
+**Previously:** Boolean algebra (`feat/logic-lab-boolean-algebra`,
+2026-05-03); INFRA-004 — route-level code-splitting; FEAT-012 —
 truth-table + truth-tree views in Modern FOL.
-**Status:** seven systems populated. The historical spine now
-includes the algebraic-logic lineage (Boole → De Morgan → Schröder)
-that earlier reviews flagged as the largest content gap. Cross-cutting
-work continues per `lab-roadmap.md`.
+**Status:** eight systems populated. The historical spine now includes
+both the algebraic-logic lineage (Boole → Schröder) and the proof-
+theoretic spine (ND, Fitch + Gentzen), closing the two largest gaps
+called out in earlier reviews. Cross-cutting work continues per
+`lab-roadmap.md`.
 
 This doc is a snapshot, not a spec. Per-system design lives in
 the matching `docs/formal-logic/<system>.md` file; per-ticket
@@ -28,10 +31,12 @@ detail lives in `work-history/FEAT-###.md`.
 | Medieval modal syllogistic + sorites | `medieval` | FEAT-010 | de re / de dicto modal validity; sorites chain validation | modal-aware Venn + sorites chain |
 | Modern first-order logic | `modern-fol` | FEAT-011 + FEAT-012 | two-tier: truth-table (propositional) + bounded semantic tableau (FOL) with union-find equality | KaTeX formula + countermodel panel + Lemmon-style truth table (propositional) + indented truth-tree / tableau view (FOL) |
 | Boolean algebra | `boolean` | `feat/logic-lab-boolean-algebra` | truth-table classification + rule-based simplifier + Quine–McCluskey prime implicants | KaTeX algebraic formula + Karnaugh map (≤ 4 vars, prime-implicant cover) + Hasse / lattice diagram (≤ 4 vars) + truth table + DNF / CNF / ANF + step-trace simplifier |
+| Natural deduction | `natural-deduction` | `feat/logic-lab-natural-deduction` | backward-chaining ND prover (propositional) with classical / intuitionistic rule-set toggle | Fitch-style line-numbered proof with subproof boxes + Gentzen-style derivation tree (discharged assumptions bracketed) |
 
-Seven systems × ~10 examples each, ~90 example inputs total.
+Eight systems × ~10 examples each, ~100 example inputs total.
 Slash-command editor (`LogicCmEditor`) and shared chrome reused
-across all seven. Test count after Boolean: **463/463 passing.**
+across all eight. Test count after natural deduction:
+**490/490 passing.**
 
 ---
 
@@ -88,6 +93,7 @@ round-trips.
 | `aristotelian` | Term-distribution diagnostics in invalid moods — FEAT-009 §Notes |
 | `medieval` | Modal sorites; obligational disputation — FEAT-010 §Notes |
 | `modern-fol` | Function congruence under equality (Nelson-Oppen, ~100 lines); fairness-complete tableau strategy; budget knob in UI — FEAT-011 §Notes |
+| `natural-deduction` | Quantifier rules (∀I/∀E/∃I/∃E); Lean-validated alternative renderer; horizontal Gentzen layout — see `work-history/feat-natural-deduction.md` §Notes |
 
 ---
 

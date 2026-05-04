@@ -162,10 +162,13 @@ currently skips entirely.
 - **Size.** M–L. The "several visualizations in one system" property
   is an asset, not a cost.
 
-### Natural deduction — Fitch + Gentzen tree (`feat/logic-lab-natural-deduction`)
+### ~~Natural deduction — Fitch + Gentzen tree~~ — shipped 2026-05-04 (`feat/logic-lab-natural-deduction`)
 
 Fitch-style line-numbered proofs with subproof boxes, plus
-Gentzen-style tree rendering for the same proof.
+Gentzen-style tree rendering for the same proof. **Status:** shipped
+2026-05-04 in the propositional fragment with a classical /
+intuitionistic toggle. Quantifier rules and an explicit Lean
+verification layer remain open per the work-history notes.
 
 - **Why.** Largest *proof-theoretic* gap. Almost every modern logic
   textbook teaches ND. The Lab can show that something is valid;

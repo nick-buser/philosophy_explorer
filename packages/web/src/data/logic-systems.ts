@@ -794,6 +794,151 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
       },
     ],
   },
+  {
+    slug: 'natural-deduction',
+    name: 'Natural Deduction',
+    shortDescription:
+      'Gentzen / Jaśkowski natural deduction for propositional logic. Premises ⊢ conclusion; the prover produces a Fitch-style numbered proof and the same derivation as a Gentzen-style tree. A classical / intuitionistic toggle controls whether RAA (proof by contradiction) is permitted.',
+    era: '1934 →',
+    keyPrimitive: 'introduction + elimination rules',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'Gerhard Gentzen and Stanisław Jaśkowski independently introduced natural deduction in 1934. Gentzen’s "Untersuchungen über das logische Schließen" (1934–1935) gave the now-canonical pair of *introduction* and *elimination* rules for each connective and proved the cut-elimination / *Hauptsatz* theorem that justifies the system’s structural cleanliness; Jaśkowski’s 1934 paper "On the Rules of Suppositions in Formal Logic" introduced the alternative *flag* / linear presentation that Frederic Fitch popularised in 1952 with the box / vertical-bar layout familiar from undergraduate textbooks. The two presentations agree extensionally — a proof in one converts mechanically into a proof in the other — but read very differently: Fitch makes the assumption / discharge structure visible as nested boxes, Gentzen as a tree whose leaves are premises (or discharged assumptions in brackets) and whose root is the conclusion. The classical / intuitionistic split lives inside the rule set: drop RAA (and its cousin double-negation elimination), and the system collapses to intuitionistic propositional logic, which Heyting had axiomatised in 1930. Curry and Howard’s 1958–1980 correspondence between intuitionistic ND proofs and simply-typed lambda terms made the system the working notation of programming-language theory.',
+    primitives: [
+      {
+        name: 'Introduction rules',
+        syntax: '∧I, ∨I, →I, ¬I, ↔I',
+        description: 'Each connective has a rule that *constructs* a formula of that shape. →I and ¬I open a subproof: assume the antecedent, derive the consequent (or ⊥), discharge.',
+      },
+      {
+        name: 'Elimination rules',
+        syntax: '∧E, ∨E, →E, ¬E, ↔E',
+        description: 'Each connective has a rule that *uses* a formula of that shape. →E is modus ponens; ∨E is the case-analysis rule that consumes a disjunction by proving the goal in two parallel subproofs.',
+      },
+      {
+        name: 'Reiteration',
+        syntax: 'Reit',
+        description: 'Copies a formula already on the branch into a deeper subproof. Required when an introduction rule needs a parent-scope formula in the body of its assumption box.',
+      },
+      {
+        name: '⊥E (ex falso)',
+        syntax: '⊥ ⊢ φ',
+        description: 'From a contradiction, anything follows. Held in both classical and intuitionistic systems; together with ¬I it encodes constructive negation.',
+      },
+      {
+        name: 'RAA (proof by contradiction)',
+        syntax: 'classical only',
+        description: 'Assume ¬φ, derive ⊥, conclude φ. The single rule that distinguishes classical from intuitionistic propositional logic in this Lab. Toggling it off makes LEM, double-negation elimination, and Peirce’s law underivable.',
+      },
+      {
+        name: 'Argument / turnstile',
+        syntax: 'φ1, φ2 ⊢ ψ',
+        description: 'The Lab’s input is an argument: a comma-separated list of premises, a turnstile (⊢ or |-), and a conclusion. The prover searches for a derivation of the conclusion from the premises.',
+      },
+    ],
+    examples: [
+      {
+        slug: 'modus-ponens',
+        natural: 'Modus ponens — p, p → q ⊢ q',
+        dsl: 'p, p -> q |- q',
+        note: 'The textbook →E rule, with the elimination applied directly to the premises.',
+      },
+      {
+        slug: 'self-implication',
+        natural: 'p → p (intuitionistically valid, no premises)',
+        dsl: '|- p -> p',
+        note: 'A one-step →I: assume p, conclude p, discharge the assumption.',
+      },
+      {
+        slug: 'hypothetical-syllogism',
+        natural: 'Hypothetical syllogism — p → q, q → r ⊢ p → r',
+        dsl: 'p -> q, q -> r |- p -> r',
+      },
+      {
+        slug: 'and-commutativity',
+        natural: 'Conjunction commutativity — p ∧ q ⊢ q ∧ p',
+        dsl: 'p & q |- q & p',
+        note: 'Three lines: ∧EL, ∧ER, ∧I.',
+      },
+      {
+        slug: 'currying',
+        natural: 'Currying — (p ∧ q) → r ⊢ p → (q → r)',
+        dsl: '(p & q) -> r |- p -> (q -> r)',
+        note: 'Two nested →I subproofs, then ∧I + →E in the inner box.',
+      },
+      {
+        slug: 'disjunction-cases',
+        natural: 'Disjunction elimination — p ∨ q, p → r, q → r ⊢ r',
+        dsl: 'p | q, p -> r, q -> r |- r',
+        note: 'The ∨E rule: case analysis with two parallel subproof boxes.',
+      },
+      {
+        slug: 'contraposition',
+        natural: 'Contraposition (one direction) — p → q ⊢ ¬q → ¬p',
+        dsl: 'p -> q |- ~q -> ~p',
+        note: 'Intuitionistically valid. The reverse direction is classical-only — it shows up as a separate example.',
+      },
+      {
+        slug: 'demorgan-intuitionistic',
+        natural: 'De Morgan (intuitionistic side) — ¬p ∧ ¬q ⊢ ¬(p ∨ q)',
+        dsl: '~p & ~q |- ~(p | q)',
+        note: '¬I on the goal opens a subproof; ∨E inside it splits on the disjunction; each side closes via ¬E.',
+      },
+      {
+        slug: 'lem',
+        natural: 'Excluded middle — ⊢ p ∨ ¬p (classical only)',
+        dsl: '|- p | ~p',
+        note: 'The classic indirect proof. Switch the toggle to "intuitionistic" to see it fail.',
+      },
+      {
+        slug: 'double-negation-elim',
+        natural: 'Double-negation elimination — ¬¬p ⊢ p (classical only)',
+        dsl: '~~p |- p',
+        note: 'A one-step RAA: assume ¬p, derive ⊥ from ¬¬p, conclude p.',
+      },
+      {
+        slug: 'peirce',
+        natural: 'Peirce’s law — ⊢ ((p → q) → p) → p (classical only)',
+        dsl: '|- ((p -> q) -> p) -> p',
+        note: 'Famous for being a *purely implicational* tautology that fails intuitionistically. The proof needs RAA to invent the antecedent p → q.',
+      },
+      {
+        slug: 'demorgan-reverse',
+        natural: 'De Morgan reverse — ¬(p ∧ q) ⊢ ¬p ∨ ¬q (classical only)',
+        dsl: '~(p & q) |- ~p | ~q',
+        note: 'The classical direction of De Morgan. The forward direction (¬p ∨ ¬q ⊢ ¬(p ∧ q)) goes through intuitionistically.',
+      },
+      {
+        slug: 'contraposition-reverse',
+        natural: 'Reverse contraposition — ¬q → ¬p ⊢ p → q (classical only)',
+        dsl: '~q -> ~p |- p -> q',
+        note: 'Pairs with the intuitionistically-valid forward direction. Together they exhibit the asymmetry RAA introduces.',
+      },
+    ],
+    readingPointers: [
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Proof Theory',
+        href: 'https://plato.stanford.edu/entries/proof-theory/',
+        kind: 'external',
+      },
+      {
+        title: 'Stanford Encyclopedia of Philosophy: The Development of Proof Theory',
+        href: 'https://plato.stanford.edu/entries/proof-theory-development/',
+        kind: 'external',
+      },
+      {
+        title: 'Open Logic Project — Natural Deduction',
+        href: 'https://openlogicproject.org/',
+        kind: 'external',
+      },
+      {
+        title: 'Frederic Fitch, Symbolic Logic: An Introduction (1952)',
+        href: 'https://archive.org/details/symboliclogicint0000fitc',
+        kind: 'external',
+      },
+    ],
+  },
 ];
 
 export function findLogicSystem(slug: string): LogicSystem | undefined {
