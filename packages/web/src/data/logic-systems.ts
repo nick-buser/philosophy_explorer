@@ -939,6 +939,161 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
       },
     ],
   },
+  {
+    slug: 'indian-buddhist',
+    name: 'Indian / Buddhist Logic (Nyāya · Dignāga)',
+    shortDescription:
+      'Nyāya five-membered inference (pratijñā · hetu · udāharaṇa · upanaya · nigamana) with Dignāga’s trairūpya (three characteristics of a valid reason) and the hetu-cakra (the 3×3 wheel that classifies a hetu as valid, inconclusive, or contradictory).',
+    era: '~150 BCE → 6th c. CE',
+    keyPrimitive: 'inference (anumāna) with example-based concomitance',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'Indian inferential logic — anumāna — was systematised in Gautama’s Nyāya-sūtra (c. 150 BCE) around the five-membered inference (pañcāvayava): pratijñā (thesis), hetu (reason), udāharaṇa (example with general principle), upanaya (application to the case at hand), and nigamana (conclusion). The Buddhist logician Dignāga (c. 480–540 CE) reformed the system in the *Pramāṇasamuccaya* and *Nyāyamukha*: he reduced the inference to three steps emphasising vyāpti (pervasion / concomitance), formalised the trairūpya — three characteristics every valid hetu must possess (pakṣa-dharmatā, sapakṣe sattvam, vipakṣe asattvam) — and constructed the hetu-cakra, a 3×3 grid cross-classifying the hetu against the sapakṣa (similar instances) and vipakṣa (dissimilar instances) classes. Two cells of the wheel mark valid reasons; two mark contradictory (viruddha) reasons; the remaining five are varieties of inconclusive reason (anaikāntika). Dignāga’s student Dharmakīrti (c. 600–660 CE) extended the framework with the *Pramāṇavārttika* and reduced valid hetus to three structural types (svabhāva-hetu, kārya-hetu, anupalabdhi). The tradition continued through Navya-Nyāya (Gaṅgeśa, 13th c.) into the modern era, with substantial 20th-century scholarly engagement from Stcherbatsky, Frauwallner, Matilal, and others. The Lab covers the Nyāya five-step shape, the trairūpya verdict, and the Dignāga wheel.',
+    primitives: [
+      {
+        name: 'Pakṣa',
+        syntax: 'paksha: <subject>',
+        description: 'The subject of the inference — the locus where the sādhya is being established. Conventionally bears the hetu (pakṣa-dharmatā); a trailing −  marks the case where the hetu is absent from the subject (asiddha).',
+      },
+      {
+        name: 'Sādhya',
+        syntax: 'sadhya: <property>',
+        description: 'The property to be proved of the pakṣa. Defines the sapakṣa class (things that have it) and the vipakṣa class (things that don’t).',
+      },
+      {
+        name: 'Hetu',
+        syntax: 'hetu: <reason>',
+        description: 'The inferential mark — the property whose presence in the pakṣa licences the conclusion. Validity is decided by the trairūpya conditions and the wheel cell.',
+      },
+      {
+        name: 'Sapakṣa',
+        syntax: 'sapaksha: a, b, c',
+        description: 'Similar examples — known to bear the sādhya. Default per item: hetu present (+). Append − to mark an example that bears the sādhya but lacks the hetu.',
+      },
+      {
+        name: 'Vipakṣa',
+        syntax: 'vipaksha: a, b, c',
+        description: 'Dissimilar examples — known to lack the sādhya. Default per item: hetu absent (−). Append + to mark an example that lacks the sādhya yet carries the hetu (a viruddha-style violation).',
+      },
+      {
+        name: 'Trairūpya',
+        syntax: 'three characteristics',
+        description: 'Dignāga’s validity test: (1) pakṣa-dharmatā — hetu in the subject; (2) sapakṣe sattvam — hetu in (some) sapakṣa; (3) vipakṣe asattvam — hetu absent from every vipakṣa. All three must hold for the inference to be valid.',
+      },
+      {
+        name: 'Hetu-cakra',
+        syntax: '3 × 3 wheel',
+        description: 'Cross-classifies the hetu’s presence against sapakṣa (all / some / none) and vipakṣa (all / some / none). Two cells valid (sad-hetu); five inconclusive (anaikāntika); two contradictory (viruddha).',
+      },
+    ],
+    examples: [
+      {
+        slug: 'smoke-on-the-mountain',
+        natural: 'Smoke on the mountain — the canonical valid inference (sad-hetu, sap-all/vip-none).',
+        dsl:
+          'paksha:   the mountain\n' +
+          'sadhya:   fiery\n' +
+          'hetu:     smoky\n' +
+          'sapaksha: kitchen, forge\n' +
+          'vipaksha: lake, dewy ground',
+        note: 'The textbook Nyāya inference. All sapakṣa bear the hetu; no vipakṣa does; pakṣa-dharmatā holds. Lands in the sad-hetu (anvaya-vyatireka) cell.',
+      },
+      {
+        slug: 'sound-impermanent',
+        natural: 'Sound is impermanent because it is produced — sad-hetu (eka-deśa).',
+        dsl:
+          'paksha:   sound\n' +
+          'sadhya:   impermanent\n' +
+          'hetu:     produced\n' +
+          'sapaksha: pot, cloth, lamp-flame, lightning-, rainbow-\n' +
+          'vipaksha: space, time',
+        note: 'Dignāga’s own teaching example. Some sapakṣa bear the hetu (pot, cloth, lamp), some don’t (lightning, rainbow are impermanent but not "produced" in the strict sense Dignāga has in mind); no vipakṣa bears it. Sap-some / vip-none — still valid.',
+      },
+      {
+        slug: 'sadharana',
+        natural: 'Inconclusive (sādhāraṇa) — sound is impermanent because it is knowable.',
+        dsl:
+          'paksha:   sound\n' +
+          'sadhya:   impermanent\n' +
+          'hetu:     knowable\n' +
+          'sapaksha: pot, cloth\n' +
+          'vipaksha: space+, time+',
+        note: 'The hetu "knowable" applies to everything — both sapakṣa (which is impermanent) and vipakṣa (which is permanent). Sap-all / vip-all = sādhāraṇa anaikāntika; the reason discriminates nothing.',
+      },
+      {
+        slug: 'asadharana',
+        natural: 'Inconclusive (asādhāraṇa) — sound is impermanent because it is audible.',
+        dsl:
+          'paksha:   sound\n' +
+          'sadhya:   impermanent\n' +
+          'hetu:     audible\n' +
+          'sapaksha: pot-, cloth-, lamp-\n' +
+          'vipaksha: space, time',
+        note: 'Dignāga’s standard example of the uncommon inconclusive. Audibility is unique to sound — no other sapakṣa or vipakṣa carries it. Sap-none / vip-none = asādhāraṇa anaikāntika; without a positive correlate the inference cannot be grounded.',
+      },
+      {
+        slug: 'viruddha',
+        natural: 'Contradictory (viruddha) — sound is permanent because it is produced.',
+        dsl:
+          'paksha:   sound+\n' +
+          'sadhya:   permanent\n' +
+          'hetu:     produced\n' +
+          'sapaksha: space-, time-\n' +
+          'vipaksha: pot+, cloth+',
+        note: 'Same hetu as the second example, but trying to prove the wrong sādhya. The hetu is absent from every sapakṣa (space, time aren’t produced) and present in every vipakṣa (pot, cloth are). Sap-none / vip-all = viruddha — the reason actually proves the negation.',
+      },
+      {
+        slug: 'partial-leak',
+        natural: 'Inconclusive — hetu in all sapakṣa, leaks into some vipakṣa.',
+        dsl:
+          'paksha:   the new species\n' +
+          'sadhya:   warm-blooded\n' +
+          'hetu:     four-legged\n' +
+          'sapaksha: tiger, dog, mouse\n' +
+          'vipaksha: lizard+, crocodile+, salamander-',
+        note: 'Four-leggedness is universal among the warm-blooded examples but also appears in some vipakṣa (cold-blooded) cases. Sap-all / vip-some = anaikāntika; the hetu cannot rule out a cold-blooded subject.',
+      },
+      {
+        slug: 'asiddha',
+        natural: 'Unestablished (asiddha) — hetu fails pakṣa-dharmatā.',
+        dsl:
+          'paksha:   the lake -\n' +
+          'sadhya:   fiery\n' +
+          'hetu:     smoky\n' +
+          'sapaksha: kitchen, forge\n' +
+          'vipaksha: dewy ground',
+        note: 'The wheel cell would have been valid (sap-all / vip-none) — but the hetu is not even present in the subject. The inference fails at the first trairūpya gate; verdict is asiddha, not valid.',
+      },
+    ],
+    readingPointers: [
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Logic in Classical Indian Philosophy',
+        href: 'https://plato.stanford.edu/entries/logic-india/',
+        kind: 'external',
+      },
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Dignāga',
+        href: 'https://plato.stanford.edu/entries/dignaga/',
+        kind: 'external',
+      },
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Epistemology in Classical Indian Philosophy',
+        href: 'https://plato.stanford.edu/entries/epistemology-india/',
+        kind: 'external',
+      },
+      {
+        title: 'Matilal, The Character of Logic in India (SUNY, 1998)',
+        href: 'https://sunypress.edu/Books/T/The-Character-of-Logic-in-India',
+        kind: 'external',
+      },
+      {
+        title: 'Tucci, The Nyāyamukha of Dignāga (1930) — first English translation',
+        href: 'https://archive.org/details/in.ernet.dli.2015.149543',
+        kind: 'external',
+      },
+    ],
+  },
 ];
 
 export function findLogicSystem(slug: string): LogicSystem | undefined {

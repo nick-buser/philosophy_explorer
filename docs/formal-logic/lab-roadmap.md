@@ -28,7 +28,7 @@ gaps legible in a way the per-system list doesn't:
 | Frame/world | Kripke (hand-authored) | Engine-derived Kripke; intuitionistic Kripke; temporal frames |
 | Tree/graph proof | Truth-tree (FEAT-012) | Natural deduction (Fitch / Gentzen), sequent, resolution |
 | Algebraic / tabular | Truth-table (FEAT-012) | Boolean algebra; Karnaugh maps; Hasse / lattice diagrams |
-| Step-by-step textual | *(none)* | Indian/Buddhist five-membered, obligational disputation |
+| Step-by-step textual | Indian/Buddhist (Nyāya five-step + Dignāga hetu-cakra) | Obligational disputation |
 
 Two consequences fall out of this view:
 
@@ -264,14 +264,16 @@ ND is the higher-leverage proof-theoretic addition first.
 
 - **Size.** M.
 
-### Indian / Buddhist logic (`feat/logic-lab-indian-buddhist`)
+### ~~Indian / Buddhist logic~~ — shipped 2026-05-04 (`feat/logic-lab-indian-buddhist`)
 
 Nyāya five-membered syllogism (pratijñā / hetu / udāharaṇa /
 upanaya / nigamana); Dignāga's hetu-cakra (wheel of reason,
 nine inferential signs); trairūpya (three characteristics of valid
-inference). Breaks the implicit Western-tradition frame; introduces
-step-by-step textual presentation as a new visualization family on
-the matrix above. Substantive content work; light engine.
+inference). **Status:** shipped 2026-05-04 — first step-by-step
+textual viz in the Lab. Compare-view scope and Lean integration
+were explicitly de-scoped at branch creation; Dharmakīrti's three
+structural hetu types and the Navya-Nyāya formalism remain open
+per the work-history notes.
 
 - **Size.** M (mostly content).
 
