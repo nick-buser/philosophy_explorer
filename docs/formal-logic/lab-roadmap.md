@@ -130,20 +130,18 @@ that the tree appears all at once.
 The ranked omissions, sized as ticket pairs (engine + viz where
 applicable). Independent; pick by what's most exciting.
 
-### Peirce EG Beta (`feat/logic-lab-peirce-beta`)
+### ~~Peirce EG Beta~~ — shipped 2026-05-05 (`feat/logic-lab-peirce-beta`)
 
 Lines of identity for predicates over Alpha cuts; reaches FOL with
-identity. SEP describes Beta as equivalent to first-order logic
-with identity, with lines filling the role of variables and
-quantifiers.
-
-- **Why.** Largest *visual* logic gap and a direct extension of
-  existing infrastructure. Completes Peirce as a serious
-  alternative to FOL, not just a propositional curiosity.
-- **Build.** Extend the existing Alpha SVG renderer with line-of-identity
-  primitives; extend the EG ↔ propositional translation to EG ↔ FOL;
-  add ~10 examples.
-- **Size.** M.
+identity. **Status:** shipped 2026-05-05 — predicates take hooks
+(`P(x)`, `R(x,y)`); identity is `x = y`; the translator binds each
+line of identity by `∃` at the LCA of the cut-areas it touches,
+making the every-loves-some shape come out as `∀x. Person(x) → ∃y.
+Loves(x,y)` and the no-x shape as `¬∃x. Phil(x) ∧ Fool(x)`. The
+renderer overlays a heavy line through shared hook anchors and adds
+an EG → FOL KaTeX panel. Ten new beta examples. EG-Beta proof
+rules / inference engine and faithful line-routing along area
+boundaries remain open per the work-history notes.
 
 ### Boolean algebra (`feat/logic-lab-boolean-algebra`)
 
@@ -346,7 +344,7 @@ batched.
 
 | System | Deferred item |
 |---|---|
-| `peirce-eg` | Beta (subsumed by `feat/logic-lab-peirce-beta` above) |
+| `peirce-eg` | ~~Beta (lines of identity)~~ — shipped 2026-05-05 in `feat/logic-lab-peirce-beta`. Remaining: EG-Beta proof rules / inference engine; faithful line-routing along area boundaries (currently straight polylines); identity rendered as a heavy line rather than a `·=·` widget |
 | `kripke` | ~~Engine-derived satisfaction~~ — shipped 2026-05-05 in `feat/logic-lab-kripke-engine`. ~~Multi-agent indexed modalities~~ — shipped as the `epistemic` system in `feat/logic-lab-intuitionistic-modal-pack`. ~~D axiom-set addition~~ — shipped as the `deontic` system. K4 / KD45 frame-class additions and a tableau-style countermodel finder remain open |
 | `intuitionistic` | First-order quantifier rules; Heyting-algebra view; Curry-Howard term display |
 | `deontic` | Dyadic / conditional deontic; STIT-style agent operators; KD45 belief variant; full Chisholm scenarios |

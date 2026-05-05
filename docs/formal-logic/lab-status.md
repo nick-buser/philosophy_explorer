@@ -1,17 +1,24 @@
 # Logic Lab — Status & Roadmap
 
-**Last shipped:** Intuitionistic + modal-variant pack
+**Last shipped:** Peirce EG Beta
+(`feat/logic-lab-peirce-beta`), 2026-05-05 — extended the alpha
+existential-graph pipeline to first-order with identity. Predicates
+take hooks (`P(x)`, `R(x,y)`); identity is `x = y`; lines of
+identity become `∃`-bound variables at the LCA cut-area in the
+translation pass. Renderer overlays heavy connecting lines on
+shared hook anchors; an EG → FOL panel surfaces the equivalent
+linear formula. Ten new beta examples covering `∃`, `∀`-via-scroll,
+two-place predicates, identity, and the every-loves-some shape
+that exercises the inner-cut LCA case. Closes the
+`lab-roadmap.md` §Medium-term "Peirce EG Beta" entry.
+**Previously:** Intuitionistic + modal-variant pack
 (`feat/logic-lab-intuitionistic-modal-pack`), 2026-05-05 — five new
 systems on the freshly-merged Kripke engine: intuitionistic
 propositional logic (pre-order forcing + persistence), standard
 deontic logic (KD on serial frames), multi-agent epistemic logic
 (per-agent K_a + S5/KD45 axiom verdicts), linear temporal logic
 (lasso traces, X/F/G/U), and CTL (branching frames, eight paired
-path-quantifier-plus-temporal operators). Closes the
-`lab-roadmap.md` "Intuitionistic logic" and "Modal expansion"
-entries except for dynamic logic and Lewis counterfactuals (deferred
-— different semantic substrates).
-**Previously:** Engine-derived Kripke
+path-quantifier-plus-temporal operators). Engine-derived Kripke
 (`feat/logic-lab-kripke-engine`, 2026-05-05); Resolution · Horn ·
 Datalog (`feat/logic-lab-resolution`, 2026-05-05); Indian / Buddhist
 logic (`feat/logic-lab-indian-buddhist`, 2026-05-04); natural
@@ -38,7 +45,7 @@ detail lives in `work-history/FEAT-###.md`.
 
 | System | Slug | Ticket | Validity engine | Visualisation |
 |---|---|---|---|---|
-| Peirce Existential Graphs (Alpha) | `peirce-eg` | FEAT-005 | structural normalisation + propositional check on translation | SVG cuts, juxtaposition, nested ovals |
+| Peirce Existential Graphs (Alpha + Beta) | `peirce-eg` | FEAT-005 + `feat/logic-lab-peirce-beta` | EG → FOL with identity translation: lines of identity become ∃-bound variables at the LCA cut-area; hooks on predicates carry the variable references; identity nodes emit `=` | SVG cuts, juxtaposition, predicate hook anchors, heavy lines of identity overlaying the cut diagram + a KaTeX panel with the equivalent first-order formula |
 | Kripke modal logic | `kripke` | FEAT-006 + `feat/logic-lab-kripke-engine` | engine-derived satisfaction (atoms / ¬ / ∧ / ∨ / → / ↔ pointwise; □ / ◇ over R-successors); per-world truth chips; frame-constraint diagnostics (reflexive / symmetric / transitive / serial / euclidean) with violation witnesses; per-axiom verdict table (K, T, 4, 5, B, D) with substitution + failing-world witnesses; R-closure under any frame class | xyflow frame diagram with per-world ⊨/⊭ chips + designated-world truth badge + model-validity badge + frame-diagnostics grid + axiom-verdict table |
 | Frege Begriffsschrift | `frege-bs` | FEAT-007 | propositional truth-table on the linearised AST | 2D stroke-and-concavity SVG |
 | Aristotelian syllogistic | `aristotelian` | FEAT-008 + FEAT-009 | mood/figure validity; existential-import toggle; square + immediate inferences | square-of-opposition diagram, Venn |
@@ -54,10 +61,10 @@ detail lives in `work-history/FEAT-###.md`.
 | Linear Temporal Logic (LTL) | `temporal-ltl` | `feat/logic-lab-intuitionistic-modal-pack` | finite *lasso* trace eval: SAT(φ) computed bottom-up over the AST; X is direct; F / G / U via least / greatest fixed points iterating over n positions until stable; canonical LTL identities (K, F∨, G∧, X∧, F=¬G¬, U→F, F-unfold, G-unfold) shipped as a regression panel | TraceView (xyflow horizontal sequence) with dashed purple loopback or dashed grey "stutter" self-loop on the last state; per-state truth chip + start-position badge |
 | Computation Tree Logic (CTL) | `temporal-ctl` | `feat/logic-lab-intuitionistic-modal-pack` | branching-frame model checker (Clarke / Emerson / Sistla labelling): EX / AX direct; EF / AF / EG / AG / EU / AU as least / greatest fixed points over forward + reverse adjacency; eight canonical CTL identities shipped as a regression panel; serial-frame diagnostic flags dead-end states | reuses KripkeModelView for the branching graph; per-state truth chips + designated-state badge + serial-frame chip |
 
-Fifteen systems with ~10 examples each, ~140 example inputs total.
+Fifteen systems with ~10 examples each, ~150 example inputs total
+(Peirce now ships seventeen examples — seven alpha + ten beta).
 Slash-command editor (`LogicCmEditor`) reused across all fifteen.
-Test count after the intuitionistic + modal-variant pack:
-**973/973 passing.**
+Test count after the Peirce EG Beta ticket: **999/999 passing.**
 
 ---
 
@@ -108,7 +115,7 @@ round-trips.
 
 | System | Deferred item |
 |---|---|
-| `peirce-eg` | Beta (lines of identity) — FEAT-005 §Notes |
+| `peirce-eg` | ~~Beta (lines of identity)~~ — shipped in `feat/logic-lab-peirce-beta`. Remaining: EG-Beta proof rules / inference engine; line-routing along area boundaries (currently straight polylines through hook anchors); identity rendered as a heavy line rather than a `·=·` widget — see `work-history/feat-logic-lab-peirce-beta.md` §Notes |
 | `kripke` | ~~Engine-derived satisfaction~~ — shipped in `feat/logic-lab-kripke-engine`. ~~Multi-agent indexed modalities~~ — shipped as the `epistemic` system. ~~B / D axiom-set additions~~ — D shipped as the `deontic` system; B is now a one-line `kripke-frames.ts` addition. Remaining: K4 / KD45 axiom-set additions, tableau-style countermodel finder when a formula isn't model-valid |
 | `intuitionistic` | Quantifier rules (drop classical → / ¬ for first-order), Heyting-algebra view, Curry-Howard term display alongside the proof — see `work-history/feat-logic-lab-intuitionistic-modal-pack.md` §Notes |
 | `deontic` | Dyadic / conditional deontic logic; STIT-style agent operators; Forrester gentle-murder + full Chisholm scenarios; KD45 belief variant — see `work-history/feat-logic-lab-intuitionistic-modal-pack.md` §Notes |
