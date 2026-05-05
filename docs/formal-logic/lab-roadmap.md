@@ -26,7 +26,7 @@ gaps legible in a way the per-system list doesn't:
 | 2D structural | Frege, Peirce EG Alpha | Peirce EG Beta/Gamma |
 | Diagrammatic semantic | Venn (Aristotelian/medieval), square-of-opposition | Euler proper, Carroll, spider |
 | Frame/world | Kripke (hand-authored) | Engine-derived Kripke; intuitionistic Kripke; temporal frames |
-| Tree/graph proof | Truth-tree (FEAT-012) | Natural deduction (Fitch / Gentzen), sequent, resolution |
+| Tree/graph proof | Truth-tree (FEAT-012), natural deduction (Fitch + Gentzen), resolution DAG, SLD tree | Sequent calculus |
 | Algebraic / tabular | Truth-table (FEAT-012) | Boolean algebra; Karnaugh maps; Hasse / lattice diagrams |
 | Step-by-step textual | Indian/Buddhist (Nyāya five-step + Dignāga hetu-cakra) | Obligational disputation |
 
@@ -246,13 +246,18 @@ to either.
 
 - **Size.** S.
 
-### Resolution / Horn / Datalog (`feat/logic-lab-resolution`)
+### ~~Resolution / Horn / Datalog~~ — shipped 2026-05-05 (`feat/logic-lab-resolution`)
 
 Bridge from FOL to executable inference: clauses, unification,
-proof search, derivation trees, query answering. Strategically
-valuable given the project's broader knowledge-graph leanings —
-naturally connects to Brandomian entailment / incompatibility
-graphs and the existing entity graph layer.
+proof search, derivation trees, query answering. **Status:**
+shipped 2026-05-05 — three engines under one DSL with
+mode-detection from syntax: binary resolution refutation
+(DAG), SLD backward chaining (derivation tree with backtracking
+visible), and semi-naïve Datalog forward chaining (per-iteration
+strata + final model). Closes the "resolution" cell of the
+matrix's Tree/graph proof row. Negation as failure, magic sets,
+iterative-deepening SLD, and the compare-view / Lean integration
+remain open per the work-history notes.
 
 - **Size.** M.
 

@@ -1,18 +1,23 @@
 # Logic Lab — Status & Roadmap
 
-**Last shipped:** Indian / Buddhist logic
-(`feat/logic-lab-indian-buddhist`), 2026-05-04 — Nyāya five-membered
-inference (pratijñā · hetu · udāharaṇa · upanaya · nigamana) with
-Dignāga's trairūpya verdict and the hetu-cakra (3×3 wheel of reason).
-First step-by-step textual visualization in the Lab.
-**Previously:** Natural deduction (`feat/logic-lab-natural-deduction`,
-2026-05-04); Boolean algebra (`feat/logic-lab-boolean-algebra`,
-2026-05-03); INFRA-004 — route-level code-splitting; FEAT-012 —
-truth-table + truth-tree views in Modern FOL.
-**Status:** nine systems populated. The historical spine now includes
-the algebraic-logic lineage (Boole → Schröder), the proof-theoretic
-spine (ND, Fitch + Gentzen), and a non-Western-tradition system
-(Nyāya / Dignāga). Cross-cutting work continues per `lab-roadmap.md`.
+**Last shipped:** Resolution · Horn · Datalog
+(`feat/logic-lab-resolution`), 2026-05-05 — one DSL, three engines:
+binary resolution refutation on a clause set; SLD goal-directed
+proof search on a Horn program; semi-naïve forward chaining of a
+Datalog program to its minimal model. Closes the "resolution" cell
+of the roadmap matrix's Tree/graph proof row.
+**Previously:** Indian / Buddhist logic
+(`feat/logic-lab-indian-buddhist`, 2026-05-04); natural deduction
+(`feat/logic-lab-natural-deduction`, 2026-05-04); Boolean algebra
+(`feat/logic-lab-boolean-algebra`, 2026-05-03); INFRA-004 —
+route-level code-splitting; FEAT-012 — truth-table + truth-tree
+views in Modern FOL.
+**Status:** ten systems populated. The historical spine now
+includes the algebraic-logic lineage (Boole → Schröder), the
+proof-theoretic spine (ND, Fitch + Gentzen), a non-Western-tradition
+system (Nyāya / Dignāga), and the executable-inference spine
+(resolution, SLD, Datalog). Cross-cutting work continues per
+`lab-roadmap.md`.
 
 This doc is a snapshot, not a spec. Per-system design lives in
 the matching `docs/formal-logic/<system>.md` file; per-ticket
@@ -33,11 +38,12 @@ detail lives in `work-history/FEAT-###.md`.
 | Boolean algebra | `boolean` | `feat/logic-lab-boolean-algebra` | truth-table classification + rule-based simplifier + Quine–McCluskey prime implicants | KaTeX algebraic formula + Karnaugh map (≤ 4 vars, prime-implicant cover) + Hasse / lattice diagram (≤ 4 vars) + truth table + DNF / CNF / ANF + step-trace simplifier |
 | Natural deduction | `natural-deduction` | `feat/logic-lab-natural-deduction` | backward-chaining ND prover (propositional) with classical / intuitionistic rule-set toggle | Fitch-style line-numbered proof with subproof boxes + Gentzen-style derivation tree (discharged assumptions bracketed) |
 | Indian / Buddhist logic (Nyāya · Dignāga) | `indian-buddhist` | `feat/logic-lab-indian-buddhist` | trairūpya checks (pakṣa-dharmatā / sapakṣe sattvam / vipakṣe asattvam) + Dignāga hetu-cakra cell placement; pakṣa-dharmatā gates the verdict (asiddha) | Five-membered textual inference (pratijñā · hetu · udāharaṇa · upanaya · nigamana) + 3×3 hetu-cakra wheel highlighting the active cell + trairūpya verdict panel |
+| Resolution · Horn · Datalog | `resolution` | `feat/logic-lab-resolution` | three engines under one DSL: binary resolution refutation (saturation, MGU, occurs check) + SLD backward chaining (leftmost selection, depth-bounded DFS, answer substitution) + semi-naïve forward chaining to fixpoint | Mode-detected from syntax: depth-stratified resolution DAG (clauses); SLD derivation tree with success spine + dead ends (horn); per-iteration strata + final-model panel (datalog) |
 
-Nine systems × ~10 examples each, ~100 example inputs total.
+Ten systems × ~10 examples each, ~100 example inputs total.
 Slash-command editor (`LogicCmEditor`) and shared chrome reused
-across all nine. Test count after Indian/Buddhist:
-**513/513 passing.**
+across all ten. Test count after Resolution:
+**567/567 passing.**
 
 ---
 
@@ -95,6 +101,7 @@ round-trips.
 | `medieval` | Modal sorites; obligational disputation — FEAT-010 §Notes |
 | `modern-fol` | Function congruence under equality (Nelson-Oppen, ~100 lines); fairness-complete tableau strategy; budget knob in UI — FEAT-011 §Notes |
 | `natural-deduction` | Quantifier rules (∀I/∀E/∃I/∃E); Lean-validated alternative renderer; horizontal Gentzen layout — see `work-history/feat-natural-deduction.md` §Notes |
+| `resolution` | Variable canonicalisation in clause signatures; iterative-deepening SLD; multiple SLD answers; negation-as-failure; list-syntax pretty-printer for `cons`/`nil`; unification trace; set-of-support strategy — see `work-history/feat-logic-lab-resolution.md` §Notes |
 
 ---
 
