@@ -5,6 +5,10 @@ import { parseEg } from '../eg-parser';
 import { EgRenderer } from '../EgRenderer';
 import { EgEditor } from '../EgEditor';
 import { EG_COMMANDS, findCommand } from '../eg-commands';
+import { isBeta } from '../eg-ast';
+import { egToFol } from '../eg-fol';
+import { renderKatex as renderFolKatex } from '../fol-render';
+import { KatexFormula } from '../KatexFormula';
 import { SectionHeading } from './shared';
 
 export default function PeirceEgLab({ system }: { system: LogicSystem }) {
@@ -85,6 +89,9 @@ function EgLab({
   examples: LogicExample[];
 }) {
   const parsed = useMemo(() => parseEg(src), [src]);
+  const beta = parsed.ok ? isBeta(parsed.tree) : false;
+  const fol = useMemo(() => (parsed.ok ? egToFol(parsed.tree) : null), [parsed]);
+  const folTex = useMemo(() => (fol ? renderFolKatex(fol) : ''), [fol]);
 
   function runCommand(slug: string) {
     const cmd = findCommand(slug);
@@ -100,7 +107,7 @@ function EgLab({
         <div className="rounded-lg border border-gray-800 bg-gray-950 overflow-hidden">
           <div className="px-3 py-2 border-b border-gray-800 text-xs text-gray-500 flex items-center justify-between">
             <span>DSL · type <code className="text-gray-400">/</code> for commands</span>
-            <span className="text-gray-600">alpha</span>
+            <span className="text-gray-600">{beta ? 'beta' : 'alpha'}</span>
           </div>
           <EgEditor value={src} onChange={onSrcChange} className="min-h-[260px]" />
         </div>
@@ -126,11 +133,29 @@ function EgLab({
         </div>
       </div>
 
+      <div className="rounded-lg border border-gray-800 bg-gray-900/40">
+        <div className="px-3 py-2 border-b border-gray-800 text-xs text-gray-500 flex items-center justify-between">
+          <span>Equivalent first-order formula</span>
+          <span className="text-gray-600">{beta ? 'beta · FOL with identity' : 'alpha · propositional'}</span>
+        </div>
+        <div className="p-6 min-h-[64px] flex items-center justify-center">
+          {fol ? (
+            <KatexFormula tex={folTex} className="text-gray-100" />
+          ) : (
+            <div className="text-xs text-gray-600">parse the input above to see its translation</div>
+          )}
+        </div>
+      </div>
+
       <p className="text-xs text-gray-500 leading-relaxed">
-        Shorthand: <code className="text-gray-300">P Q</code> juxtaposes (conjunction);
+        Alpha: <code className="text-gray-300">P Q</code> juxtaposes (conjunction);
         <code className="ml-1 text-gray-300">(P)</code> wraps in a cut (negation);
         <code className="ml-1 text-gray-300">(P (Q))</code> is the scroll (implication).
-        Type <code className="text-gray-300">/</code> in the editor to insert
+        Beta: <code className="text-gray-300">P(x)</code> attaches a line of identity
+        (an existentially-quantified variable scoped to the outermost area
+        the line touches); <code className="ml-1 text-gray-300">R(x,y)</code> is a
+        2-place predicate; <code className="ml-1 text-gray-300">x = y</code> joins
+        two lines. Type <code className="text-gray-300">/</code> in the editor to insert
         structural templates or examples.
       </p>
     </div>

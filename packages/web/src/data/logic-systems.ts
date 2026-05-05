@@ -52,11 +52,11 @@ export type LogicSystem = {
 export const LOGIC_SYSTEMS: LogicSystem[] = [
   {
     slug: 'peirce-eg',
-    name: 'Peirce\u2019s Existential Graphs (Alpha)',
+    name: 'Peirce\u2019s Existential Graphs (Alpha + Beta)',
     shortDescription:
-      'A 2D diagrammatic propositional logic. Writing a proposition asserts it; enclosing it in an oval (a "cut") negates it; nesting handles implication.',
+      'A 2D diagrammatic logic. Writing a proposition asserts it; enclosing it in an oval (a "cut") negates it; "lines of identity" attached to predicates stand in for variables and existential quantifiers, reaching first-order logic with identity.',
     era: '1880s\u20131900s',
-    keyPrimitive: 'cut + juxtaposition',
+    keyPrimitive: 'cut \u00b7 juxtaposition \u00b7 line of identity',
     status: 'available',
     thinkerSlug: 'charles-peirce',
     history:
@@ -91,6 +91,21 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
         name: 'Double cut (identity)',
         syntax: '((P))',
         description: 'Two nested cuts around the same graph are an identity transform: the double-cut rule lets you add or remove them freely.',
+      },
+      {
+        name: 'Line of identity',
+        syntax: 'P(x)',
+        description: 'A hook on a predicate names a "line of identity" \u2014 Peirce\u2019s heavy line standing in for a variable. The line is bound by an existential quantifier at the outermost area it touches.',
+      },
+      {
+        name: 'n-ary predicate',
+        syntax: 'R(x,y)',
+        description: 'A predicate with several hooks fills the role of an n-ary relation. Multiple hooks bound to the same line name assert the same individual fills both spots.',
+      },
+      {
+        name: 'Identity assertion',
+        syntax: 'x = y',
+        description: 'Joining two lines of identity asserts that the two individuals are the same. This makes beta a first-order logic *with* identity (= as a primitive, not a defined predicate).',
       },
     ],
     examples: [
@@ -130,6 +145,63 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
         slug: 'demorgan',
         natural: 'not (P and Q) \u2014 De Morgan shape in Peirce notation',
         dsl: '(P Q)',
+      },
+      {
+        slug: 'beta-existential',
+        natural: 'something is P \u2014 \u2203x. P(x)',
+        dsl: 'P(x)',
+        note: 'Beta: a single line of identity on the sheet is an outermost \u2203x.',
+      },
+      {
+        slug: 'beta-existential-conj',
+        natural: 'some man is mortal \u2014 \u2203x. Man(x) \u2227 Mortal(x)',
+        dsl: 'Man(x) Mortal(x)',
+        note: 'Sharing the line name x asserts the two predicates apply to the same individual.',
+      },
+      {
+        slug: 'beta-some-non',
+        natural: 'some man is not mortal \u2014 \u2203x. Man(x) \u2227 \u00acMortal(x)',
+        dsl: 'Man(x) (Mortal(x))',
+      },
+      {
+        slug: 'beta-no',
+        natural: 'no philosopher is foolish \u2014 \u00ac\u2203x. Phil(x) \u2227 Fool(x)',
+        dsl: '(Phil(x) Fool(x))',
+        note: 'The line lives entirely inside the cut, so its \u2203 is bound under negation.',
+      },
+      {
+        slug: 'beta-universal',
+        natural: 'every man is mortal \u2014 \u2200x. Man(x) \u2192 Mortal(x)',
+        dsl: '(Man(x) (Mortal(x)))',
+        note: 'Peirce\u2019s scroll plus a line: \u00ac\u2203x. Man(x) \u2227 \u00acMortal(x) \u2261 \u2200x. Man(x) \u2192 Mortal(x).',
+      },
+      {
+        slug: 'beta-relation',
+        natural: 'somebody loves somebody \u2014 \u2203x. \u2203y. Loves(x,y)',
+        dsl: 'Loves(x,y)',
+        note: 'A 2-place predicate with two hooks. Distinct line names give distinct \u2203-binders.',
+      },
+      {
+        slug: 'beta-relation-self',
+        natural: 'somebody loves themselves \u2014 \u2203x. Loves(x,x)',
+        dsl: 'Loves(x,x)',
+        note: 'Re-using the same line name on two hooks of the predicate forces the two arguments to be the same individual.',
+      },
+      {
+        slug: 'beta-identity',
+        natural: 'some man is the philosopher \u2014 \u2203x. \u2203y. Man(x) \u2227 Phil(y) \u2227 x = y',
+        dsl: 'Man(x) Phil(y) x = y',
+      },
+      {
+        slug: 'beta-everyone-loves',
+        natural: 'every person loves someone \u2014 \u2200x. Person(x) \u2192 \u2203y. Loves(x,y)',
+        dsl: '(Person(x) (Loves(x,y)))',
+        note: 'The y-line is confined to the inner cut, so \u2203y is bound there; the x-line spans both areas, so its \u2203-binder ends up at the outer cut and the negation in front of it produces \u2200x.',
+      },
+      {
+        slug: 'beta-distinct',
+        natural: 'two distinct things are P \u2014 \u2203x. \u2203y. P(x) \u2227 P(y) \u2227 \u00ac(x = y)',
+        dsl: 'P(x) P(y) (x = y)',
       },
     ],
     readingPointers: [

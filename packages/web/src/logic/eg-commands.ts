@@ -37,6 +37,30 @@ const structural: SlashCommand[] = [
     detail: 'two atoms side by side',
     insert: 'A B',
   },
+  {
+    slug: 'predicate',
+    label: 'Insert predicate with line',
+    detail: 'beta — P(x)',
+    insert: 'P(x)',
+  },
+  {
+    slug: 'relation',
+    label: 'Insert 2-place predicate',
+    detail: 'beta — R(x,y)',
+    insert: 'R(x,y)',
+  },
+  {
+    slug: 'identity',
+    label: 'Insert identity',
+    detail: 'beta — x = y',
+    insert: 'x = y',
+  },
+  {
+    slug: 'universal',
+    label: 'Insert universal-from-scroll',
+    detail: 'beta — (P(x) (Q(x))) is "every P is Q"',
+    insert: '(P(x) (Q(x)))',
+  },
 ];
 
 const examples: SlashCommand[] = LOGIC_SYSTEMS
