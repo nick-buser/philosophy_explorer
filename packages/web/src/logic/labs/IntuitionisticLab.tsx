@@ -3,57 +3,29 @@ import { Link } from '@tanstack/react-router';
 import type { LogicExample, LogicSystem } from '../../data/logic-systems';
 import { parseModal } from '../kripke-parser';
 import { renderKatex } from '../kripke-render';
-import { LogicCmEditor, type SlashCommand } from '../LogicCmEditor';
+import { IntuitionisticFormulaEditor } from '../IntuitionisticFormulaEditor';
 import { KripkeModelView } from '../KripkeModelView';
 import { KatexFormula } from '../KatexFormula';
-import { KRIPKE_COMMANDS, findKripkeCommand } from '../kripke-commands';
-import type {
-  FrameClass,
-  FrameClassSlug,
-  KripkeModel,
-  ModalFormula,
-} from '../kripke-types';
-import { ALL_FRAMES, findFrame } from '../kripke-frames';
+import { INTUITIONISTIC_COMMANDS, findIntuitionisticCommand } from '../intuitionistic-commands';
+import type { KripkeModel, ModalFormula } from '../kripke-types';
 import {
-  satisfactionMap,
-  satisfies,
+  forces,
+  forcesMap,
   validInModel,
-} from '../kripke-eval';
+  IntuitionisticEvalError,
+} from '../intuitionistic-eval';
 import {
-  closeUnderFrame,
-  frameDiagnostics,
-  validateAgainst,
-  type ConstraintWitness,
-} from '../kripke-frame-check';
-import { axiomVerdicts } from '../kripke-axioms';
+  closeFrame,
+  closeValuation,
+  intuitionisticDiagnostics,
+} from '../intuitionistic-frames';
+import { intuitionisticAxiomVerdicts } from '../intuitionistic-axioms';
 import { SectionHeading } from './shared';
 
-type Props = {
-  system: LogicSystem;
-  // Slash-command palette for the editor + the toolbar's structural buttons.
-  // Defaults to the canonical Kripke command set; the deontic system
-  // injects its own (O / P / F aliases plus deontic-specific examples).
-  commands?: readonly SlashCommand[];
-  // Slug-prefixed lookup that mirrors `findKripkeCommand` for the active
-  // command set. Required when `commands` is overridden.
-  findCommand?: (slug: string) => SlashCommand | undefined;
-};
-
-export default function KripkeLab({
-  system,
-  commands = KRIPKE_COMMANDS,
-  findCommand = findKripkeCommand,
-}: Props) {
+export default function IntuitionisticLab({ system }: { system: LogicSystem }) {
   const initial = system.examples[0]!;
   const [src, setSrc] = useState<string>(initial.dsl);
   const [exampleSlug, setExampleSlug] = useState<string>(initial.slug);
-  const frameOptions: FrameClass[] = system.frameClasses ?? ALL_FRAMES;
-  const [frameSlug, setFrameSlug] = useState<FrameClassSlug>(
-    initial.frameClass ?? frameOptions[0]?.slug ?? 'K',
-  );
-  // The "live" model: starts as the example's hand-authored model, can
-  // be replaced by closing R under a chosen frame class via the
-  // "fix model" button.
   const [liveModel, setLiveModel] = useState<KripkeModel | undefined>(initial.model);
 
   const activeExample = useMemo(
@@ -67,7 +39,6 @@ export default function KripkeLab({
     setExampleSlug(slug);
     setSrc(ex.dsl);
     setLiveModel(ex.model);
-    if (ex.frameClass) setFrameSlug(ex.frameClass);
   }
 
   function runCommand(slug: string) {
@@ -75,14 +46,14 @@ export default function KripkeLab({
       pickExample(slug.slice('example.'.length));
       return;
     }
-    const cmd = findCommand(slug);
+    const cmd = findIntuitionisticCommand(slug);
     if (!cmd) return;
     setSrc(cmd.insert);
   }
 
-  function fixModelToFrame() {
+  function fixFrame() {
     if (!liveModel) return;
-    setLiveModel(closeUnderFrame(liveModel, frameSlug));
+    setLiveModel(closeValuation(closeFrame(liveModel)));
   }
 
   function resetModel() {
@@ -92,7 +63,6 @@ export default function KripkeLab({
   return (
     <main className="min-h-screen py-12">
       <div className="max-w-5xl mx-auto px-6 space-y-12">
-
         <Link to="/logic" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
           ← Logic Lab
         </Link>
@@ -107,19 +77,15 @@ export default function KripkeLab({
 
         <section>
           <SectionHeading>Lab</SectionHeading>
-          <KripkeLabBody
+          <IntuitionisticLabBody
             src={src}
             onSrcChange={setSrc}
             examples={system.examples}
             onPickCommand={runCommand}
-            frameSlug={frameSlug}
-            onFrameChange={setFrameSlug}
-            frameOptions={frameOptions}
             activeExample={activeExample}
             liveModel={liveModel}
-            onFixModel={fixModelToFrame}
+            onFixFrame={fixFrame}
             onResetModel={resetModel}
-            commands={commands}
           />
         </section>
 
@@ -169,38 +135,29 @@ export default function KripkeLab({
   );
 }
 
-function KripkeLabBody({
+function IntuitionisticLabBody({
   src, onSrcChange, examples, onPickCommand,
-  frameSlug, onFrameChange, frameOptions, activeExample,
-  liveModel, onFixModel, onResetModel, commands,
+  activeExample, liveModel, onFixFrame, onResetModel,
 }: {
   src: string;
   onSrcChange: (s: string) => void;
   examples: LogicExample[];
   onPickCommand: (slug: string) => void;
-  frameSlug: FrameClassSlug;
-  onFrameChange: (s: FrameClassSlug) => void;
-  frameOptions: FrameClass[];
   activeExample: LogicExample;
   liveModel: KripkeModel | undefined;
-  onFixModel: () => void;
+  onFixFrame: () => void;
   onResetModel: () => void;
-  commands: readonly SlashCommand[];
 }) {
   const parsed = useMemo(() => parseModal(src), [src]);
-  const frame = findFrame(frameSlug);
   const modelEdited =
     liveModel !== undefined &&
     activeExample.model !== undefined &&
     liveModel !== activeExample.model;
+  const containsModalOps = parsed.ok && hasModal(parsed.formula);
 
   return (
     <div className="space-y-4">
-      <FrameClassPicker selected={frameSlug} onSelect={onFrameChange} options={frameOptions} />
-      <FrameClassDetail frameSlug={frameSlug} />
-
-      <KripkeToolbar
-        commands={commands}
+      <IntuitionisticToolbar
         onCommand={onPickCommand}
         examples={examples}
         activeExampleSlug={activeExample.slug}
@@ -210,16 +167,20 @@ function KripkeLabBody({
         <div className="rounded-lg border border-gray-800 bg-gray-950 overflow-hidden">
           <div className="px-3 py-2 border-b border-gray-800 text-xs text-gray-500 flex items-center justify-between">
             <span>DSL · type <code className="text-gray-400">/</code> for commands</span>
-            <span className="text-gray-600">propositional modal</span>
+            <span className="text-gray-600">propositional intuitionistic</span>
           </div>
-          <LogicCmEditor commands={commands} value={src} onChange={onSrcChange} className="min-h-[180px]" />
+          <IntuitionisticFormulaEditor value={src} onChange={onSrcChange} className="min-h-[180px]" />
         </div>
 
         <div className="rounded-lg border border-gray-800 bg-gray-900/40 flex flex-col">
           <div className="px-3 py-2 border-b border-gray-800 text-xs text-gray-500 flex items-center justify-between">
             <span>Rendering</span>
             {parsed.ok ? (
-              <span className="text-emerald-400">parsed</span>
+              containsModalOps ? (
+                <span className="text-amber-400">no modal ops in intuitionistic</span>
+              ) : (
+                <span className="text-emerald-400">parsed</span>
+              )
             ) : (
               <span className="text-amber-400">parse error</span>
             )}
@@ -237,88 +198,105 @@ function KripkeLabBody({
       </div>
 
       {liveModel && (
-        <KripkeModelPanel
+        <IntuitionisticModelPanel
           model={liveModel}
-          formula={parsed.ok ? parsed.formula : undefined}
+          formula={parsed.ok && !containsModalOps ? parsed.formula : undefined}
           activeExample={activeExample}
-          frameSlug={frameSlug}
           modelEdited={modelEdited}
-          onFixModel={onFixModel}
+          onFixFrame={onFixFrame}
           onResetModel={onResetModel}
         />
       )}
 
       {liveModel && (
-        <FrameDiagnosticsPanel model={liveModel} frameSlug={frameSlug} />
+        <FrameShapePanel model={liveModel} />
       )}
 
       {liveModel && (
-        <AxiomVerdictsPanel model={liveModel} />
+        <IntuitionisticAxiomsPanel model={liveModel} />
       )}
 
       <p className="text-xs text-gray-500 leading-relaxed">
-        Truth values, per-world chips, frame diagnostics and axiom verdicts are computed
-        live by the engine. Frame class <code className="text-gray-300">{frame.slug}</code>{' '}
-        sets the constraints checked under "frame diagnostics"; if the example model violates
-        them, the "close R under {frame.slug}" button adds the smallest set of edges to fix it.
+        Forcing values, per-world chips, frame-shape verdicts and axiom verdicts are
+        computed live by the intuitionistic engine. Intuitionistic Kripke frames are
+        pre-orders with a monotone valuation; the "fix frame" button takes the
+        reflexive-transitive closure of R and lifts atoms forward so the result is
+        a valid intuitionistic model.
       </p>
     </div>
   );
 }
 
-function KripkeModelPanel({
-  model, formula, activeExample, frameSlug, modelEdited, onFixModel, onResetModel,
+function hasModal(f: ModalFormula): boolean {
+  switch (f.kind) {
+    case 'atom':    return false;
+    case 'box':
+    case 'dia':     return true;
+    case 'not':     return hasModal(f.body);
+    case 'and':
+    case 'or':
+    case 'implies':
+    case 'iff':     return hasModal(f.left) || hasModal(f.right);
+  }
+}
+
+function IntuitionisticModelPanel({
+  model, formula, activeExample, modelEdited, onFixFrame, onResetModel,
 }: {
   model: KripkeModel;
   formula: ModalFormula | undefined;
   activeExample: LogicExample;
-  frameSlug: FrameClassSlug;
   modelEdited: boolean;
-  onFixModel: () => void;
+  onFixFrame: () => void;
   onResetModel: () => void;
 }) {
-  const satMap = useMemo(
-    () => (formula ? satisfactionMap(formula, model) : undefined),
-    [formula, model],
-  );
+  const diag = useMemo(() => intuitionisticDiagnostics(model), [model]);
+  const fMap = useMemo(() => {
+    if (!formula) return undefined;
+    try { return forcesMap(formula, model); }
+    catch (e) {
+      if (e instanceof IntuitionisticEvalError) return undefined;
+      throw e;
+    }
+  }, [formula, model]);
   const designated = model.designated ?? model.worlds[0]?.id;
   const designatedTruth = useMemo(() => {
     if (!formula || !designated) return undefined;
-    return satisfies(formula, model, designated);
+    try { return forces(formula, model, designated); }
+    catch (e) {
+      if (e instanceof IntuitionisticEvalError) return undefined;
+      throw e;
+    }
   }, [formula, model, designated]);
-  const validity = useMemo(
-    () => (formula ? validInModel(formula, model) : undefined),
-    [formula, model],
-  );
-  const validation = useMemo(() => validateAgainst(model, frameSlug), [model, frameSlug]);
+  const validity = useMemo(() => {
+    if (!formula) return undefined;
+    try { return validInModel(formula, model); }
+    catch (e) {
+      if (e instanceof IntuitionisticEvalError) return undefined;
+      throw e;
+    }
+  }, [formula, model]);
 
   return (
     <div className="rounded-lg border border-gray-800 bg-gray-900/30 overflow-hidden">
       <div className="px-3 py-2 border-b border-gray-800 text-xs text-gray-500 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
-          <span>Kripke model</span>
+          <span>Intuitionistic model</span>
           <span className="text-gray-600">·</span>
           <span className="text-gray-400">{activeExample.natural}</span>
-          {activeExample.frameClass && (
-            <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20">
-              declared {activeExample.frameClass}
-            </span>
-          )}
           {modelEdited && (
-            <span className="text-[10px] uppercase tracking-wider text-amber-300">
-              edited
-            </span>
+            <span className="text-[10px] uppercase tracking-wider text-amber-300">edited</span>
           )}
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          {!validation.ok && (
+          {!diag.isValidFrame && (
             <button
               type="button"
-              onClick={onFixModel}
+              onClick={onFixFrame}
               className="text-[10px] uppercase tracking-wider px-2 py-1 rounded border border-amber-500/30 bg-amber-500/10 text-amber-200 hover:bg-amber-500/20 transition-colors"
-              title={`Add the smallest set of edges so R satisfies ${frameSlug}'s constraints`}
+              title="Take reflexive-transitive closure of R and propagate atoms upward"
             >
-              close R under {frameSlug}
+              fix frame
             </button>
           )}
           {modelEdited && (
@@ -342,7 +320,7 @@ function KripkeModelPanel({
                 ? `formula forced at ${designated}`
                 : `formula not forced at ${designated}`}
             >
-              {designatedTruth ? '⊨' : '⊭'} {designated}
+              {designatedTruth ? '⊩' : '⊮'} {designated}
             </span>
           )}
           {validity && (
@@ -362,7 +340,7 @@ function KripkeModelPanel({
           )}
         </div>
       </div>
-      <KripkeModelView model={model} satisfaction={satMap} className="bg-gray-950/50" />
+      <KripkeModelView model={model} satisfaction={fMap} className="bg-gray-950/50" />
       {activeExample.note && (
         <div className="px-4 py-3 border-t border-gray-800 text-sm text-gray-400 leading-relaxed">
           {activeExample.note}
@@ -372,193 +350,111 @@ function KripkeModelPanel({
   );
 }
 
-function FrameDiagnosticsPanel({
-  model, frameSlug,
-}: {
-  model: KripkeModel;
-  frameSlug: FrameClassSlug;
-}) {
-  const diag = useMemo(() => frameDiagnostics(model), [model]);
-  const frame = findFrame(frameSlug);
-  const required = new Set(frame.constraints);
-  const constraints = ['reflexive', 'symmetric', 'transitive', 'serial', 'euclidean'] as const;
-
+function FrameShapePanel({ model }: { model: KripkeModel }) {
+  const diag = useMemo(() => intuitionisticDiagnostics(model), [model]);
+  const cells = [
+    { key: 'reflexive',  holds: diag.reflexive.holds,  label: 'reflexive',  hint: 'every world accesses itself' },
+    { key: 'transitive', holds: diag.transitive.holds, label: 'transitive', hint: 'R(a,b) ∧ R(b,c) ⇒ R(a,c)' },
+    {
+      key: 'monotone',
+      holds: diag.monotone.holds,
+      label: 'monotone',
+      hint: diag.monotone.holds
+        ? 'V is upward-closed under R'
+        : `${diag.monotone.witness.from} has '${diag.monotone.witness.atom}' but ${diag.monotone.witness.to} doesn’t`,
+    },
+  ];
   return (
     <div className="rounded-lg border border-gray-800 bg-gray-900/30 p-4 space-y-3">
-      <div className="flex items-baseline justify-between gap-3 flex-wrap">
-        <h3 className="text-gray-100 font-medium">Frame diagnostics</h3>
-        <span className="text-xs text-gray-500">
-          checked against <code className="text-gray-300">{frameSlug}</code>
-        </span>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
-        {constraints.map(c => {
-          const verdict = diag.perConstraint[c];
-          const requiredHere = required.has(c);
-          const cls = verdict.holds
+      <h3 className="text-gray-100 font-medium">Frame shape</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        {cells.map(c => {
+          const cls = c.holds
             ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
-            : requiredHere
-              ? 'bg-rose-500/10 text-rose-300 border-rose-500/30'
-              : 'bg-gray-800/40 text-gray-500 border-gray-800';
+            : 'bg-rose-500/10 text-rose-300 border-rose-500/30';
           return (
             <div
-              key={c}
+              key={c.key}
               className={`text-xs px-2 py-1.5 rounded border font-mono flex items-baseline justify-between gap-1 ${cls}`}
-              title={
-                verdict.holds
-                  ? `R is ${c}`
-                  : witnessLabel(verdict.witness)
-              }
+              title={c.hint}
             >
-              <span>{c}</span>
-              <span>
-                {verdict.holds ? '✓' : requiredHere ? '✗' : '·'}
-              </span>
+              <span>{c.label}</span>
+              <span>{c.holds ? '✓' : '✗'}</span>
             </div>
           );
         })}
       </div>
       <p className="text-xs text-gray-500 leading-relaxed">
-        Bold rose ✗ = constraint required by {frameSlug} but R doesn't satisfy it. Grey ·
-        = neither required nor present. ✓ = R satisfies the constraint regardless of frame class.
+        Intuitionistic Kripke frames are <em>pre-orders</em> (reflexive + transitive)
+        with a <em>monotone</em> valuation: once an atom holds at a world, it holds at
+        every accessible world. Failing any of these three turns the diagrams into a
+        well-formed visualization of an ill-formed frame.
       </p>
     </div>
   );
 }
 
-function AxiomVerdictsPanel({ model }: { model: KripkeModel }) {
-  const verdicts = useMemo(() => axiomVerdicts(model), [model]);
+function IntuitionisticAxiomsPanel({ model }: { model: KripkeModel }) {
+  const verdicts = useMemo(() => intuitionisticAxiomVerdicts(model), [model]);
   return (
     <div className="rounded-lg border border-gray-800 bg-gray-900/30 p-4 space-y-3">
       <h3 className="text-gray-100 font-medium">Axioms in this model</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        {verdicts.map(v => (
-          <div
-            key={v.axiom.short}
-            className={
-              'text-xs px-3 py-2 rounded border ' +
-              (v.valid
-                ? 'border-emerald-500/30 bg-emerald-500/5'
-                : 'border-rose-500/30 bg-rose-500/5')
-            }
-          >
-            <div className="flex items-baseline justify-between gap-2">
-              <span className="font-mono text-gray-100">{v.axiom.short}</span>
-              <span className={v.valid ? 'text-emerald-300' : 'text-rose-300'}>
-                {v.valid ? 'valid' : 'fails'}
-              </span>
-            </div>
-            <div className="text-[10px] text-gray-500 mt-0.5">{v.axiom.name}</div>
-            <code className="text-[10px] block mt-1 text-blue-300 font-mono break-all">
-              {v.axiom.schema}
-            </code>
-            {!v.valid && v.failure && (
-              <div className="text-[10px] text-rose-300/80 mt-1">
-                fails at <code className="font-mono">{v.failure.world}</code> under{' '}
-                <code className="font-mono">
-                  {Object.entries(v.failure.substitution).map(([k, val]) => `${k}↦${val}`).join(', ')}
-                </code>
+        {verdicts.map(v => {
+          const expectClassicalFail = v.axiom.kind === 'classical-only';
+          const pedagogicallyExpected = expectClassicalFail ? !v.valid : v.valid;
+          const cls = pedagogicallyExpected
+            ? 'border-emerald-500/30 bg-emerald-500/5'
+            : 'border-amber-500/30 bg-amber-500/5';
+          return (
+            <div key={v.axiom.short} className={`text-xs px-3 py-2 rounded border ${cls}`}>
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="font-mono text-gray-100">{v.axiom.short}</span>
+                <span className={v.valid ? 'text-emerald-300' : 'text-rose-300'}>
+                  {v.valid ? 'valid' : 'fails'}
+                </span>
               </div>
-            )}
-          </div>
-        ))}
+              <div className="text-[10px] text-gray-500 mt-0.5">{v.axiom.name}</div>
+              <code className="text-[10px] block mt-1 text-blue-300 font-mono break-all">
+                {v.axiom.schema}
+              </code>
+              <div className="text-[10px] text-gray-500 mt-1 leading-relaxed">{v.axiom.gloss}</div>
+              {!v.valid && v.failure && (
+                <div className="text-[10px] text-rose-300/80 mt-1">
+                  fails at <code className="font-mono">{v.failure.world}</code> under{' '}
+                  <code className="font-mono">
+                    {Object.entries(v.failure.substitution).map(([k, val]) => `${k}↦${val}`).join(', ')}
+                  </code>
+                </div>
+              )}
+              {v.axiom.kind === 'classical-only' && v.valid && (
+                <div className="text-[10px] text-amber-300/80 mt-1">
+                  classical-only axiom is valid here — likely no countermodel fits the model’s atom set; pick the LEM example to see one fail.
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
       <p className="text-xs text-gray-500 leading-relaxed">
-        An axiom is "valid in this model" iff it's forced at every world for every
-        substitution of its schema variables into atoms occurring in the model.
-        Engine-derived; no hand-authored truth values.
+        Green border = the model’s verdict matches the pedagogical role
+        (intuitionistically valid principles holding; classical-only principles
+        failing). Amber = the verdict is unexpected (a classical-only axiom holds
+        because the model lacks the right witness shape, or an intuitionistically
+        valid axiom fails because the frame violates a frame-shape constraint).
       </p>
     </div>
   );
 }
 
-function witnessLabel(w: ConstraintWitness): string {
-  switch (w.kind) {
-    case 'reflexive':  return `no self-loop at ${w.world}`;
-    case 'symmetric':  return `${w.from}→${w.to} has no reverse`;
-    case 'transitive': {
-      const [a, b, c] = w.via;
-      return `${a}→${b}→${c}, but ${a}→${c} missing`;
-    }
-    case 'serial':     return `${w.world} is a dead end`;
-    case 'euclidean': {
-      const [a, b, c] = w.via;
-      return `${a}→${b}, ${a}→${c}, but ${b}→${c} missing`;
-    }
-  }
-}
-
-function FrameClassPicker({
-  selected, onSelect, options,
+function IntuitionisticToolbar({
+  onCommand, examples, activeExampleSlug,
 }: {
-  selected: FrameClassSlug;
-  onSelect: (s: FrameClassSlug) => void;
-  options: FrameClass[];
-}) {
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="text-xs text-gray-500 mr-1">frame class:</span>
-      {options.map(f => {
-        const active = f.slug === selected;
-        return (
-          <button
-            key={f.slug}
-            type="button"
-            onClick={() => onSelect(f.slug)}
-            className={
-              'text-xs px-2.5 py-1.5 rounded border transition-colors font-mono ' +
-              (active
-                ? 'border-blue-500/50 bg-blue-500/10 text-blue-200'
-                : 'border-gray-800 bg-gray-900 text-gray-300 hover:bg-gray-800 hover:text-gray-100')
-            }
-            title={f.name}
-          >
-            {f.slug}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-function FrameClassDetail({ frameSlug }: { frameSlug: FrameClassSlug }) {
-  const frame = findFrame(frameSlug);
-  const parsed = useMemo(() => parseModal(frame.characteristicAxiom.dsl), [frame]);
-  return (
-    <div className="rounded-lg border border-gray-800 bg-gray-900/30 p-4 space-y-3">
-      <div className="flex items-baseline justify-between gap-3 flex-wrap">
-        <h3 className="text-gray-100 font-medium">{frame.name}</h3>
-        <span className="text-xs text-gray-500">
-          {frame.constraints.length === 0
-            ? 'no constraints on R'
-            : frame.constraints.join(' + ')}
-        </span>
-      </div>
-      <p className="text-sm text-gray-400 leading-relaxed">{frame.description}</p>
-      <div className="flex items-center gap-3 flex-wrap">
-        <span className="text-[10px] uppercase tracking-wider text-gray-500">
-          characteristic axiom
-        </span>
-        {parsed.ok && (
-          <KatexFormula tex={renderKatex(parsed.formula)} className="text-gray-100" displayMode={false} />
-        )}
-        <code className="text-xs px-1.5 py-0.5 rounded bg-gray-950 border border-gray-800 text-blue-300 font-mono">
-          {frame.characteristicAxiom.dsl}
-        </code>
-      </div>
-    </div>
-  );
-}
-
-function KripkeToolbar({
-  commands, onCommand, examples, activeExampleSlug,
-}: {
-  commands: readonly SlashCommand[];
   onCommand: (slug: string) => void;
   examples: LogicExample[];
   activeExampleSlug: string;
 }) {
-  const structural = commands.filter(c => !c.slug.startsWith('example.'));
+  const structural = INTUITIONISTIC_COMMANDS.filter(c => !c.slug.startsWith('example.'));
   return (
     <div className="flex flex-wrap items-center gap-2">
       {structural.map(c => (

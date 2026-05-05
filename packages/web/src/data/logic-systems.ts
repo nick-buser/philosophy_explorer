@@ -3,7 +3,9 @@
 // See docs/formal-logic/logic-explorer-tab.md §Storage.
 
 import type { FrameClass, FrameClassSlug, KripkeModel } from '../logic/kripke-types';
-import { ALL_FRAMES } from '../logic/kripke-frames';
+import type { EpistemicModel } from '../logic/epistemic-types';
+import type { Trace } from '../logic/temporal-types';
+import { FRAMES } from '../logic/kripke-frames';
 
 export type LogicSystemStatus = 'available' | 'stub';
 
@@ -17,6 +19,11 @@ export type LogicExample = {
   model?: KripkeModel;
   satisfied?: boolean;   // truth at the designated world (hand-authored in phase 1)
   frameClass?: FrameClassSlug;
+  // Multi-agent epistemic systems use a different model shape (per-agent
+  // accessibility relations). Other systems leave this undefined.
+  epistemicModel?: EpistemicModel;
+  // Linear-temporal-logic systems use a lasso trace.
+  trace?: Trace;
 };
 
 export type LogicPrimitive = {
@@ -200,7 +207,7 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
         kind: 'external',
       },
     ],
-    frameClasses: ALL_FRAMES,
+    frameClasses: [FRAMES.K, FRAMES.T, FRAMES.S4, FRAMES.S5],
   },
   {
     slug: 'frege-bs',
@@ -1266,6 +1273,334 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
       },
     ],
   },
+  {
+    slug: 'temporal-ctl',
+    name: 'Computation Tree Logic (CTL)',
+    shortDescription:
+      'A branching-time temporal logic. Paths are *trees of futures* through a Kripke structure; each future-time operator is paired with a path quantifier (A — every path, E — some path). Decidable in polynomial time and the foundation of model checking.',
+    era: '1981 →',
+    keyPrimitive: 'A / E paired with X / F / G / U over a branching frame',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'Edmund Clarke and Allen Emerson introduced CTL in 1981 as a branching-time alternative to LTL. The eight paired path-quantifier-plus-temporal operators (AX, EX, AF, EF, AG, EG, A[U], E[U]) give a logic with a polynomial-time labelling algorithm — for each subformula, mark every state where it holds — that became the core of practical model checkers (SMV, NuSMV, Uppaal). Clarke, Emerson, and Sistla (1986) gave the algorithm; Clarke, Emerson, and Sifakis shared the 2007 Turing Award for the resulting field. CTL and LTL are *incomparable* — neither subsumes the other — and CTL* is the common refinement.',
+    primitives: [
+      {
+        name: 'AX / EX (next)',
+        syntax: 'AX p   EX p',
+        description:
+          'AX φ holds at s iff φ holds at every successor of s. EX φ holds iff φ holds at some successor.',
+      },
+      {
+        name: 'AF / EF (eventually)',
+        syntax: 'AF p   EF p',
+        description:
+          'AF φ holds iff every infinite path through s eventually reaches a state forcing φ. EF φ iff some path does.',
+      },
+      {
+        name: 'AG / EG (always)',
+        syntax: 'AG p   EG p',
+        description:
+          'AG φ holds iff every state reachable from s forces φ. EG φ iff some path through s keeps φ true forever.',
+      },
+      {
+        name: 'A[…U…] / E[…U…] (until)',
+        syntax: 'A[p U q]   E[p U q]',
+        description:
+          'A[φ U ψ] iff every path through s has a position forcing ψ with φ holding strictly before. E[φ U ψ] iff some path does.',
+      },
+      {
+        name: 'Branching frame',
+        syntax: '(W, R, V) serial',
+        description:
+          'A Kripke structure with a serial accessibility relation. Paths are infinite sequences through R; the path-quantifier semantics is meaningful only when every state has a successor.',
+      },
+    ],
+    examples: TEMPORAL_CTL_EXAMPLES(),
+    readingPointers: [
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Temporal Logic',
+        href: 'https://plato.stanford.edu/entries/logic-temporal/',
+        kind: 'external',
+      },
+      {
+        title: 'Clarke, Emerson, Sistla, "Automatic Verification of Finite-State Concurrent Systems Using Temporal Logic Specifications" (TOPLAS 1986)',
+        href: 'https://dl.acm.org/doi/10.1145/5397.5399',
+        kind: 'external',
+      },
+      {
+        title: 'Baier & Katoen, *Principles of Model Checking* (MIT Press, 2008)',
+        href: 'https://mitpress.mit.edu/9780262026499/',
+        kind: 'external',
+      },
+    ],
+  },
+  {
+    slug: 'temporal-ltl',
+    name: 'Linear Temporal Logic (LTL)',
+    shortDescription:
+      'A logic of time interpreted on infinite *traces* of states. The future-time operators X (next), F (eventually), G (always), and U (until) describe how a single timeline evolves. Standard for program-correctness specification (Pnueli 1977).',
+    era: '1977 →',
+    keyPrimitive: 'X / F / G / U over a single trace',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'Amir Pnueli’s 1977 paper *The Temporal Logic of Programs* introduced LTL as a specification language for reactive systems, winning him the Turing Award in 1996. The core insight is that program properties — termination, response, fairness, mutual exclusion — are propositions about *the trace a program produces*, and LTL gives them a clean modal-logic syntax. Manna & Pnueli systematised the theory through the 1980s–90s; Lichtenstein & Pnueli (1985) gave the polynomial-time model checker for finite-state systems that became the basis for SPIN, NuSMV, and the formal-verification industry. The Lab represents infinite traces *finitely* as lassos: a finite list of states with a designated loopback index that says where the timeline cycles to.',
+    primitives: [
+      {
+        name: 'Next',
+        syntax: 'X p',
+        description:
+          'X φ holds at position i iff φ holds at position i+1. The "one tick from now" operator.',
+      },
+      {
+        name: 'Eventually',
+        syntax: 'F p',
+        description:
+          'F φ holds at i iff φ holds at some position ≥ i. Captures eventual occurrence — used to express liveness.',
+      },
+      {
+        name: 'Always',
+        syntax: 'G p',
+        description:
+          'G φ holds at i iff φ holds at every position ≥ i. Captures invariance — used to express safety.',
+      },
+      {
+        name: 'Until',
+        syntax: 'p U q',
+        description:
+          'φ U ψ holds at i iff there is a future j ≥ i with ψ at j and φ at every position in [i, j). The strongest binary temporal operator; F and G are definable from U.',
+      },
+      {
+        name: 'Lasso trace',
+        syntax: '(W, →, loop)',
+        description:
+          'A finite sequence of states ending in a cycle. The cycle’s starting index (loopBack) determines what "infinitely often" means on the trace; a stutter trace (loopBack = last index) approximates a non-cyclic future.',
+      },
+    ],
+    examples: TEMPORAL_LTL_EXAMPLES(),
+    readingPointers: [
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Temporal Logic',
+        href: 'https://plato.stanford.edu/entries/logic-temporal/',
+        kind: 'external',
+      },
+      {
+        title: 'Pnueli, "The Temporal Logic of Programs" (FOCS, 1977)',
+        href: 'https://ieeexplore.ieee.org/document/4567924',
+        kind: 'external',
+      },
+      {
+        title: 'Baier & Katoen, *Principles of Model Checking* (MIT Press, 2008)',
+        href: 'https://mitpress.mit.edu/9780262026499/',
+        kind: 'external',
+      },
+    ],
+  },
+  {
+    slug: 'epistemic',
+    name: 'Multi-agent Epistemic Logic',
+    shortDescription:
+      'Knowledge and belief modelled with one accessibility relation per agent. Worlds are *epistemic alternatives*; agent a knows φ at w iff φ holds at every world a cannot distinguish from w. Standard knowledge logics use S5 frames; standard belief logics use KD45.',
+    era: '1962 →',
+    keyPrimitive: 'K_a φ over a per-agent accessibility relation',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'Hintikka’s 1962 *Knowledge and Belief* introduced the modal-logic treatment of epistemic concepts: knowledge as a □-style operator quantifying over worlds an agent cannot distinguish from the actual one. Multi-agent versions were systematised by Halpern, Moses, Vardi, and Fagin in the 1980s–90s (`Reasoning About Knowledge`, MIT Press 1995), where they became central to distributed-systems verification, game theory, and pragmatics. Knowledge is canonically S5 (each R_a is an equivalence relation: factive, positive-introspective, negative-introspective). Belief is canonically KD45 — drop reflexivity, keep seriality. The Lab ships the K / T / 4 / 5 / D axiom panel per declared agent.',
+    primitives: [
+      {
+        name: 'Knowledge operator',
+        syntax: 'K_a p   ([a] p)',
+        description:
+          'K_a φ holds at w iff φ holds at every world v with R_a(w, v). Two notations are accepted: `K_a p` and `[a] p` for the same operator.',
+      },
+      {
+        name: 'Consideration / possibility operator',
+        syntax: 'M_a p   (<<a>> p)',
+        description:
+          'Dual of K_a: M_a φ ≡ ¬K_a ¬φ — agent a considers φ epistemically possible.',
+      },
+      {
+        name: 'Per-agent accessibility',
+        syntax: 'R_a',
+        description:
+          'A relation per declared agent. Two worlds related by R_a are *epistemically indistinguishable* for a. Knowledge axioms are constraints on R_a (T = reflexive, 4 = transitive, 5 = Euclidean, D = serial).',
+      },
+      {
+        name: 'Knowledge frame (S5)',
+        syntax: 'R_a equivalence',
+        description:
+          'Each R_a is reflexive, symmetric, and transitive. Validates K, T, 4, 5 — the canonical multi-agent knowledge logic.',
+      },
+      {
+        name: 'Belief frame (KD45)',
+        syntax: 'R_a serial+trans+euclid',
+        description:
+          'Drop reflexivity (an agent may falsely believe φ): each R_a is serial, transitive, and Euclidean. Validates K, D, 4, 5 — the canonical belief logic.',
+      },
+    ],
+    examples: EPISTEMIC_EXAMPLES(),
+    readingPointers: [
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Epistemic Logic',
+        href: 'https://plato.stanford.edu/entries/logic-epistemic/',
+        kind: 'external',
+      },
+      {
+        title: 'Hintikka, *Knowledge and Belief* (Cornell, 1962)',
+        href: 'https://www.cornellpress.cornell.edu/book/9780801403149/knowledge-and-belief/',
+        kind: 'external',
+      },
+      {
+        title: 'Fagin, Halpern, Moses, Vardi, *Reasoning About Knowledge* (MIT Press, 1995)',
+        href: 'https://mitpress.mit.edu/9780262562003/reasoning-about-knowledge/',
+        kind: 'external',
+      },
+    ],
+  },
+  {
+    slug: 'deontic',
+    name: 'Standard Deontic Logic (KD)',
+    shortDescription:
+      'A modal logic of obligation and permission interpreted on serial Kripke frames. Re-uses the modal engine: O ≡ □ (obligatory), P ≡ ◇ (permitted), F ≡ ¬◇ (forbidden). Validates the D axiom (Oφ → Pφ): every obligation has at least one permitted realization.',
+    era: '1951 →',
+    keyPrimitive: 'O / P / F over a serial accessibility relation',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'Modern deontic logic begins with G. H. von Wright’s 1951 paper *Deontic Logic*, which lifted ought-statements into the modal-logic toolkit. The standard system, KD, treats Oφ as a □ on a serial Kripke frame whose accessible worlds are the *deontically ideal* alternatives to the current world; Pφ is the dual ◇. The D axiom (Oφ → Pφ) corresponds exactly to seriality of R. KD has well-known limitations — Ross’s paradox (1944), Chisholm’s contrary-to-duty puzzle (1963), the gentle-murderer paradox (Forrester, 1984), and free-choice permission — which motivate richer dyadic, conditional, and STIT deontic logics. The Lab ships KD as the canonical entry point.',
+    primitives: [
+      {
+        name: 'Obligation',
+        syntax: '[]p   (Op)',
+        description:
+          'Op holds at world w iff p holds at every deontically-accessible alternative — every world that represents a way things ought to be from w.',
+      },
+      {
+        name: 'Permission',
+        syntax: '<>p   (Pp)',
+        description:
+          'Pp holds at w iff p holds at *some* deontically-accessible alternative. Dual of obligation: Pφ ≡ ¬O¬φ.',
+      },
+      {
+        name: 'Prohibition',
+        syntax: '!<>p  (Fp)',
+        description:
+          'Fp holds at w iff p holds at no deontically-accessible alternative. Definable: Fφ ≡ O¬φ ≡ ¬Pφ.',
+      },
+      {
+        name: 'Serial frame',
+        syntax: 'D-frame',
+        description:
+          'Accessibility relation R is *serial*: every world has at least one R-successor. This guarantees that Oφ never holds vacuously and that Oφ → Pφ is never trivially false.',
+      },
+      {
+        name: 'D axiom',
+        syntax: '[]p -> <>p',
+        description:
+          'Oφ → Pφ — what is obligatory is permitted. The characteristic axiom of standard deontic logic; it corresponds exactly to seriality of R.',
+      },
+    ],
+    examples: DEONTIC_EXAMPLES(),
+    readingPointers: [
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Deontic Logic',
+        href: 'https://plato.stanford.edu/entries/logic-deontic/',
+        kind: 'external',
+      },
+      {
+        title: 'von Wright, "Deontic Logic" (Mind, 1951)',
+        href: 'https://www.jstor.org/stable/2251395',
+        kind: 'external',
+      },
+      {
+        title: 'Hilpinen & McNamara, "Deontic Logic: A Historical Survey and Introduction" (Handbook of Deontic Logic, vol. 1, 2013)',
+        href: 'https://www.collegepublications.co.uk/handbooks/?00012',
+        kind: 'external',
+      },
+    ],
+    frameClasses: [FRAMES.D, FRAMES.T],
+  },
+  {
+    slug: 'intuitionistic',
+    name: 'Intuitionistic Propositional Logic',
+    shortDescription:
+      'A constructive propositional logic interpreted on a pre-order of "stages of knowledge". A formula holds at a stage only if there is a witness, and once witnessed it persists into every accessible future. Excluded middle, double-negation elimination, and Peirce’s law all fail.',
+    era: '1907 →',
+    keyPrimitive: 'persistent forcing on a pre-order',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'Brouwer’s 1907 PhD thesis *On the Foundations of Mathematics* rejected the law of excluded middle as a universal principle, founding intuitionism. Heyting (1930) gave the first axiomatization of intuitionistic propositional logic; Gödel (1932), McKinsey and Tarski (1948), and Kripke (1965) gave it model theory. Kripke’s pre-order semantics — worlds as stages of knowledge, persistence as monotone growth of established truths — became the standard pedagogical introduction. Intuitionistic logic is the propositional core of constructive mathematics and, via the Curry–Howard correspondence, the type theory of pure functional programming.',
+    primitives: [
+      {
+        name: 'Atomic proposition',
+        syntax: 'p, q, r, …',
+        description:
+          'A proposition that may or may not be established at a given stage. The valuation V(w) lists the atoms established at world w; persistence requires V(w) ⊆ V(v) whenever w ≤ v.',
+      },
+      {
+        name: 'Conjunction',
+        syntax: 'p & q',
+        description:
+          'w ⊩ φ ∧ ψ iff w ⊩ φ and w ⊩ ψ. Both halves must be established at the current stage.',
+      },
+      {
+        name: 'Disjunction',
+        syntax: 'p | q',
+        description:
+          'w ⊩ φ ∨ ψ iff w ⊩ φ or w ⊩ ψ. Constructively, you must be able to *say* which disjunct holds — the law of excluded middle (φ ∨ ¬φ) is therefore not a universal principle.',
+      },
+      {
+        name: 'Implication',
+        syntax: 'p -> q',
+        description:
+          'w ⊩ φ → ψ iff for every accessible future v ≥ w: if v ⊩ φ then v ⊩ ψ. The universal-future quantification is what blocks classical principles like Peirce’s law.',
+      },
+      {
+        name: 'Negation',
+        syntax: '!p   (¬p)',
+        description:
+          'w ⊩ ¬φ iff for every accessible future v ≥ w: v ⋮ φ. “φ will never be established”. Strictly stronger than “φ isn’t established here yet”.',
+      },
+      {
+        name: 'Pre-order frame',
+        syntax: '(W, ≤)',
+        description:
+          'A reflexive, transitive accessibility relation. Worlds are *stages of knowledge*; ≤ is “extends to a later stage”. The pre-order shape is what guarantees persistence is well-defined.',
+      },
+      {
+        name: 'Monotone valuation',
+        syntax: 'w ≤ v ⇒ V(w) ⊆ V(v)',
+        description:
+          'Once an atom is forced at a stage, it remains forced at every later stage. The forcing relation lifts this to all formulas — every intuitionistic formula is upward-persistent.',
+      },
+    ],
+    examples: INTUITIONISTIC_EXAMPLES(),
+    readingPointers: [
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Intuitionistic Logic',
+        href: 'https://plato.stanford.edu/entries/logic-intuitionistic/',
+        kind: 'external',
+      },
+      {
+        title: 'Stanford Encyclopedia of Philosophy: The Development of Intuitionistic Logic',
+        href: 'https://plato.stanford.edu/entries/intuitionistic-logic-development/',
+        kind: 'external',
+      },
+      {
+        title: 'Troelstra & van Dalen, *Constructivism in Mathematics* (North-Holland, 1988)',
+        href: 'https://www.elsevier.com/books/constructivism-in-mathematics-vol-1/troelstra/978-0-444-70506-8',
+        kind: 'external',
+      },
+      {
+        title: 'van Dalen, *Logic and Structure* (Springer, 5th ed.)',
+        href: 'https://link.springer.com/book/10.1007/978-1-4471-4558-5',
+        kind: 'external',
+      },
+    ],
+  },
 ];
 
 export function findLogicSystem(slug: string): LogicSystem | undefined {
@@ -1485,6 +1820,796 @@ function KRIPKE_EXAMPLES(): LogicExample[] {
       },
       satisfied: true,
       note: 'Every world has at least one successor (w1 self-loops, w0 sees w1) — that’s seriality, the constraint D corresponds to. D is the deontic axiom: what is obligatory is permissible. Worth pairing with the b-fails case to see how different constraints produce different axiom verdicts.',
+    },
+  ];
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// CTL examples — hand-authored. Each ships a small branching Kripke
+// structure (always serial). The state ids `s0`, `s1`, … and atoms
+// follow the CTL textbook convention. Reuses KripkeModel.
+
+function TEMPORAL_CTL_EXAMPLES(): LogicExample[] {
+  return [
+    {
+      slug: 'ex-basic',
+      natural: 'EX p — there is a next state where p',
+      dsl: 'EX p',
+      frameClass: 'D',
+      model: {
+        worlds: [
+          { id: 's0', atoms: [] },
+          { id: 's1', atoms: ['p'] },
+          { id: 's2', atoms: [] },
+        ],
+        edges: [
+          { from: 's0', to: 's1' },
+          { from: 's0', to: 's2' },
+          { from: 's1', to: 's1' },
+          { from: 's2', to: 's2' },
+        ],
+        designated: 's0',
+      },
+      satisfied: true,
+      note: 's0 has two successors; s1 carries p, so EX p holds at s0. AX p does not — s2 lacks p.',
+    },
+    {
+      slug: 'ax-vs-ex',
+      natural: 'AX p but ¬AG p — true at next-step but not always',
+      dsl: 'AX p & !AG p',
+      frameClass: 'D',
+      model: {
+        worlds: [
+          { id: 's0', atoms: [] },
+          { id: 's1', atoms: ['p'] },
+          { id: 's2', atoms: [] },
+        ],
+        edges: [
+          { from: 's0', to: 's1' },
+          { from: 's1', to: 's2' },
+          { from: 's2', to: 's2' },
+        ],
+        designated: 's0',
+      },
+      satisfied: true,
+      note: 's0’s only successor (s1) has p, so AX p ⊨ s0. But s1 → s2 leaves the truthful world: AG p ⋮ s0 because s2 (reachable from s0) lacks p.',
+    },
+    {
+      slug: 'ef-not-ag',
+      natural: 'EF p but ¬AG p — possibly p but not invariantly',
+      dsl: 'EF p & !AG p',
+      frameClass: 'D',
+      model: {
+        worlds: [
+          { id: 's0', atoms: [] },
+          { id: 's1', atoms: ['p'] },
+          { id: 's2', atoms: [] },
+        ],
+        edges: [
+          { from: 's0', to: 's1' },
+          { from: 's0', to: 's2' },
+          { from: 's1', to: 's1' },
+          { from: 's2', to: 's2' },
+        ],
+        designated: 's0',
+      },
+      satisfied: true,
+      note: 'Some path from s0 reaches p (the s1 branch), so EF p holds. But the s2 branch never reaches p, so AG p fails. The exact distinction CTL gets you over LTL.',
+    },
+    {
+      slug: 'eg-loop',
+      natural: 'EG p — some path keeps p forever',
+      dsl: 'EG p',
+      frameClass: 'D',
+      model: {
+        worlds: [
+          { id: 's0', atoms: ['p'] },
+          { id: 's1', atoms: ['p'] },
+          { id: 's2', atoms: [] },
+        ],
+        edges: [
+          { from: 's0', to: 's1' },
+          { from: 's0', to: 's2' },
+          { from: 's1', to: 's1' },
+          { from: 's2', to: 's2' },
+        ],
+        designated: 's0',
+      },
+      satisfied: true,
+      note: 'The path s0 → s1 → s1 → … keeps p forever, so EG p ⊨ s0. AG p still fails (s2 lacks p). EG vs AG is the canonical CTL distinction.',
+    },
+    {
+      slug: 'au-basic',
+      natural: 'A[p U q] — every path has p until q',
+      dsl: 'A[p U q]',
+      frameClass: 'D',
+      model: {
+        worlds: [
+          { id: 's0', atoms: ['p'] },
+          { id: 's1', atoms: ['p'] },
+          { id: 's2', atoms: ['q'] },
+          { id: 's3', atoms: ['q'] },
+        ],
+        edges: [
+          { from: 's0', to: 's1' },
+          { from: 's0', to: 's2' },
+          { from: 's1', to: 's2' },
+          { from: 's1', to: 's3' },
+          { from: 's2', to: 's2' },
+          { from: 's3', to: 's3' },
+        ],
+        designated: 's0',
+      },
+      satisfied: true,
+      note: 'Every path through s0 forces p until reaching q at s2 or s3. The closure conjunct (q must occur) holds because both s2 and s3 carry q and no path avoids them.',
+    },
+    {
+      slug: 'eu-not-au',
+      natural: 'E[p U q] but ¬A[p U q]',
+      dsl: 'E[p U q] & !A[p U q]',
+      frameClass: 'D',
+      model: {
+        worlds: [
+          { id: 's0', atoms: ['p'] },
+          { id: 's1', atoms: ['p'] },
+          { id: 's2', atoms: ['q'] },
+          { id: 's3', atoms: [] },
+        ],
+        edges: [
+          { from: 's0', to: 's1' },
+          { from: 's0', to: 's3' },
+          { from: 's1', to: 's2' },
+          { from: 's2', to: 's2' },
+          { from: 's3', to: 's3' },
+        ],
+        designated: 's0',
+      },
+      satisfied: true,
+      note: 'The s0 → s1 → s2 path has p until q, so E[p U q] holds. But the s0 → s3 path never reaches q (and s3 also lacks p), so the universal A[p U q] fails. Same scenario shape as the LTL "some traces are good, some aren’t" pattern, expressible directly here.',
+    },
+    {
+      slug: 'mutex-ag',
+      natural: 'Mutual exclusion — AG ¬(p1 ∧ p2)',
+      dsl: 'AG !(p1 & p2)',
+      frameClass: 'D',
+      model: {
+        worlds: [
+          { id: 's0', atoms: [] },
+          { id: 's1', atoms: ['p1'] },
+          { id: 's2', atoms: ['p2'] },
+        ],
+        edges: [
+          { from: 's0', to: 's1' },
+          { from: 's0', to: 's2' },
+          { from: 's1', to: 's0' },
+          { from: 's2', to: 's0' },
+        ],
+        designated: 's0',
+      },
+      satisfied: true,
+      note: 'A toy mutex: from idle (s0) one of two clients can be in their critical section (s1 has p1, s2 has p2), and they always return to idle. No reachable state has both atoms — AG ¬(p1 ∧ p2) holds. The branching shape is what makes mutex naturally a CTL property.',
+    },
+    {
+      slug: 'starvation-fails',
+      natural: 'Starvation — AG (req → AF resp) (fails on a starving branch)',
+      dsl: 'AG (req -> AF resp)',
+      frameClass: 'D',
+      model: {
+        worlds: [
+          { id: 's0', atoms: ['req'] },
+          { id: 's1', atoms: [] },         // ignored: stays here forever
+          { id: 's2', atoms: ['resp'] },
+        ],
+        edges: [
+          { from: 's0', to: 's1' },
+          { from: 's0', to: 's2' },
+          { from: 's1', to: 's1' },
+          { from: 's2', to: 's2' },
+        ],
+        designated: 's0',
+      },
+      satisfied: false,
+      note: 'At s0 a request is made; one path responds (via s2) but another stays in s1 forever, so AF resp fails along the s1 branch and AG-bracketing the implication fails at s0. Classic starvation pattern; pinning it down requires a path quantifier.',
+    },
+  ];
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// LTL examples — hand-authored. Each ships a small lasso trace.
+// Convention: state ids `s0`, `s1`, … with `start = 0`. `loopBack`
+// = states.length - 1 means "stutter" (last state self-loops);
+// `loopBack < states.length - 1` makes the trace genuinely cyclic.
+
+function TEMPORAL_LTL_EXAMPLES(): LogicExample[] {
+  return [
+    {
+      slug: 'next-basic',
+      natural: 'X p — at the next state, p',
+      dsl: 'X p',
+      trace: {
+        states: [
+          { id: 's0', atoms: [] },
+          { id: 's1', atoms: ['p'] },
+          { id: 's2', atoms: ['p'] },
+        ],
+        loopBack: 2,
+        start: 0,
+      },
+      satisfied: true,
+      note: 'p holds at s1 (the next state from s0), so X p holds at the start. Stutter trace — s2 self-loops, so the future after s2 is "p forever".',
+    },
+    {
+      slug: 'eventually-basic',
+      natural: 'F p — eventually p',
+      dsl: 'F p',
+      trace: {
+        states: [
+          { id: 's0', atoms: [] },
+          { id: 's1', atoms: [] },
+          { id: 's2', atoms: ['p'] },
+        ],
+        loopBack: 2,
+        start: 0,
+      },
+      satisfied: true,
+      note: 'p eventually holds (at s2). F p holds at every position ≤ 2 of the trace.',
+    },
+    {
+      slug: 'always-on-stutter',
+      natural: 'G p — always p, on a stutter trace',
+      dsl: 'G p',
+      trace: {
+        states: [
+          { id: 's0', atoms: ['p'] },
+          { id: 's1', atoms: ['p'] },
+        ],
+        loopBack: 1,
+        start: 0,
+      },
+      satisfied: true,
+      note: 'p holds at every state. The stutter at s1 keeps it holding into the infinite future.',
+    },
+    {
+      slug: 'always-fails-cyclic',
+      natural: 'G p fails on a cyclic trace where p eventually drops',
+      dsl: 'G p',
+      trace: {
+        states: [
+          { id: 's0', atoms: ['p'] },
+          { id: 's1', atoms: ['p'] },
+          { id: 's2', atoms: [] },
+        ],
+        loopBack: 0,
+        start: 0,
+      },
+      satisfied: false,
+      note: 'The loop returns to s0 → s1 → s2 → s0 → … so the infinite trace is p, p, ¬p, p, p, ¬p, … . p fails infinitely often, so G p fails at every position.',
+    },
+    {
+      slug: 'until-basic',
+      natural: 'p U q — p until q',
+      dsl: 'p U q',
+      trace: {
+        states: [
+          { id: 's0', atoms: ['p'] },
+          { id: 's1', atoms: ['p'] },
+          { id: 's2', atoms: ['q'] },
+        ],
+        loopBack: 2,
+        start: 0,
+      },
+      satisfied: true,
+      note: 'q is reached at s2; p holds at every position before then (s0, s1). Until’s closure-conjunct is exactly this: q must occur, and p must persist up to it.',
+    },
+    {
+      slug: 'liveness-response',
+      natural: 'Response — G(req → F resp)',
+      dsl: 'G(req -> F resp)',
+      trace: {
+        states: [
+          { id: 's0', atoms: ['req'] },
+          { id: 's1', atoms: [] },
+          { id: 's2', atoms: ['resp'] },
+          { id: 's3', atoms: ['req'] },
+          { id: 's4', atoms: ['resp'] },
+        ],
+        loopBack: 4,
+        start: 0,
+      },
+      satisfied: true,
+      note: 'Every request is eventually answered: at s0 (req → response at s2), at s3 (req → response at s4). The canonical liveness pattern in protocol verification.',
+    },
+    {
+      slug: 'fairness-fails',
+      natural: 'Fairness fails — GF p (infinitely often p) fails on a stutter trace where p drops',
+      dsl: 'G F p',
+      trace: {
+        states: [
+          { id: 's0', atoms: ['p'] },
+          { id: 's1', atoms: [] },
+        ],
+        loopBack: 1,
+        start: 0,
+      },
+      satisfied: false,
+      note: 'p holds only at s0; after that the trace stutters in s1 forever without p. So F p eventually becomes false, and G F p fails at the start. Switch the loopBack to 0 to make it true (the trace then becomes p, ¬p, p, ¬p, …).',
+    },
+    {
+      slug: 'duality-f-not-g-not',
+      natural: 'F p ↔ ¬G ¬p — the canonical LTL duality',
+      dsl: 'F p <-> !G !p',
+      trace: {
+        states: [
+          { id: 's0', atoms: [] },
+          { id: 's1', atoms: ['p'] },
+        ],
+        loopBack: 1,
+        start: 0,
+      },
+      satisfied: true,
+      note: 'Holds at every position of every trace. Eventually-φ equals not-always-not-φ.',
+    },
+  ];
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Epistemic examples — hand-authored. Each ships a small multi-agent
+// model with the relations declared per agent. Atom valuations are
+// shared across agents (everyone agrees on the *facts*; they differ
+// only in which worlds they can tell apart).
+//
+// Two-agent S5 model (alice + bob) is the workhorse — all five
+// classical knowledge axioms are validated on it; the knowledge-vs-
+// belief example demotes one agent's relation to KD45 to break T.
+
+function S5_REFLEX_PAIRS(world: string, agent: string) {
+  return { from: world, to: world, agent };
+}
+
+function EPISTEMIC_EXAMPLES(): LogicExample[] {
+  // Two-world S5 model with alice and bob.
+  // Alice can't tell w0 from w1 (R_alice = total). Bob distinguishes
+  // them (R_bob = identity only). Atom p holds at w1 only.
+  const ALICE_BLIND_BOB_KNOWS: EpistemicModel = {
+    worlds: [
+      { id: 'w0', atoms: [] },
+      { id: 'w1', atoms: ['p'] },
+    ],
+    edges: [
+      // alice: total relation (S5: reflexive + symmetric + transitive)
+      { from: 'w0', to: 'w0', agent: 'alice' },
+      { from: 'w0', to: 'w1', agent: 'alice' },
+      { from: 'w1', to: 'w0', agent: 'alice' },
+      { from: 'w1', to: 'w1', agent: 'alice' },
+      // bob: identity only (he can tell the worlds apart)
+      { from: 'w0', to: 'w0', agent: 'bob' },
+      { from: 'w1', to: 'w1', agent: 'bob' },
+    ],
+    agents: ['alice', 'bob'],
+    designated: 'w1',
+  };
+
+  // S5 model where alice and bob both have the *total* relation.
+  // Used to verify K / T / 4 / 5 hold for both agents.
+  const TWO_WORLD_S5_BOTH: EpistemicModel = {
+    worlds: [
+      { id: 'w0', atoms: [] },
+      { id: 'w1', atoms: ['p'] },
+    ],
+    edges: [
+      { from: 'w0', to: 'w0', agent: 'alice' },
+      { from: 'w0', to: 'w1', agent: 'alice' },
+      { from: 'w1', to: 'w0', agent: 'alice' },
+      { from: 'w1', to: 'w1', agent: 'alice' },
+      { from: 'w0', to: 'w0', agent: 'bob' },
+      { from: 'w0', to: 'w1', agent: 'bob' },
+      { from: 'w1', to: 'w0', agent: 'bob' },
+      { from: 'w1', to: 'w1', agent: 'bob' },
+    ],
+    agents: ['alice', 'bob'],
+    designated: 'w0',
+  };
+
+  // KD45 model for `bob` (serial + trans + Euclid, NOT reflexive).
+  // Used to show K_bob p → p (T) fails — knowledge-vs-belief cleavage.
+  const BOB_BELIEVES_FALSELY: EpistemicModel = {
+    worlds: [
+      { id: 'w0', atoms: [] },        // actual world: p is false
+      { id: 'w1', atoms: ['p'] },     // bob's only believed alternative
+    ],
+    edges: [
+      // alice: S5 — knowledge
+      S5_REFLEX_PAIRS('w0', 'alice'),
+      S5_REFLEX_PAIRS('w1', 'alice'),
+      { from: 'w0', to: 'w1', agent: 'alice' },
+      { from: 'w1', to: 'w0', agent: 'alice' },
+      // bob: KD45 — believes p, but p is false at the actual world.
+      // R_bob = { (w0, w1), (w1, w1) } — serial, transitive, Euclidean,
+      // but not reflexive at w0.
+      { from: 'w0', to: 'w1', agent: 'bob' },
+      { from: 'w1', to: 'w1', agent: 'bob' },
+    ],
+    agents: ['alice', 'bob'],
+    designated: 'w0',
+  };
+
+  return [
+    {
+      slug: 'alice-doesnt-know-p',
+      natural: 'Alice doesn’t know whether p — ¬K_alice p ∧ ¬K_alice ¬p',
+      dsl: '!K_alice p & !K_alice !p',
+      epistemicModel: ALICE_BLIND_BOB_KNOWS,
+      satisfied: true,
+      note: 'Alice considers both worlds possible. p ⊨ w1 but p ⋯ w0; since alice can’t distinguish them she neither knows p nor knows ¬p.',
+    },
+    {
+      slug: 'bob-knows-p',
+      natural: 'Bob knows whether p — K_bob p ∨ K_bob ¬p (here: K_bob p)',
+      dsl: 'K_bob p',
+      epistemicModel: ALICE_BLIND_BOB_KNOWS,
+      satisfied: true,
+      note: 'At the designated world (w1), bob’s only epistemic alternative is w1 itself. Since p ⊨ w1, K_bob p holds.',
+    },
+    {
+      slug: 'higher-order-asymmetry',
+      natural: 'Higher-order knowledge asymmetry — K_bob p ∧ ¬K_alice K_bob p',
+      dsl: 'K_bob p & !K_alice K_bob p',
+      epistemicModel: ALICE_BLIND_BOB_KNOWS,
+      satisfied: true,
+      note: 'Bob knows p, but alice doesn’t know that bob knows p — at the alternative w0 (which alice considers possible), p is false, so K_bob p fails there for bob. Alice can’t rule that out.',
+    },
+    {
+      slug: 'k-axiom-multi-agent',
+      natural: 'K-axiom holds for every agent — K_a (p → q) → (K_a p → K_a q)',
+      dsl: 'K_alice (p -> q) -> (K_alice p -> K_alice q)',
+      epistemicModel: TWO_WORLD_S5_BOTH,
+      satisfied: true,
+      note: 'Distribution of knowledge over implication is sound on every multi-agent Kripke model. The example just exhibits one.',
+    },
+    {
+      slug: 'positive-introspection',
+      natural: 'Positive introspection (4) — K_alice p → K_alice K_alice p',
+      dsl: 'K_alice p -> K_alice K_alice p',
+      epistemicModel: TWO_WORLD_S5_BOTH,
+      satisfied: true,
+      note: 'On an S5 frame R_alice is transitive: if alice knows p, she knows that she knows p. The 4 axiom.',
+    },
+    {
+      slug: 'negative-introspection',
+      natural: 'Negative introspection (5) — ¬K_alice p → K_alice ¬K_alice p',
+      dsl: '!K_alice p -> K_alice !K_alice p',
+      epistemicModel: ALICE_BLIND_BOB_KNOWS,
+      satisfied: true,
+      note: 'Alice doesn’t know p at w1, and she knows that — because at every world R_alice-related to w1, alice still doesn’t know p (the relation is total over a 2-world set). The 5 axiom on S5 frames.',
+    },
+    {
+      slug: 'belief-not-knowledge',
+      natural: 'Bob believes p falsely — K_bob p ∧ ¬p (T fails for bob)',
+      dsl: 'K_bob p & !p',
+      epistemicModel: BOB_BELIEVES_FALSELY,
+      satisfied: true,
+      note: 'At the actual world w0, p is false, but bob’s only epistemically-accessible alternative is w1, where p holds. So K_bob p (interpreted as belief) is forced even though p isn’t. The factivity (T) axiom fails for bob — exactly the formal cleavage between knowledge (S5) and belief (KD45).',
+    },
+  ];
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Deontic examples — hand-authored. Each ships a small serial Kripke
+// model and pairs the formula with its deontic gloss in the note.
+// Designation = the actual world; accessible worlds represent
+// deontically-ideal alternatives.
+
+function DEONTIC_EXAMPLES(): LogicExample[] {
+  return [
+    {
+      slug: 'd-axiom',
+      natural: 'D axiom — Op → Pp (obligation implies permission)',
+      dsl: '[]p -> <>p',
+      frameClass: 'D',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: [] },
+          { id: 'w1', atoms: ['p'] },
+        ],
+        edges: [
+          { from: 'w0', to: 'w1' },
+          { from: 'w1', to: 'w1' },
+        ],
+        designated: 'w0',
+      },
+      satisfied: true,
+      note: 'Seriality at w0 (it has the alternative w1) ensures Op → Pp at w0. The defining picture of standard deontic logic — obligations come with at least one permitted realisation.',
+    },
+    {
+      slug: 'd-fails-on-non-serial',
+      natural: 'D fails on a non-serial frame — Op → Pp at a dead-end world',
+      dsl: '[]p -> <>p',
+      frameClass: 'K',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: [] },
+        ],
+        edges: [],
+        designated: 'w0',
+      },
+      satisfied: false,
+      note: 'Without seriality, Op is vacuously true at w0 (no successors to falsify p) but Pp is vacuously false (no successors to witness p). The D axiom fails — the canonical motivating reason deontic logic insists on seriality.',
+    },
+    {
+      slug: 'forbidden-not-permitted',
+      natural: 'Fp ≡ ¬Pp ≡ O¬p — three glosses on prohibition',
+      dsl: '!<>p <-> []!p',
+      frameClass: 'D',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: [] },
+          { id: 'w1', atoms: [] },
+        ],
+        edges: [
+          { from: 'w0', to: 'w1' },
+          { from: 'w1', to: 'w1' },
+        ],
+        designated: 'w0',
+      },
+      satisfied: true,
+      note: 'Validates the standard duality: forbidding p is the same as obliging not-p. Holds in every Kripke model — the K logic alone is enough; seriality isn’t needed for this fragment.',
+    },
+    {
+      slug: 'k-conjunction-in-d',
+      natural: 'Aggregation — Op ∧ Oq → O(p ∧ q)',
+      dsl: '([]p & []q) -> [](p & q)',
+      frameClass: 'D',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: [] },
+          { id: 'w1', atoms: ['p', 'q'] },
+        ],
+        edges: [
+          { from: 'w0', to: 'w1' },
+          { from: 'w1', to: 'w1' },
+        ],
+        designated: 'w0',
+      },
+      satisfied: true,
+      note: 'Two separate obligations imply the joint obligation. Sometimes flagged as too strong (Williams’s puzzle of joint impossibility) — modern deontic logics often weaken this.',
+    },
+    {
+      slug: 'ross-paradox',
+      natural: 'Ross’s paradox — Op → O(p ∨ q)',
+      dsl: '[]p -> [](p | q)',
+      frameClass: 'D',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: [] },
+          { id: 'w1', atoms: ['p'] },
+        ],
+        edges: [
+          { from: 'w0', to: 'w1' },
+          { from: 'w1', to: 'w1' },
+        ],
+        designated: 'w0',
+      },
+      satisfied: true,
+      note: 'Formally valid in KD: if you’re obliged to mail the letter (Op), you’re obliged that you-mail-it-or-burn-it (O(p ∨ q)). Ross (1944) pointed this out as counterintuitive evidence that O does not behave like ordinary necessity for natural-language ought.',
+    },
+    {
+      slug: 'free-choice-fails',
+      natural: 'Free-choice permission — P(p ∨ q) → (Pp ∧ Pq) (fails)',
+      dsl: '<>(p | q) -> (<>p & <>q)',
+      frameClass: 'D',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: [] },
+          { id: 'w1', atoms: ['p'] },
+        ],
+        edges: [
+          { from: 'w0', to: 'w1' },
+          { from: 'w1', to: 'w1' },
+        ],
+        designated: 'w0',
+      },
+      satisfied: false,
+      note: 'Counterexample for free-choice permission: w1 witnesses (p ∨ q) by virtue of p, so P(p ∨ q) holds at w0; but no successor witnesses q, so Pq fails. The natural-language reading "you may have tea or coffee" suggests both are permitted; KD doesn’t deliver that and a richer logic is needed.',
+    },
+    {
+      slug: 'chisholm-fragment',
+      natural: 'Conditional fragment — O(p → q) → (Op → Oq) (the K-axiom in deontic guise)',
+      dsl: '[](p -> q) -> ([]p -> []q)',
+      frameClass: 'D',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: [] },
+          { id: 'w1', atoms: ['p', 'q'] },
+        ],
+        edges: [
+          { from: 'w0', to: 'w1' },
+          { from: 'w1', to: 'w1' },
+        ],
+        designated: 'w0',
+      },
+      satisfied: true,
+      note: 'The K-axiom is exactly the principle Chisholm’s 1963 contrary-to-duty puzzle stresses: a conditional obligation O(p → q) plus the obligation Op forces the obligation Oq, even when in fact ¬p holds. Whether that is the right logic for ought-given-that is the open question that motivates dyadic deontic logics.',
+    },
+  ];
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Intuitionistic examples — hand-authored. Each pairs a formula with a
+// pre-order Kripke model whose valuation is monotone (atoms persist
+// upward along R). The classical-only examples ship the canonical
+// 2-world / 3-world counter-frames; the intuitionistically-valid ones
+// ship a single-world model where the verdict is uncontroversial.
+//
+// Convention: w0 is the designated world; reflexive self-edges are
+// included so the frame-shape verdict is green by default.
+
+function INTUITIONISTIC_EXAMPLES(): LogicExample[] {
+  return [
+    {
+      slug: 'identity',
+      natural: 'Identity — p → p',
+      dsl: 'p -> p',
+      model: {
+        worlds: [{ id: 'w0', atoms: [] }],
+        edges: [{ from: 'w0', to: 'w0' }],
+        designated: 'w0',
+      },
+      satisfied: true,
+      note: 'Trivially intuitionistically valid at every world of every pre-order frame. The simplest sanity check.',
+    },
+    {
+      slug: 'modus-ponens',
+      natural: 'Modus ponens — (p ∧ (p → q)) → q',
+      dsl: '(p & (p -> q)) -> q',
+      model: {
+        worlds: [{ id: 'w0', atoms: ['p', 'q'] }],
+        edges: [{ from: 'w0', to: 'w0' }],
+        designated: 'w0',
+      },
+      satisfied: true,
+      note: 'Sound in every Kripke pre-order: if p ⊩ w and (p → q) ⊩ w, then in particular at w itself the implication forces q.',
+    },
+    {
+      slug: 'dni',
+      natural: 'Double-negation introduction — p → ¬¬p (intuitionistic)',
+      dsl: 'p -> !!p',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: [] },
+          { id: 'w1', atoms: ['p'] },
+        ],
+        edges: [
+          { from: 'w0', to: 'w0' },
+          { from: 'w0', to: 'w1' },
+          { from: 'w1', to: 'w1' },
+        ],
+        designated: 'w0',
+      },
+      satisfied: true,
+      note: 'Intuitionistically valid (the *converse* of DNE): once p is forced at v, no future v′ ≥ v can force ¬p, because ¬p needs p to never appear.',
+    },
+    {
+      slug: 'lem-fails',
+      natural: 'Excluded middle — p ∨ ¬p (classical only; fails here)',
+      dsl: 'p | !p',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: [] },
+          { id: 'w1', atoms: ['p'] },
+        ],
+        edges: [
+          { from: 'w0', to: 'w0' },
+          { from: 'w0', to: 'w1' },
+          { from: 'w1', to: 'w1' },
+        ],
+        designated: 'w0',
+      },
+      satisfied: false,
+      note: 'At w0, p ⋮ (atom not yet established) and ¬p ⋮ (some accessible future — w1 — does establish p). So neither disjunct holds at w0; LEM fails. The canonical 2-world counter-frame.',
+    },
+    {
+      slug: 'dne-fails',
+      natural: 'Double-negation elimination — ¬¬p → p (classical only; fails here)',
+      dsl: '!!p -> p',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: [] },
+          { id: 'w1', atoms: ['p'] },
+        ],
+        edges: [
+          { from: 'w0', to: 'w0' },
+          { from: 'w0', to: 'w1' },
+          { from: 'w1', to: 'w1' },
+        ],
+        designated: 'w0',
+      },
+      satisfied: false,
+      note: 'At w0, ¬¬p ⊩ (every accessible future has *some* further future forcing p — namely w1) but p ⋮. The implication therefore fails. Same counter-frame as LEM; intuitionism’s asymmetry between the two halves of double-negation is on display.',
+    },
+    {
+      slug: 'peirce-fails',
+      natural: 'Peirce’s law — ((p → q) → p) → p (classical only; fails here)',
+      dsl: '((p -> q) -> p) -> p',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: [] },
+          { id: 'w1', atoms: ['p'] },
+        ],
+        edges: [
+          { from: 'w0', to: 'w0' },
+          { from: 'w0', to: 'w1' },
+          { from: 'w1', to: 'w1' },
+        ],
+        designated: 'w0',
+      },
+      satisfied: false,
+      note: 'At w0: (p → q) ⋮ at w0 and at w1 (since p ⊩ w1, q ⋮ w1), so (p → q) → p ⊩ w0 vacuously. But p ⋮ w0, so Peirce ⊮ w0. A *purely implicational* classical tautology that the constructive reading rejects.',
+    },
+    {
+      slug: 'wlem-fails',
+      natural: 'Weak excluded middle — ¬p ∨ ¬¬p (classical only; fails here)',
+      dsl: '!p | !!p',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: [] },
+          { id: 'w1', atoms: ['p'] },
+          { id: 'w2', atoms: [] },
+        ],
+        edges: [
+          { from: 'w0', to: 'w0' },
+          { from: 'w0', to: 'w1' },
+          { from: 'w0', to: 'w2' },
+          { from: 'w1', to: 'w1' },
+          { from: 'w2', to: 'w2' },
+        ],
+        designated: 'w0',
+      },
+      satisfied: false,
+      note: 'A 3-world fork: w0 sees w1 (with p) and w2 (without p). At w0, ¬p ⋮ (w1 forces p) and ¬¬p ⋮ (w2 has no successor forcing p, so ¬p ⊩ w2 — that is, some future of w0 forces ¬p). Both disjuncts fail.',
+    },
+    {
+      slug: 'demorgan-classical-only',
+      natural: 'De Morgan, classical half — ¬(p ∧ q) → (¬p ∨ ¬q) (fails here)',
+      dsl: '!(p & q) -> (!p | !q)',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: [] },
+          { id: 'w1', atoms: ['p'] },
+          { id: 'w2', atoms: ['q'] },
+        ],
+        edges: [
+          { from: 'w0', to: 'w0' },
+          { from: 'w0', to: 'w1' },
+          { from: 'w0', to: 'w2' },
+          { from: 'w1', to: 'w1' },
+          { from: 'w2', to: 'w2' },
+        ],
+        designated: 'w0',
+      },
+      satisfied: false,
+      note: 'At w0, ¬(p ∧ q) ⊩ (no world forces both atoms) but ¬p ∨ ¬q ⋮ — neither disjunct holds, since w1 is a future where p is forced and w2 a future where q is forced. The constructive direction (¬p ∨ ¬q → ¬(p ∧ q)) is intuitionistically valid; this one is not.',
+    },
+    {
+      slug: 'demorgan-intuitionistic',
+      natural: 'De Morgan, intuitionistic half — (¬p ∨ ¬q) → ¬(p ∧ q) (valid)',
+      dsl: '(!p | !q) -> !(p & q)',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: [] },
+          { id: 'w1', atoms: ['p'] },
+          { id: 'w2', atoms: ['q'] },
+        ],
+        edges: [
+          { from: 'w0', to: 'w0' },
+          { from: 'w0', to: 'w1' },
+          { from: 'w0', to: 'w2' },
+          { from: 'w1', to: 'w1' },
+          { from: 'w2', to: 'w2' },
+        ],
+        designated: 'w0',
+      },
+      satisfied: true,
+      note: 'Same fork as the classical-only example. Each disjunct on the antecedent gives a constructive witness against the conjunction; the implication is intuitionistically valid even when its converse isn’t.',
     },
   ];
 }

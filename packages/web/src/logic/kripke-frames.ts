@@ -67,10 +67,22 @@ export const FRAMES: Record<FrameClassSlug, FrameClass> = {
     description:
       'Frames whose accessibility relation is an equivalence (equivalently: reflexive + Euclidean). Validates the 5 axiom (◇p → □◇p): possibility is itself necessary. The standard logic for metaphysical necessity in the Lewis–Kripke tradition; treats worlds in any equivalence class as wholly interchangeable.',
   },
+  D: {
+    slug: 'D',
+    name: 'D — Serial frames',
+    constraints: ['serial'],
+    characteristicAxiom: {
+      natural: 'What is obligatory is permitted.',
+      dsl: '[]p -> <>p',
+      unicode: '□p → ◇p',
+    },
+    description:
+      'Every world has at least one accessible alternative. Validates the D axiom (□p → ◇p) — the deontic reading: an obligation has at least one permitted realization. Standard deontic logic is KD (K plus seriality); reflexivity (T) is dropped because the actual world need not satisfy what is merely obligatory.',
+  },
 };
 
 // Display order on the picker.
-export const FRAME_ORDER: FrameClassSlug[] = ['K', 'T', 'S4', 'S5'];
+export const FRAME_ORDER: FrameClassSlug[] = ['K', 'T', 'S4', 'S5', 'D'];
 
 export const ALL_FRAMES: FrameClass[] = FRAME_ORDER.map(s => FRAMES[s]);
 
