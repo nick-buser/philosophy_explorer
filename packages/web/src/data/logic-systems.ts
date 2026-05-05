@@ -1094,6 +1094,178 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
       },
     ],
   },
+  {
+    slug: 'resolution',
+    name: 'Resolution · Horn · Datalog',
+    shortDescription:
+      'One DSL, three engines: binary resolution refutation on a clause set; SLD goal-directed proof search on a Horn program; semi-naïve forward chaining of a Datalog program to its minimal model.',
+    era: '1965 → present',
+    keyPrimitive: 'clause + unification',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'Resolution as a uniform proof method for first-order logic was introduced by J. A. Robinson in his 1965 paper "A Machine-Oriented Logic Based on the Resolution Principle." The idea was that any two clauses with complementary literals can be combined into a new clause, and that — paired with most-general-unifier substitution — this single rule of inference is *refutation-complete* for first-order logic. The result reshaped automated reasoning. Robert Kowalski and Alain Colmerauer in 1972–73 specialised resolution to *Horn clauses* (at most one positive literal each) and combined it with leftmost selection and depth-first backtracking to produce SLD resolution — the operational core of Prolog. In parallel, the database community recognised that Horn programs without function symbols admit a tractable forward-chaining evaluation: every program has a unique least Herbrand model, computed in polynomial time by iterating the immediate-consequence operator T_P to fixpoint. This stratified-and-safe fragment became Datalog. The three viewpoints — refutation, SLD, forward chaining — are connected: each reads the same Horn program with a different proof procedure.',
+    primitives: [
+      {
+        name: 'Term',
+        syntax: 'X · alice · cons(X, Xs)',
+        description: 'Variable (capital initial / underscore), constant (lowercase), or compound functor(args). Ground terms have no variables.',
+      },
+      {
+        name: 'Atom',
+        syntax: 'parent(alice, bob)',
+        description: 'Predicate applied to terms. The basic unit of meaning in Horn / Datalog programs and the atom of every literal in clauses mode.',
+      },
+      {
+        name: 'Literal',
+        syntax: 'p(X)  /  ¬p(X)',
+        description: 'A positive or negative atom. Negation written ¬ / ~ / "not". Used inside clauses; Horn / Datalog atoms are always positive.',
+      },
+      {
+        name: 'Clause',
+        syntax: 'p ∨ ¬q ∨ r',
+        description: 'A disjunction of literals (a set, in the abstract). The empty clause ⊥ is the contradiction.',
+      },
+      {
+        name: 'Goal (refutation)',
+        syntax: '⊢ G  /  |- G',
+        description: 'In clauses mode, the engine adds the negation of every goal literal as a unit clause and searches for ⊥. Reaching ⊥ proves the goal follows from the inputs.',
+      },
+      {
+        name: 'Horn rule',
+        syntax: 'h(X) :- b1(X), b2(X).',
+        description: 'A head atom with zero or more body atoms. Facts are rules with empty body. The Prolog / Datalog notation; identifies a definite clause.',
+      },
+      {
+        name: 'Query',
+        syntax: '?- ancestor(alice, Z).',
+        description: 'A conjunction of atoms to prove. SLD resolution backward-chains it leftmost-first and returns the answer substitution for its variables.',
+      },
+      {
+        name: 'Unification',
+        syntax: 'mgu(p(X, b), p(a, Y))',
+        description: 'Robinson MGU: the most general substitution making two atoms identical. Required for both binary resolution and SLD goal reduction.',
+      },
+    ],
+    examples: [
+      {
+        slug: 'modus-ponens-refutation',
+        natural: 'Propositional refutation: modus ponens — {p, ¬p ∨ q, ⊢ q} resolves to ⊥.',
+        dsl:
+          'p\n' +
+          '~p | q\n' +
+          '|- q',
+        note: 'The textbook refutation example. Adding ¬q gives the unit clause {¬q}; resolving with {¬p ∨ q} on q yields {¬p}; resolving with {p} yields ⊥.',
+      },
+      {
+        slug: 'unsat-three-clauses',
+        natural: 'Refute an unsatisfiable clause set: {p ∨ q, ¬p, ¬q} alone contradict.',
+        dsl:
+          'p | q\n' +
+          '~p\n' +
+          '~q',
+        note: 'No goal needed — the clause set itself is unsatisfiable. Resolution on {p, q} with {¬p} yields {q}; resolving with {¬q} gives ⊥.',
+      },
+      {
+        slug: 'transitivity-fol',
+        natural: 'First-order resolution: from p(a) and ∀X. p(X) → q(X), derive q(a).',
+        dsl:
+          'p(a)\n' +
+          '~p(X) | q(X)\n' +
+          '|- q(a)',
+        note: 'Demonstrates unification: resolving {¬p(X) ∨ q(X)} with {¬q(a)} on q binds X ↦ a; the resolvent {¬p(a)} then resolves with {p(a)} to ⊥.',
+      },
+      {
+        slug: 'ancestor-sld',
+        natural: 'Horn / SLD: who is alice an ancestor of?',
+        dsl:
+          'parent(alice, bob).\n' +
+          'parent(bob, carol).\n' +
+          'parent(carol, dave).\n' +
+          'ancestor(X, Y) :- parent(X, Y).\n' +
+          'ancestor(X, Z) :- parent(X, Y), ancestor(Y, Z).\n' +
+          '?- ancestor(alice, Z).',
+        note: 'SLD finds the first answer Z = bob via the base rule. Re-rooting the recursive rule on bob would find Z = carol and then Z = dave. The lab shows the first success path with backtracked dead-ends visible.',
+      },
+      {
+        slug: 'append-sld',
+        natural: 'Horn / SLD with structures: append([1, 2], [3], R).',
+        dsl:
+          'append(nil, L, L).\n' +
+          'append(cons(H, T), L, cons(H, R)) :- append(T, L, R).\n' +
+          '?- append(cons(one, cons(two, nil)), cons(three, nil), R).',
+        note: 'The classic recursive list-append, with nil and cons used as constants and a binary functor. Each recursive resolution unifies the head pattern with the goal and emits the recursive sub-goal.',
+      },
+      {
+        slug: 'transitive-closure-datalog',
+        natural: 'Datalog: transitive closure of an edge relation.',
+        dsl:
+          'edge(a, b).\n' +
+          'edge(b, c).\n' +
+          'edge(c, d).\n' +
+          'edge(d, e).\n' +
+          'tc(X, Y) :- edge(X, Y).\n' +
+          'tc(X, Y) :- edge(X, Z), tc(Z, Y).',
+        note: 'No query — the engine forward-chains to the fixpoint. Stratum 0 = the four edge facts. Stratum 1 derives tc(a,b), tc(b,c), tc(c,d), tc(d,e) (base rule). Stratum 2 adds tc(a,c), tc(b,d), tc(c,e). Subsequent rounds chain on through.',
+      },
+      {
+        slug: 'same-generation-datalog',
+        natural: 'Datalog: classic same-generation query — siblings, cousins, second cousins…',
+        dsl:
+          'parent(arthur, bob).\n' +
+          'parent(arthur, carol).\n' +
+          'parent(bob, dave).\n' +
+          'parent(carol, eve).\n' +
+          'parent(dave, frank).\n' +
+          'parent(eve, gail).\n' +
+          'sg(X, X) :- person(X).\n' +
+          'sg(X, Y) :- parent(P, X), parent(Q, Y), sg(P, Q).\n' +
+          'person(arthur).\n' +
+          'person(bob).\n' +
+          'person(carol).\n' +
+          'person(dave).\n' +
+          'person(eve).\n' +
+          'person(frank).\n' +
+          'person(gail).',
+        note: 'Same-generation pairs: bob and carol (siblings, both children of arthur); dave and eve (cousins, parents are siblings); frank and gail (second cousins). The reflexive base case sg(X, X) puts every person in their own generation.',
+      },
+      {
+        slug: 'reachability-with-query',
+        natural: 'Same edges, asked as an SLD query: is e reachable from a?',
+        dsl:
+          'edge(a, b).\n' +
+          'edge(b, c).\n' +
+          'edge(c, d).\n' +
+          'edge(d, e).\n' +
+          'reach(X, Y) :- edge(X, Y).\n' +
+          'reach(X, Y) :- edge(X, Z), reach(Z, Y).\n' +
+          '?- reach(a, e).',
+        note: 'Same program shape as the Datalog example above, but with a `?-` query — switches into SLD mode. SLD chains through edge(a,b), edge(b,c), … until reach(b, e) → reach(c, e) → reach(d, e) → edge(d, e). The derivation tree is the witness.',
+      },
+    ],
+    readingPointers: [
+      {
+        title: 'Robinson, "A Machine-Oriented Logic Based on the Resolution Principle" (JACM 1965)',
+        href: 'https://dl.acm.org/doi/10.1145/321250.321253',
+        kind: 'external',
+      },
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Automated Reasoning',
+        href: 'https://plato.stanford.edu/entries/reasoning-automated/',
+        kind: 'external',
+      },
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Logic Programming',
+        href: 'https://plato.stanford.edu/entries/logic-programming/',
+        kind: 'external',
+      },
+      {
+        title: 'Abiteboul, Hull & Vianu, Foundations of Databases (1995) — Datalog chapters online',
+        href: 'http://webdam.inria.fr/Alice/',
+        kind: 'external',
+      },
+    ],
+  },
 ];
 
 export function findLogicSystem(slug: string): LogicSystem | undefined {
