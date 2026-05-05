@@ -202,22 +202,29 @@ world, true at all accessible worlds) and removes excluded middle
   with Natural Deduction above for the rule-toggle UX.
 - **Size.** M, much smaller if Natural Deduction lands first.
 
-### Engine-derived Kripke (`feat/logic-lab-kripke-engine`)
+### ~~Engine-derived Kripke~~ — shipped 2026-05-05 (`feat/logic-lab-kripke-engine`)
 
-Currently `kripke` evaluates hand-authored truth-at-designated-world
-per (formula, frame, model). The deferred work is replacing that with
-an engine that takes a frame + model + formula and computes
-satisfaction, plus letting the user toggle frame conditions K/T/B/S4/S5
-and see which axioms hold/fail.
+Replaces hand-authored `satisfied: boolean` per example with a
+recursive `satisfies(formula, model, world)` over the existing
+ModalFormula AST. **Status:** shipped 2026-05-05 — engine + frame-
+constraint diagnostics (reflexive / symmetric / transitive / serial /
+euclidean with violation witnesses) + per-axiom verdict table (K, T,
+4, 5, B, D, with substitution + failing-world witnesses) + R-closure
+under any frame class via a "fix model" affordance. Per-world ⊨ / ⊭
+chips on the model view; designated-world truth badge and
+model-validity badge derived live from the editor formula. Closes
+the FEAT-006 §Notes "engine-derived satisfaction" deferral and the
+`kripke-modal-logic.md` §Open question 5 ("is the static field
+honest?") — answer: no longer, it's now computed.
 
-- **Why.** Makes Kripke a real engine instead of a curated demo.
-  Sets up the reusable substrate for epistemic / deontic / temporal
-  variants later (no per-variant ticket needed for the engine, just
-  for axiom-set + content).
-- **Build.** Kripke satisfaction algorithm (well-understood);
-  countermodel generation when a formula fails; UI for frame-condition
-  toggle; axiom-schema validity check per frame.
-- **Size.** M. Already flagged in FEAT-006 §Notes.
+- **Why.** Made Kripke a real engine instead of a curated demo.
+  Set up the reusable substrate for the next ticket (intuitionistic
+  Kripke) and for future epistemic / deontic / temporal variants —
+  per-variant work is now a data edit (axiom-set + content), not a
+  new engine.
+- **Size.** M (as scoped). Multi-agent indexed modalities, tableau-
+  style countermodel finder, and B / D / K4 / KD45 frame-class
+  additions remain open per the work-history notes.
 
 ---
 
@@ -330,7 +337,7 @@ batched.
 | System | Deferred item |
 |---|---|
 | `peirce-eg` | Beta (subsumed by `feat/logic-lab-peirce-beta` above) |
-| `kripke` | Engine-derived satisfaction (subsumed by `feat/logic-lab-kripke-engine`) |
+| `kripke` | ~~Engine-derived satisfaction~~ — shipped 2026-05-05 in `feat/logic-lab-kripke-engine`. Multi-agent indexed modalities (`[a]p`, `K_a p`); B / D / K4 / KD45 axiom-set additions (now data-only); tableau-style countermodel finder remain open |
 | `frege-bs` | Higher-order content; identity-of-content `≡` |
 | `aristotelian` | Term-distribution diagnostics in invalid moods |
 | `medieval` | Modal sorites; obligational disputation |

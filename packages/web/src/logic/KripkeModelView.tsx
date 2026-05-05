@@ -10,7 +10,7 @@ import {
   type NodeProps,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import type { KripkeModel } from './kripke-types';
+import type { KripkeModel, WorldId } from './kripke-types';
 
 // KripkeModelView — renders a single Kripke model with React Flow.
 //
@@ -29,6 +29,9 @@ type WorldNodeData = {
   atoms: string[];
   designated: boolean;
   reflexive: boolean;
+  // Optional per-world verdict for the active formula. When set, the
+  // node renders ⊨ / ⊭ as a chip below the atom list.
+  satisfies?: boolean;
 };
 
 type WorldNode = Node<WorldNodeData, 'world'>;
@@ -73,6 +76,23 @@ function WorldNodeComp({ data }: NodeProps<WorldNode>) {
           ))
         )}
       </div>
+      {data.satisfies !== undefined && (
+        <div className="mt-1.5">
+          <span
+            className={
+              'text-[10px] font-mono px-1.5 py-0.5 rounded border ' +
+              (data.satisfies
+                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                : 'bg-rose-500/15 text-rose-300 border-rose-500/30')
+            }
+            title={data.satisfies
+              ? 'formula forced at this world'
+              : 'formula not forced at this world'}
+          >
+            {data.satisfies ? '⊨' : '⊭'} φ
+          </span>
+        </div>
+      )}
     </div>
   );
 }
@@ -82,10 +102,16 @@ const nodeTypes = { world: WorldNodeComp };
 type Props = {
   model: KripkeModel;
   className?: string;
+  // Per-world verdict for the active formula. When provided, each
+  // node renders ⊨ / ⊭ alongside its atom chips.
+  satisfaction?: Record<WorldId, boolean>;
 };
 
-export function KripkeModelView({ model, className }: Props) {
-  const { nodes, edges } = useMemo(() => buildGraph(model), [model]);
+export function KripkeModelView({ model, className, satisfaction }: Props) {
+  const { nodes, edges } = useMemo(
+    () => buildGraph(model, satisfaction),
+    [model, satisfaction],
+  );
 
   return (
     <div className={className} style={{ width: '100%', height: 320 }}>
@@ -114,7 +140,10 @@ export function KripkeModelView({ model, className }: Props) {
 // Exported for unit testing — keeps the rendering decisions (which
 // edges collapse, which worlds are reflexive, where the designated
 // flag goes) testable without mounting React Flow in jsdom.
-export function buildGraph(model: KripkeModel): { nodes: WorldNode[]; edges: Edge[] } {
+export function buildGraph(
+  model: KripkeModel,
+  satisfaction?: Record<WorldId, boolean>,
+): { nodes: WorldNode[]; edges: Edge[] } {
   const SPACING = 200;
   const reflexiveSet = new Set(
     model.edges.filter(e => e.from === e.to).map(e => e.from),
@@ -129,6 +158,7 @@ export function buildGraph(model: KripkeModel): { nodes: WorldNode[]; edges: Edg
       atoms: w.atoms,
       designated: w.id === model.designated,
       reflexive: reflexiveSet.has(w.id),
+      satisfies: satisfaction?.[w.id],
     },
   }));
 

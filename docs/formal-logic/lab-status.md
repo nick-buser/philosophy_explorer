@@ -1,18 +1,21 @@
 # Logic Lab — Status & Roadmap
 
-**Last shipped:** Resolution · Horn · Datalog
-(`feat/logic-lab-resolution`), 2026-05-05 — one DSL, three engines:
-binary resolution refutation on a clause set; SLD goal-directed
-proof search on a Horn program; semi-naïve forward chaining of a
-Datalog program to its minimal model. Closes the "resolution" cell
-of the roadmap matrix's Tree/graph proof row.
-**Previously:** Indian / Buddhist logic
+**Last shipped:** Engine-derived Kripke
+(`feat/logic-lab-kripke-engine`), 2026-05-05 — Kripke satisfaction
+algorithm + frame-constraint diagnostics + per-axiom verdicts (K, T,
+4, 5, B, D) + R-closure under any frame class. Closes the FEAT-006
+§Notes "engine-derived satisfaction" deferral and the
+`kripke-modal-logic.md` §5 "is the static `satisfied` field honest?"
+question. Substrate for intuitionistic Kripke, the next ticket.
+**Previously:** Resolution · Horn · Datalog
+(`feat/logic-lab-resolution`, 2026-05-05); Indian / Buddhist logic
 (`feat/logic-lab-indian-buddhist`, 2026-05-04); natural deduction
 (`feat/logic-lab-natural-deduction`, 2026-05-04); Boolean algebra
 (`feat/logic-lab-boolean-algebra`, 2026-05-03); INFRA-004 —
 route-level code-splitting; FEAT-012 — truth-table + truth-tree
 views in Modern FOL.
-**Status:** ten systems populated. The historical spine now
+**Status:** ten systems populated, with the modal-logic system now
+engine-driven rather than hand-authored. The historical spine
 includes the algebraic-logic lineage (Boole → Schröder), the
 proof-theoretic spine (ND, Fitch + Gentzen), a non-Western-tradition
 system (Nyāya / Dignāga), and the executable-inference spine
@@ -30,7 +33,7 @@ detail lives in `work-history/FEAT-###.md`.
 | System | Slug | Ticket | Validity engine | Visualisation |
 |---|---|---|---|---|
 | Peirce Existential Graphs (Alpha) | `peirce-eg` | FEAT-005 | structural normalisation + propositional check on translation | SVG cuts, juxtaposition, nested ovals |
-| Kripke modal logic | `kripke` | FEAT-006 | hand-authored truth at designated world per (formula, frame, model) | xyflow frame diagram + truth badge |
+| Kripke modal logic | `kripke` | FEAT-006 + `feat/logic-lab-kripke-engine` | engine-derived satisfaction (atoms / ¬ / ∧ / ∨ / → / ↔ pointwise; □ / ◇ over R-successors); per-world truth chips; frame-constraint diagnostics (reflexive / symmetric / transitive / serial / euclidean) with violation witnesses; per-axiom verdict table (K, T, 4, 5, B, D) with substitution + failing-world witnesses; R-closure under any frame class | xyflow frame diagram with per-world ⊨/⊭ chips + designated-world truth badge + model-validity badge + frame-diagnostics grid + axiom-verdict table |
 | Frege Begriffsschrift | `frege-bs` | FEAT-007 | propositional truth-table on the linearised AST | 2D stroke-and-concavity SVG |
 | Aristotelian syllogistic | `aristotelian` | FEAT-008 + FEAT-009 | mood/figure validity; existential-import toggle; square + immediate inferences | square-of-opposition diagram, Venn |
 | Medieval modal syllogistic + sorites | `medieval` | FEAT-010 | de re / de dicto modal validity; sorites chain validation | modal-aware Venn + sorites chain |
@@ -42,8 +45,8 @@ detail lives in `work-history/FEAT-###.md`.
 
 Ten systems × ~10 examples each, ~100 example inputs total.
 Slash-command editor (`LogicCmEditor`) and shared chrome reused
-across all ten. Test count after Resolution:
-**567/567 passing.**
+across all ten. Test count after engine-derived Kripke:
+**648/648 passing.**
 
 ---
 
@@ -95,7 +98,7 @@ round-trips.
 | System | Deferred item |
 |---|---|
 | `peirce-eg` | Beta (lines of identity) — FEAT-005 §Notes |
-| `kripke` | Engine-derived satisfaction (currently hand-authored) — FEAT-006 §Notes |
+| `kripke` | ~~Engine-derived satisfaction~~ — shipped in `feat/logic-lab-kripke-engine`. Multi-agent indexed modalities (`[a]p`, `K_a p`); B / D / K4 / KD45 axiom-set additions (now data-only — `kripke-frames.ts` + `kripke-axioms.ts` are open for new entries); tableau-style countermodel finder when a formula isn't model-valid |
 | `frege-bs` | Higher-order content; identity-of-content `≡` — `frege-begriffsschrift.md` |
 | `aristotelian` | Term-distribution diagnostics in invalid moods — FEAT-009 §Notes |
 | `medieval` | Modal sorites; obligational disputation — FEAT-010 §Notes |
