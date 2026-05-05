@@ -25,7 +25,7 @@ gaps legible in a way the per-system list doesn't:
 | Linear symbolic | Aristotelian, Modern FOL | Stoic, Polish, Boolean equations |
 | 2D structural | Frege, Peirce EG Alpha | Peirce EG Beta/Gamma |
 | Diagrammatic semantic | Venn (Aristotelian/medieval), square-of-opposition | Euler proper, Carroll, spider |
-| Frame/world | Kripke (hand-authored) | Engine-derived Kripke; intuitionistic Kripke; temporal frames |
+| Frame/world | Kripke (engine-driven); intuitionistic pre-orders; deontic / epistemic Kripke; LTL lasso traces; CTL branching frames | Sphere semantics (Lewis counterfactuals); labelled transition systems (dynamic logic) |
 | Tree/graph proof | Truth-tree (FEAT-012), natural deduction (Fitch + Gentzen), resolution DAG, SLD tree | Sequent calculus |
 | Algebraic / tabular | Truth-table (FEAT-012) | Boolean algebra; Karnaugh maps; Hasse / lattice diagrams |
 | Step-by-step textual | Indian/Buddhist (Nyāya five-step + Dignāga hetu-cakra) | Obligational disputation |
@@ -184,23 +184,18 @@ verification layer remain open per the work-history notes.
   toggling rules.
 - **Size.** L. Larger than Boolean; smaller than Lean integration.
 
-### Intuitionistic logic (`feat/logic-lab-intuitionistic`)
+### ~~Intuitionistic logic~~ — shipped 2026-05-05 (`feat/logic-lab-intuitionistic-modal-pack`)
 
-Reuses the Kripke infrastructure with persistence (once true at a
-world, true at all accessible worlds) and removes excluded middle
-/ double-negation elimination from the proof rules.
-
-- **Why.** Canonical alternative to classical logic, basis of
-  constructive mathematics, and the Curry-Howard end of the
-  type-theory bridge. Cheap given existing scaffolding; opens
-  substantial conceptual surface (genuinely different conceptions
-  of proof and truth).
-- **Build.** Add intuitionistic Kripke semantics (monotone-world
-  diagrams) to the existing engine; mark classically-valid-but-
-  intuitionistically-invalid principles (excluded middle,
-  double-negation, Peirce's law) with countermodels; pair naturally
-  with Natural Deduction above for the rule-toggle UX.
-- **Size.** M, much smaller if Natural Deduction lands first.
+Pre-order Kripke forcing with persistence; classical-only-vs-
+intuitionistically-valid axiom panel showcasing LEM, DNE, Peirce,
+weak LEM, and the non-intuitionistic half of De Morgan as failures
+on a 2-world chain / 3-world fork. **Status:** shipped 2026-05-05 as
+part of the intuitionistic + modal-variant pack — `intuitionistic-eval`
+treats → and ¬ as universal-future quantifiers over the reflexive-
+transitive closure of R, with a frame-shape diagnostic and a "fix
+frame" affordance that lifts atoms upward to monotonicity. First-order
+quantifier rules and a Heyting-algebra / Curry-Howard view remain
+open per the work-history notes.
 
 ### ~~Engine-derived Kripke~~ — shipped 2026-05-05 (`feat/logic-lab-kripke-engine`)
 
@@ -289,14 +284,29 @@ per the work-history notes.
 
 - **Size.** M (mostly content).
 
-### Modal expansion (`feat/logic-lab-modal-variants`)
+### ~~Modal expansion~~ — partially shipped 2026-05-05 (`feat/logic-lab-intuitionistic-modal-pack`)
 
-Once Kripke is engine-derived: epistemic, deontic, temporal (LTL/CTL
-on existing frame visualization), dynamic, counterfactual. Each is
-small individually but only worth picking once the substrate is in
-place.
+Bundled with the intuitionistic ticket as five new systems on the
+freshly-merged Kripke engine. **Status:** four of the six anticipated
+modal variants shipped 2026-05-05 — deontic (KD on serial frames,
+with a new D frame class), epistemic (multi-agent indexed K_a with
+per-agent S5 / KD45 axiom verdicts), LTL (lasso traces, X / F / G / U
+with closed-form fixed points), and CTL (branching frames, eight
+paired path-quantifier-plus-temporal operators with a Clarke / Emerson
+/ Sistla labelling algorithm). Two variants remain in their own
+follow-up tickets:
 
-- **Size.** S each, batched.
+- **Dynamic logic** (`feat/logic-lab-dynamic`). Needs an action AST
+  (α; β, α ∪ β, α\*, ?φ) and a labelled-transition-system frame —
+  different enough from Kripke proper to warrant separate scoping.
+- **Lewis counterfactuals** (`feat/logic-lab-counterfactuals`). Needs
+  Lewis sphere semantics or Stalnaker selection functions — a
+  different semantic substrate from Kripke; not a content addition.
+
+Originally pegged at "S each, batched" — accurate for deontic
+(content + axiom-pack) but understated for epistemic (multi-agent
+AST) and the temporal logics (new engines). The four shipped
+amount to ~2k LOC together.
 
 ### Lean integration — Fitch-style ND (`feat/logic-lab-lean-fitch`)
 
@@ -337,7 +347,12 @@ batched.
 | System | Deferred item |
 |---|---|
 | `peirce-eg` | Beta (subsumed by `feat/logic-lab-peirce-beta` above) |
-| `kripke` | ~~Engine-derived satisfaction~~ — shipped 2026-05-05 in `feat/logic-lab-kripke-engine`. Multi-agent indexed modalities (`[a]p`, `K_a p`); B / D / K4 / KD45 axiom-set additions (now data-only); tableau-style countermodel finder remain open |
+| `kripke` | ~~Engine-derived satisfaction~~ — shipped 2026-05-05 in `feat/logic-lab-kripke-engine`. ~~Multi-agent indexed modalities~~ — shipped as the `epistemic` system in `feat/logic-lab-intuitionistic-modal-pack`. ~~D axiom-set addition~~ — shipped as the `deontic` system. K4 / KD45 frame-class additions and a tableau-style countermodel finder remain open |
+| `intuitionistic` | First-order quantifier rules; Heyting-algebra view; Curry-Howard term display |
+| `deontic` | Dyadic / conditional deontic; STIT-style agent operators; KD45 belief variant; full Chisholm scenarios |
+| `epistemic` | Common-knowledge `C` (least fixed point of "everyone knows"); distributed-knowledge `K_D`; Muddy Children / coordinated-attack scenarios |
+| `temporal-ltl` | Past-time operators (Y / O / H / S); LTL → Büchi automaton view; CTL\* superset |
+| `temporal-ctl` | Custom dagre layout for branching frames; CTL\* (path formulas inside A / E); µ-calculus; counterexample-as-trace witness |
 | `frege-bs` | Higher-order content; identity-of-content `≡` |
 | `aristotelian` | Term-distribution diagnostics in invalid moods |
 | `medieval` | Modal sorites; obligational disputation |

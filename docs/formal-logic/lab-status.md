@@ -1,25 +1,31 @@
 # Logic Lab — Status & Roadmap
 
-**Last shipped:** Engine-derived Kripke
-(`feat/logic-lab-kripke-engine`), 2026-05-05 — Kripke satisfaction
-algorithm + frame-constraint diagnostics + per-axiom verdicts (K, T,
-4, 5, B, D) + R-closure under any frame class. Closes the FEAT-006
-§Notes "engine-derived satisfaction" deferral and the
-`kripke-modal-logic.md` §5 "is the static `satisfied` field honest?"
-question. Substrate for intuitionistic Kripke, the next ticket.
-**Previously:** Resolution · Horn · Datalog
-(`feat/logic-lab-resolution`, 2026-05-05); Indian / Buddhist logic
-(`feat/logic-lab-indian-buddhist`, 2026-05-04); natural deduction
-(`feat/logic-lab-natural-deduction`, 2026-05-04); Boolean algebra
-(`feat/logic-lab-boolean-algebra`, 2026-05-03); INFRA-004 —
+**Last shipped:** Intuitionistic + modal-variant pack
+(`feat/logic-lab-intuitionistic-modal-pack`), 2026-05-05 — five new
+systems on the freshly-merged Kripke engine: intuitionistic
+propositional logic (pre-order forcing + persistence), standard
+deontic logic (KD on serial frames), multi-agent epistemic logic
+(per-agent K_a + S5/KD45 axiom verdicts), linear temporal logic
+(lasso traces, X/F/G/U), and CTL (branching frames, eight paired
+path-quantifier-plus-temporal operators). Closes the
+`lab-roadmap.md` "Intuitionistic logic" and "Modal expansion"
+entries except for dynamic logic and Lewis counterfactuals (deferred
+— different semantic substrates).
+**Previously:** Engine-derived Kripke
+(`feat/logic-lab-kripke-engine`, 2026-05-05); Resolution · Horn ·
+Datalog (`feat/logic-lab-resolution`, 2026-05-05); Indian / Buddhist
+logic (`feat/logic-lab-indian-buddhist`, 2026-05-04); natural
+deduction (`feat/logic-lab-natural-deduction`, 2026-05-04); Boolean
+algebra (`feat/logic-lab-boolean-algebra`, 2026-05-03); INFRA-004 —
 route-level code-splitting; FEAT-012 — truth-table + truth-tree
 views in Modern FOL.
-**Status:** ten systems populated, with the modal-logic system now
-engine-driven rather than hand-authored. The historical spine
+**Status:** fifteen systems populated. The historical spine
 includes the algebraic-logic lineage (Boole → Schröder), the
 proof-theoretic spine (ND, Fitch + Gentzen), a non-Western-tradition
-system (Nyāya / Dignāga), and the executable-inference spine
-(resolution, SLD, Datalog). Cross-cutting work continues per
+system (Nyāya / Dignāga), the executable-inference spine
+(resolution, SLD, Datalog), and now the full modal-flavour spine
+(classical · intuitionistic · deontic · epistemic · LTL · CTL) on a
+shared Kripke engine. Cross-cutting work continues per
 `lab-roadmap.md`.
 
 This doc is a snapshot, not a spec. Per-system design lives in
@@ -42,11 +48,16 @@ detail lives in `work-history/FEAT-###.md`.
 | Natural deduction | `natural-deduction` | `feat/logic-lab-natural-deduction` | backward-chaining ND prover (propositional) with classical / intuitionistic rule-set toggle | Fitch-style line-numbered proof with subproof boxes + Gentzen-style derivation tree (discharged assumptions bracketed) |
 | Indian / Buddhist logic (Nyāya · Dignāga) | `indian-buddhist` | `feat/logic-lab-indian-buddhist` | trairūpya checks (pakṣa-dharmatā / sapakṣe sattvam / vipakṣe asattvam) + Dignāga hetu-cakra cell placement; pakṣa-dharmatā gates the verdict (asiddha) | Five-membered textual inference (pratijñā · hetu · udāharaṇa · upanaya · nigamana) + 3×3 hetu-cakra wheel highlighting the active cell + trairūpya verdict panel |
 | Resolution · Horn · Datalog | `resolution` | `feat/logic-lab-resolution` | three engines under one DSL: binary resolution refutation (saturation, MGU, occurs check) + SLD backward chaining (leftmost selection, depth-bounded DFS, answer substitution) + semi-naïve forward chaining to fixpoint | Mode-detected from syntax: depth-stratified resolution DAG (clauses); SLD derivation tree with success spine + dead ends (horn); per-iteration strata + final-model panel (datalog) |
+| Intuitionistic propositional logic | `intuitionistic` | `feat/logic-lab-intuitionistic-modal-pack` | intuitionistic forcing on Kripke pre-orders (atoms by lookup; ∧ / ∨ pointwise; → and ¬ universal-future over R*; box / ◇ explicitly rejected); persistence + monotonicity diagnostics with closure-fix affordance; classical-only-vs-intuitionistically-valid axiom panel (LEM / DNE / Peirce / wLEM / De Morgan) | xyflow pre-order diagram with per-world ⊩/⊮ chips + designated-world badge + frame-shape grid (reflexive / transitive / monotone) + axiom-verdict cards |
+| Standard deontic logic (KD) | `deontic` | `feat/logic-lab-intuitionistic-modal-pack` | reuses modal engine on serial Kripke frames; D-axiom centred verdict; new D frame class | xyflow frame diagram with O / P / F slash-command palette glossing □ / ◇ / ¬◇; same diagnostics + axiom-verdict surface as the Kripke lab |
+| Multi-agent epistemic logic | `epistemic` | `feat/logic-lab-intuitionistic-modal-pack` | indexed K_a / M_a over per-agent accessibility relations; K / T / 4 / 5 / D verdicts evaluated per declared agent; substitutions across atoms-plus-fresh-names so witnesses can stage "atom forced nowhere" cases | per-agent edge colours + agent legend + ↻ chips for per-agent reflexivity + per-axiom × per-agent verdict grid |
+| Linear Temporal Logic (LTL) | `temporal-ltl` | `feat/logic-lab-intuitionistic-modal-pack` | finite *lasso* trace eval: SAT(φ) computed bottom-up over the AST; X is direct; F / G / U via least / greatest fixed points iterating over n positions until stable; canonical LTL identities (K, F∨, G∧, X∧, F=¬G¬, U→F, F-unfold, G-unfold) shipped as a regression panel | TraceView (xyflow horizontal sequence) with dashed purple loopback or dashed grey "stutter" self-loop on the last state; per-state truth chip + start-position badge |
+| Computation Tree Logic (CTL) | `temporal-ctl` | `feat/logic-lab-intuitionistic-modal-pack` | branching-frame model checker (Clarke / Emerson / Sistla labelling): EX / AX direct; EF / AF / EG / AG / EU / AU as least / greatest fixed points over forward + reverse adjacency; eight canonical CTL identities shipped as a regression panel; serial-frame diagnostic flags dead-end states | reuses KripkeModelView for the branching graph; per-state truth chips + designated-state badge + serial-frame chip |
 
-Ten systems × ~10 examples each, ~100 example inputs total.
-Slash-command editor (`LogicCmEditor`) and shared chrome reused
-across all ten. Test count after engine-derived Kripke:
-**648/648 passing.**
+Fifteen systems with ~10 examples each, ~140 example inputs total.
+Slash-command editor (`LogicCmEditor`) reused across all fifteen.
+Test count after the intuitionistic + modal-variant pack:
+**973/973 passing.**
 
 ---
 
@@ -98,7 +109,12 @@ round-trips.
 | System | Deferred item |
 |---|---|
 | `peirce-eg` | Beta (lines of identity) — FEAT-005 §Notes |
-| `kripke` | ~~Engine-derived satisfaction~~ — shipped in `feat/logic-lab-kripke-engine`. Multi-agent indexed modalities (`[a]p`, `K_a p`); B / D / K4 / KD45 axiom-set additions (now data-only — `kripke-frames.ts` + `kripke-axioms.ts` are open for new entries); tableau-style countermodel finder when a formula isn't model-valid |
+| `kripke` | ~~Engine-derived satisfaction~~ — shipped in `feat/logic-lab-kripke-engine`. ~~Multi-agent indexed modalities~~ — shipped as the `epistemic` system. ~~B / D axiom-set additions~~ — D shipped as the `deontic` system; B is now a one-line `kripke-frames.ts` addition. Remaining: K4 / KD45 axiom-set additions, tableau-style countermodel finder when a formula isn't model-valid |
+| `intuitionistic` | Quantifier rules (drop classical → / ¬ for first-order), Heyting-algebra view, Curry-Howard term display alongside the proof — see `work-history/feat-logic-lab-intuitionistic-modal-pack.md` §Notes |
+| `deontic` | Dyadic / conditional deontic logic; STIT-style agent operators; Forrester gentle-murder + full Chisholm scenarios; KD45 belief variant — see `work-history/feat-logic-lab-intuitionistic-modal-pack.md` §Notes |
+| `epistemic` | Common-knowledge `C` (least fixed point of "everyone knows" iterated); distributed-knowledge `K_D`; Muddy Children / coordinated-attack scenarios — see `work-history/feat-logic-lab-intuitionistic-modal-pack.md` §Notes |
+| `temporal-ltl` | Past-time operators (Y / O / H / S); fairness assumptions in the Lab UI; LTL → Büchi automaton view; CTL\* superset — see `work-history/feat-logic-lab-intuitionistic-modal-pack.md` §Notes |
+| `temporal-ctl` | Custom dagre layout for branching frames; CTL\* (path formulas inside A / E); µ-calculus; counterexample-as-trace witness when a property fails — see `work-history/feat-logic-lab-intuitionistic-modal-pack.md` §Notes |
 | `frege-bs` | Higher-order content; identity-of-content `≡` — `frege-begriffsschrift.md` |
 | `aristotelian` | Term-distribution diagnostics in invalid moods — FEAT-009 §Notes |
 | `medieval` | Modal sorites; obligational disputation — FEAT-010 §Notes |
@@ -166,9 +182,9 @@ are the open design questions; see `formal-verification.md` §3-4.
 4. Cross-cutting **4** (browser smoke) — not blocking, should land
    before the Lab is "done" by external standards.
 5. Beyond B + browser smoke, see **`lab-roadmap.md`** for the
-   medium- and long-term plan (Peirce Beta, Boolean algebra,
-   natural deduction, intuitionistic logic, engine-derived Kripke,
-   Stoic/many-valued/Indian-Buddhist breadth, Lean integration).
+   medium- and long-term plan (Peirce Beta, Stoic propositional logic,
+   many-valued logic, sequent calculus, dynamic logic, Lewis
+   counterfactuals, Lean integration).
 
 ---
 
