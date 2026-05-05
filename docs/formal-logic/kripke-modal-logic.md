@@ -1,7 +1,10 @@
 # Kripke / Modal Logic — System Design
 
-**Status:** Draft — phase-1 scope, 2026-04-24
-**Implementing ticket:** `FEAT-006-logic-lab-kripke-modal`
+**Status:** Phase-1 shipped 2026-04-24 (`FEAT-006-logic-lab-kripke-modal`).
+Phase-2 engine-derived satisfaction shipped 2026-05-05
+(`feat/logic-lab-kripke-engine`) — see `work-history/feat-logic-lab-kripke-engine.md`.
+**Implementing tickets:** `FEAT-006-logic-lab-kripke-modal`,
+`feat/logic-lab-kripke-engine`
 
 The second populated system in the Logic Lab, after Peirce EG. Modal
 propositional logic with a Kripke-semantics visualization and a
@@ -251,19 +254,39 @@ testable:
 
 ## Phase 2+ scope
 
-Out of phase 1, in rough priority order:
+**Shipped in phase 2** (`feat/logic-lab-kripke-engine`, 2026-05-05):
 
-1. **Multi-agent / indexed modalities.** `[a]p`, `K_a p`, `B_a p`.
+- ✅ **Recursive evaluator.** `satisfies(formula, model, world)` —
+  pure function in `kripke-eval.ts`. Per-world satisfaction map
+  drives the ⊨ / ⊭ chips on the model view.
+- ✅ **Frame validation.** `kripke-frame-check.ts` decides
+  reflexive / symmetric / transitive / serial / euclidean over a
+  model and reports violation witnesses; the Lab's
+  frame-diagnostics panel surfaces them. The "close R under {frame}"
+  button takes the smallest closure.
+- ✅ **Per-axiom validity** (K, T, 4, 5, B, D) over a model with a
+  substitution + failing-world witness when invalid. Adding new
+  axioms is a data edit in `kripke-axioms.ts`.
+
+Still open, in rough priority order:
+
+1. **Intuitionistic Kripke** (`feat/logic-lab-intuitionistic`) —
+   reuses the frame data shape; different connective recursion
+   (¬ and → quantify over an upward-closure) plus a persistence
+   check on atoms. Next up on the roadmap.
+2. **Multi-agent / indexed modalities.** `[a]p`, `K_a p`, `B_a p`.
    AST gains an agent index; model gains per-agent edges.
-2. **Frame validation.** Warn when an example's `model` violates the
-   declared `frameClass`'s constraints. Pure function over the model.
 3. **Interactive model editing.** Drag worlds, click to toggle atoms,
    draw R-edges. Persists to local-storage-only initially.
-4. **Recursive evaluator.** `eval(formula, model, world)` — small
-   pure function, ~40 LOC. Replaces the static `satisfied` field.
-5. **Formula → minimal-counterexample finder** (small models only —
-   bounded search).
-6. **Tableau proof rendering.**
+4. **Tableau-style countermodel finder.** When a formula isn't
+   model-valid, search a small model that falsifies it (bounded
+   bisimulation-up-to-depth). The validity badge already reports a
+   failing-world witness against the *current* model; this would
+   construct a counter-frame from scratch.
+5. **Tableau proof rendering** (deeper than the truth-tree view in
+   Modern FOL — modal tableaux with prefixed formulas).
+6. **B / D / K4 / KD45 frame-class additions.** Now data-only edits
+   in `kripke-frames.ts` (the picker reads `ALL_FRAMES`).
 7. **Quantified modal logic.** Constant vs varying domain selector.
 8. **Lean integration** for verifying axiom derivations under chosen
    frame conditions.
@@ -287,22 +310,28 @@ When `LogicIR` does land, it lands on the F# side per
 translators between variants, and the canonical normalizer are all
 F# from day one.
 
-### 1b. AST authority — TS-only for phase 1, planned for F# migration
+### 1b. AST authority — TS-only through phase 2; F# migration not yet triggered
 
-The modal AST, parser, evaluator (when it lands), and frame-validity
-checker are TS-only in phase 1. This is **deliberate debt**, not a
-target-state choice. See
-[`backend-logic-core.md`](./backend-logic-core.md) for the migration
-triggers and mechanics. The strongest forcing functions are:
+The modal AST, parser, evaluator, frame-validity checker, and
+axiom-verdict table are TS-only as of phase 2
+(`feat/logic-lab-kripke-engine`). This is **deliberate debt**, not a
+target-state choice — same call as phase 1, but worth re-evaluating
+because the first of the three forcing functions has now fired:
 
-- The first time the truth badge needs to be honest (computed, not
-  hand-authored).
-- The first time Lean integration ships for any system.
-- The introduction of `LogicIR` (see §1).
+- ✅ **The first time the truth badge needs to be honest** —
+  shipped phase 2. Engine evaluates client-side; no F# required.
+  The pure-TS engine is small (~150 LOC across `kripke-eval`,
+  `kripke-frame-check`, `kripke-axioms`), browser-side, offline-
+  capable. Migrating it to F# right now would buy nothing.
+- The first time Lean integration ships for any system. *Not yet.*
+- The introduction of `LogicIR` (see §1). *Not yet.*
 
-Whichever of these fires first should open the F# logic ticket and
-take responsibility for promoting the modal AST to F# via the
-Layer 1 codegen pipeline.
+The intuitionistic-Kripke ticket, next on the roadmap, will reuse
+this substrate (different connective recursion, same frame data
+shape). If a third Kripke-shaped engine arrives after that — or if
+Lean integration moves into Kripke territory — that's the right
+trigger to open the F# logic ticket. Until then, the TS engine is
+the right call.
 
 ### 2. CodeMirror reuse — copy first, extract second
 
@@ -327,11 +356,14 @@ either as part of FEAT-006 polish or as a small `DOCS` ticket.
 
 ### 5. Truth badge — is "static `satisfied` field" honest?
 
-Phase 1 stores `satisfied: boolean` in seed data. Risk: a future
-content edit changes the model but forgets the badge. Mitigation: a
-unit test that runs the (phase-2) evaluator over every example and
-checks consistency. Acceptable risk for phase 1 because examples are
-hand-curated and few.
+**Closed in phase 2** (`feat/logic-lab-kripke-engine`, 2026-05-05).
+Truth values are now engine-computed at every world, not just at the
+designated world, and update live as the user edits the formula. The
+hand-authored `satisfied: boolean` field is retained for back-compat
+and as a regression cross-check — `kripke-eval.test.ts` asserts the
+engine agrees with the historical hand-authored value at the
+designated world for every shipped example, catching drift if a
+future content edit moves the model out from under the badge.
 
 ---
 

@@ -1426,5 +1426,65 @@ function KRIPKE_EXAMPLES(): LogicExample[] {
       satisfied: true,
       note: 'All three worlds form one equivalence class. ◇p holds at every world (w1 carries p and is reachable from each), so □◇p holds at w0.',
     },
+    {
+      slug: 'four-fails-non-transitive',
+      natural: '4-axiom fails on a chain w0 → w1 → w2 lacking w0 → w2',
+      dsl: '[]p -> [][]p',
+      frameClass: 'T',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: ['p'] },
+          { id: 'w1', atoms: ['p'] },
+          { id: 'w2', atoms: [] },
+        ],
+        edges: [
+          K_REFLEXIVE('w0'),
+          K_REFLEXIVE('w1'),
+          K_REFLEXIVE('w2'),
+          { from: 'w0', to: 'w1' },
+          { from: 'w1', to: 'w2' },
+        ],
+        designated: 'w0',
+      },
+      satisfied: false,
+      note: 'R is reflexive (so we are on a T-frame) but not transitive — w0 sees w1 and w1 sees w2, yet w0 doesn’t see w2. □p holds at w0 (every successor of w0 carries p) but □□p fails: at w1, □p needs p at every successor of w1, and w2 lacks it. The "close R under S4" button adds w0 → w2 and the verdict flips. This is exactly the model FEAT-006 §Notes anticipated as the engine’s motivating example.',
+    },
+    {
+      slug: 'b-fails',
+      natural: 'B-axiom fails on a non-symmetric line: p → □◇p',
+      dsl: 'p -> []<>p',
+      frameClass: 'K',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: ['p'] },
+          { id: 'w1', atoms: [] },
+        ],
+        edges: [
+          { from: 'w0', to: 'w1' },
+        ],
+        designated: 'w0',
+      },
+      satisfied: false,
+      note: 'p holds at w0, but ◇p fails at w1 (w1 is a dead end with no successor carrying p), so □◇p fails at w0. B is the symmetry axiom; this counter-frame is the canonical illustration of why B requires R’s reverse closure.',
+    },
+    {
+      slug: 'd-on-serial',
+      natural: 'D-axiom on a serial-but-not-reflexive frame: □p → ◇p',
+      dsl: '[]p -> <>p',
+      frameClass: 'K',
+      model: {
+        worlds: [
+          { id: 'w0', atoms: [] },
+          { id: 'w1', atoms: ['p'] },
+        ],
+        edges: [
+          { from: 'w0', to: 'w1' },
+          { from: 'w1', to: 'w1' },
+        ],
+        designated: 'w0',
+      },
+      satisfied: true,
+      note: 'Every world has at least one successor (w1 self-loops, w0 sees w1) — that’s seriality, the constraint D corresponds to. D is the deontic axiom: what is obligatory is permissible. Worth pairing with the b-fails case to see how different constraints produce different axiom verdicts.',
+    },
   ];
 }
