@@ -15,6 +15,11 @@ const BooleanAlgebraLab = lazy(() => import('../logic/labs/BooleanAlgebraLab'));
 const NaturalDeductionLab = lazy(() => import('../logic/labs/NaturalDeductionLab'));
 const IndianBuddhistLab = lazy(() => import('../logic/labs/IndianBuddhistLab'));
 const ResolutionLab = lazy(() => import('../logic/labs/ResolutionLab'));
+const IntuitionisticLab = lazy(() => import('../logic/labs/IntuitionisticLab'));
+const DeonticLab = lazy(() => import('../logic/labs/DeonticLab'));
+const EpistemicLab = lazy(() => import('../logic/labs/EpistemicLab'));
+const TemporalLtlLab = lazy(() => import('../logic/labs/TemporalLtlLab'));
+const TemporalCtlLab = lazy(() => import('../logic/labs/TemporalCtlLab'));
 
 export const Route = createLazyRoute('/logic/$system')({
   component: LogicSystemPage,
@@ -64,6 +69,11 @@ function LogicSystemPage() {
     slug === 'natural-deduction' ? NaturalDeductionLab :
     slug === 'indian-buddhist' ? IndianBuddhistLab :
     slug === 'resolution' ? ResolutionLab :
+    slug === 'intuitionistic' ? IntuitionisticLab :
+    slug === 'deontic' ? DeonticLab :
+    slug === 'epistemic' ? EpistemicLab :
+    slug === 'temporal-ltl' ? TemporalLtlLab :
+    slug === 'temporal-ctl' ? TemporalCtlLab :
     PeirceEgLab;
 
   return (

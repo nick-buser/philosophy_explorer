@@ -42,7 +42,7 @@ export type KripkeModel = {
 
 // ---------- Frame classes ----------
 
-export type FrameClassSlug = 'K' | 'T' | 'S4' | 'S5';
+export type FrameClassSlug = 'K' | 'T' | 'S4' | 'S5' | 'D';
 
 export type FrameConstraint =
   | 'reflexive'
