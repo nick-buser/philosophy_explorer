@@ -320,14 +320,37 @@ cold-start latency, embedding choice (`formal-verification.md` §3-4).
 
 ---
 
+## Description-logic family
+
+A staged build-out of decidable description logic, moving from the
+canonical core (ALC) up to OWL 2 DL. Each stage is its own ticket
+with a queue file under `.tickets/`; pick by appetite once the base
+ALC ticket lands.
+
+| Stage | Ticket | What | Size |
+|---|---|---|---|
+| Base | `feat/logic-lab-description-logic` | ALC concept language + TBox + ABox + tableau reasoner + concept-hierarchy / ABox-graph / tableau-tree visualisations + ~10 examples. | L |
+| SHIQ | [`.tickets/feat-logic-lab-dl-shiq.md`](../../.tickets/feat-logic-lab-dl-shiq.md) | Inverse roles, qualified number restrictions, role hierarchies, transitivity. Tableau gets pairwise / equality blocking. | M |
+| SROIQ | [`.tickets/feat-logic-lab-dl-sroiq.md`](../../.tickets/feat-logic-lab-dl-sroiq.md) | Nominals, self-restriction, role chains, role properties — completes OWL 2 DL. | M |
+| Datatypes | [`.tickets/feat-logic-lab-dl-datatypes.md`](../../.tickets/feat-logic-lab-dl-datatypes.md) | xsd primitives + datatype restrictions; concrete-domain solver. The `(D)` in SROIQ(D). | S–M |
+| OWL import | [`.tickets/feat-logic-lab-dl-owl-import.md`](../../.tickets/feat-logic-lab-dl-owl-import.md) | Manchester + Functional syntax parsers; ingest real `.owl` files. | M |
+| EL profile | [`.tickets/feat-logic-lab-dl-el-profile.md`](../../.tickets/feat-logic-lab-dl-el-profile.md) | Polynomial-time consequence-based reasoner for OWL 2 EL (SNOMED CT-class ontologies). | S–M |
+| Justification | [`.tickets/feat-logic-lab-dl-justification.md`](../../.tickets/feat-logic-lab-dl-justification.md) | "Why does this entailment hold?" — minimal-axiom-subset explanations. | S |
+
+Compare-view pairing (DL ↔ Modern FOL via the standard ALC → FOL
+translation) lands as part of `feat/logic-lab-compare-view` — does
+not need its own DL ticket.
+
+---
+
 ## Optional / lower-priority
 
 Not spine-completing in the way the above items are; depth
 investments in directions the spine already touches.
 
 - Peirce EG Gamma (modal/higher-order)
-- Description logic / OWL (semantic-web; more engineering than
-  philosophical)
+- Description logic / OWL (in progress — see §Description-logic
+  family below)
 - Linear / relevance / substructural logics (niche but conceptually
   rich)
 - Free logic, second-order logic (specialist)
