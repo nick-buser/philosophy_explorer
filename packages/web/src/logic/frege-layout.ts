@@ -1,4 +1,4 @@
-import type { FregeContent, FregeFormula } from './frege-types';
+import type { FregeContent, FregeFormula, QuantifierSort } from './frege-types';
 
 // Layout pass for the Frege Begriffsschrift renderer.
 //
@@ -8,6 +8,18 @@ import type { FregeContent, FregeFormula } from './frege-types';
 // phases — bottom-up sizing followed by top-down placement that emits
 // absolute drawing primitives. The renderer (FregeRenderer.tsx) is a
 // dumb consumer of those primitives.
+//
+// Phase 2 additions (higher-order):
+//   - `iden` lays out as a single row: left subcontent · ≡ · right
+//     subcontent. The judgment bar still attaches at the leftmost stub;
+//     each subcontent emits its own content stroke.
+//   - `exists` lowers to ¬∀x.¬body in the sizer. This matches Frege's
+//     own derivation in *Begriffsschrift* §11–12 — he never had an
+//     explicit existential glyph, just the double-negation pattern
+//     bracketing a concavity. The renderer ends up emitting the
+//     derived shape via existing primitives.
+//   - `forall` carries a `sort` ('individual' | 'predicate') that the
+//     cavity primitive forwards to the renderer for color distinction.
 //
 // Coordinates are in SVG user units (≈ pixels at scale 1).
 
@@ -34,6 +46,12 @@ const FORALL_LETTER_PX        = 13;
 const COND_HUB_GAP            = 22;     // leftward extension past the T-junction
 const COND_VGAP               = 24;     // vertical gap between consequent and antecedent rows
 
+const IDEN_SIGN_W             = 18;     // width reserved for the ≡ glyph
+const IDEN_SIGN_PX            = 18;     // glyph font-size (matches atoms)
+const IDEN_GAP_BEFORE         = 4;      // breathing room left of the glyph
+const IDEN_GAP_AFTER          = 4;      // and right of it
+const IDEN_HALF_HEIGHT        = ATOM_FONT_PX / 2 + ROW_PAD_ABOVE;
+
 const JUDGMENT_BAR_LEN        = 28;
 const JUDGMENT_BAR_PAD        = 0;      // bar shares its right-edge with the body's stub
 
@@ -46,6 +64,7 @@ export const LAYOUT_CONSTS = {
   FORALL_PAD_LEFT, FORALL_CAVITY_OFFSET, FORALL_CAVITY_W,
   FORALL_CAVITY_DEPTH, FORALL_CAVITY_SLOPE, FORALL_LETTER_PX,
   COND_HUB_GAP, COND_VGAP,
+  IDEN_SIGN_W, IDEN_SIGN_PX, IDEN_GAP_BEFORE, IDEN_GAP_AFTER,
   JUDGMENT_BAR_LEN, JUDGMENT_BAR_PAD,
   SHEET_PAD,
 };
@@ -73,22 +92,40 @@ type Sized = {
 type SizedNode =
   | { kind: 'atom';    name: string; args: string[]; textW: number }
   | { kind: 'not';     body: Sized }
-  | { kind: 'forall';  variable: string; body: Sized }
-  | { kind: 'cond';    antecedent: Sized; consequent: Sized };
+  | { kind: 'forall';  variable: string; sort: QuantifierSort; body: Sized }
+  | { kind: 'cond';    antecedent: Sized; consequent: Sized }
+  | { kind: 'iden';    left: Sized; right: Sized };
+
+// Lower `exists` to ¬∀x.¬body for layout purposes — Frege drew it that
+// way (Begriffsschrift §11–12). All higher-order existentials lower the
+// same way; the predicate-sort is forwarded onto the inner `forall`.
+function lower(c: FregeContent): FregeContent {
+  if (c.kind !== 'exists') return c;
+  return {
+    kind: 'not',
+    body: {
+      kind: 'forall',
+      variable: c.variable,
+      sort: c.sort,
+      body: { kind: 'not', body: c.body },
+    },
+  };
+}
 
 function sizeContent(c: FregeContent): Sized {
-  switch (c.kind) {
+  const lowered = lower(c);
+  switch (lowered.kind) {
     case 'atom': {
-      const textW = approxTextWidth(atomText(c.name, c.args));
+      const textW = approxTextWidth(atomText(lowered.name, lowered.args));
       return {
         w:     STROKE_LEN_MIN + ATOM_LEFT_GAP + textW,
         above: ATOM_FONT_PX / 2 + ROW_PAD_ABOVE,
         below: ATOM_FONT_PX / 2 + ROW_PAD_BELOW,
-        node:  { kind: 'atom', name: c.name, args: c.args, textW },
+        node:  { kind: 'atom', name: lowered.name, args: lowered.args, textW },
       };
     }
     case 'not': {
-      const b = sizeContent(c.body);
+      const b = sizeContent(lowered.body);
       return {
         w:     NEG_PAD_LEFT + b.w,
         above: b.above,
@@ -97,17 +134,17 @@ function sizeContent(c: FregeContent): Sized {
       };
     }
     case 'forall': {
-      const b = sizeContent(c.body);
+      const b = sizeContent(lowered.body);
       return {
         w:     FORALL_PAD_LEFT + b.w,
         above: b.above,
         below: Math.max(b.below, FORALL_CAVITY_DEPTH + 4),
-        node:  { kind: 'forall', variable: c.variable, body: b },
+        node:  { kind: 'forall', variable: lowered.variable, sort: lowered.sort, body: b },
       };
     }
     case 'cond': {
-      const ant = sizeContent(c.antecedent);
-      const con = sizeContent(c.consequent);
+      const ant = sizeContent(lowered.antecedent);
+      const con = sizeContent(lowered.consequent);
       return {
         w:     COND_HUB_GAP + Math.max(ant.w, con.w),
         above: con.above,
@@ -115,6 +152,20 @@ function sizeContent(c: FregeContent): Sized {
         node:  { kind: 'cond', antecedent: ant, consequent: con },
       };
     }
+    case 'iden': {
+      const lhs = sizeContent(lowered.left);
+      const rhs = sizeContent(lowered.right);
+      return {
+        w:     lhs.w + IDEN_GAP_BEFORE + IDEN_SIGN_W + IDEN_GAP_AFTER + rhs.w,
+        above: Math.max(lhs.above, rhs.above, IDEN_HALF_HEIGHT),
+        below: Math.max(lhs.below, rhs.below, IDEN_HALF_HEIGHT),
+        node:  { kind: 'iden', left: lhs, right: rhs },
+      };
+    }
+    case 'exists':
+      // Unreachable: lowered above. Kept exhaustive so TS/the linter
+      // catch a missing case if the AST grows.
+      throw new Error('unreachable: exists should have been lowered');
   }
 }
 
@@ -124,7 +175,8 @@ export type Primitive =
   | { kind: 'hstroke';     x1: number; x2: number; y: number }
   | { kind: 'vstroke';     x: number; y1: number; y2: number }
   | { kind: 'negTick';     x: number; y: number; len: number }
-  | { kind: 'cavity';      x: number; y: number; w: number; depth: number; slope: number; letter: string }
+  | { kind: 'cavity';      x: number; y: number; w: number; depth: number; slope: number; letter: string; sort: QuantifierSort }
+  | { kind: 'idenSign';    x: number; y: number; size: number }
   | { kind: 'judgmentBar'; x: number; y1: number; y2: number }
   | { kind: 'atomText';    x: number; y: number; text: string };
 
@@ -162,6 +214,7 @@ function placeContent(s: Sized, stubX: number, stubY: number, out: Primitive[]):
         depth:  FORALL_CAVITY_DEPTH,
         slope:  FORALL_CAVITY_SLOPE,
         letter: n.variable,
+        sort:   n.sort,
       });
       out.push({ kind: 'hstroke', x1: cavityX + FORALL_CAVITY_W, x2: newStub, y: stubY });
       placeContent(n.body, newStub, stubY, out);
@@ -179,6 +232,19 @@ function placeContent(s: Sized, stubX: number, stubY: number, out: Primitive[]):
       const antStubY = stubY + con.below + COND_VGAP + ant.above;
       out.push({ kind: 'vstroke', x: hubX, y1: stubY, y2: antStubY });
       placeContent(ant, hubX, antStubY, out);
+      return;
+    }
+    case 'iden': {
+      const { left, right } = n;
+      // Left subcontent emits its own leading stroke from stubX.
+      placeContent(left, stubX, stubY, out);
+      // Sign sits centred in its IDEN_SIGN_W slot.
+      const signLeft   = stubX + left.w + IDEN_GAP_BEFORE;
+      const signCentre = signLeft + IDEN_SIGN_W / 2;
+      out.push({ kind: 'idenSign', x: signCentre, y: stubY, size: IDEN_SIGN_PX });
+      // Right subcontent's stub starts past the sign.
+      const rightStubX = signLeft + IDEN_SIGN_W + IDEN_GAP_AFTER;
+      placeContent(right, rightStubX, stubY, out);
       return;
     }
   }

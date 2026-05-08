@@ -1,6 +1,23 @@
 # Logic Lab — Status & Roadmap
 
-**Last shipped:** Peirce EG Beta
+**Last shipped:** Frege higher-order
+(`feat/logic-lab-frege-higher-order`), 2026-05-08 — extended the
+Begriffsschrift to Part III: identity-of-content (`A == B` rendered
+as a triple-bar between two contents), existential as Frege's
+derived `¬∀¬` shape (parsed as a first-class `exists` keyword but
+laid out via the canonical double-negation+concavity form), and
+higher-order quantification over predicate variables (capital-letter
+bound variables read as second-level concepts; cavity letter shifts
+to cyan). New Frege → FOL/HOL translation panel mirrors the
+Peirce EG → FOL pattern; an order chip surfaces propositional /
+first-order / higher-order classification. Eight new examples
+covering identity reflexivity, the substitution principle (Frege
+axiom 52), Leibniz indiscernibility (second-order), HO comprehension,
+and contraposition stated as identity-of-content. Closes the
+`frege-bs` deferrals from §5 ("Higher-order content;
+identity-of-content `≡`") and the "Full Frege higher-order system"
+entry in `lab-roadmap.md` §Optional.
+**Previously:** Peirce EG Beta
 (`feat/logic-lab-peirce-beta`), 2026-05-05 — extended the alpha
 existential-graph pipeline to first-order with identity. Predicates
 take hooks (`P(x)`, `R(x,y)`); identity is `x = y`; lines of
@@ -11,7 +28,7 @@ linear formula. Ten new beta examples covering `∃`, `∀`-via-scroll,
 two-place predicates, identity, and the every-loves-some shape
 that exercises the inner-cut LCA case. Closes the
 `lab-roadmap.md` §Medium-term "Peirce EG Beta" entry.
-**Previously:** Intuitionistic + modal-variant pack
+**Earlier:** Intuitionistic + modal-variant pack
 (`feat/logic-lab-intuitionistic-modal-pack`), 2026-05-05 — five new
 systems on the freshly-merged Kripke engine: intuitionistic
 propositional logic (pre-order forcing + persistence), standard
@@ -47,7 +64,7 @@ detail lives in `work-history/FEAT-###.md`.
 |---|---|---|---|---|
 | Peirce Existential Graphs (Alpha + Beta) | `peirce-eg` | FEAT-005 + `feat/logic-lab-peirce-beta` | EG → FOL with identity translation: lines of identity become ∃-bound variables at the LCA cut-area; hooks on predicates carry the variable references; identity nodes emit `=` | SVG cuts, juxtaposition, predicate hook anchors, heavy lines of identity overlaying the cut diagram + a KaTeX panel with the equivalent first-order formula |
 | Kripke modal logic | `kripke` | FEAT-006 + `feat/logic-lab-kripke-engine` | engine-derived satisfaction (atoms / ¬ / ∧ / ∨ / → / ↔ pointwise; □ / ◇ over R-successors); per-world truth chips; frame-constraint diagnostics (reflexive / symmetric / transitive / serial / euclidean) with violation witnesses; per-axiom verdict table (K, T, 4, 5, B, D) with substitution + failing-world witnesses; R-closure under any frame class | xyflow frame diagram with per-world ⊨/⊭ chips + designated-world truth badge + model-validity badge + frame-diagnostics grid + axiom-verdict table |
-| Frege Begriffsschrift | `frege-bs` | FEAT-007 | propositional truth-table on the linearised AST | 2D stroke-and-concavity SVG |
+| Frege Begriffsschrift (Part I + Part III) | `frege-bs` | FEAT-007 + `feat/logic-lab-frege-higher-order` | (no validity engine — rendering + translation only) | 2D stroke-and-concavity SVG with predicate-sort cavity colouring + identity-of-content triple-bar; Frege → FOL/HOL translation panel; propositional / first-order / higher-order order chip |
 | Aristotelian syllogistic | `aristotelian` | FEAT-008 + FEAT-009 | mood/figure validity; existential-import toggle; square + immediate inferences | square-of-opposition diagram, Venn |
 | Medieval modal syllogistic + sorites | `medieval` | FEAT-010 | de re / de dicto modal validity; sorites chain validation | modal-aware Venn + sorites chain |
 | Modern first-order logic | `modern-fol` | FEAT-011 + FEAT-012 | two-tier: truth-table (propositional) + bounded semantic tableau (FOL) with union-find equality | KaTeX formula + countermodel panel + Lemmon-style truth table (propositional) + indented truth-tree / tableau view (FOL) |
@@ -61,10 +78,11 @@ detail lives in `work-history/FEAT-###.md`.
 | Linear Temporal Logic (LTL) | `temporal-ltl` | `feat/logic-lab-intuitionistic-modal-pack` | finite *lasso* trace eval: SAT(φ) computed bottom-up over the AST; X is direct; F / G / U via least / greatest fixed points iterating over n positions until stable; canonical LTL identities (K, F∨, G∧, X∧, F=¬G¬, U→F, F-unfold, G-unfold) shipped as a regression panel | TraceView (xyflow horizontal sequence) with dashed purple loopback or dashed grey "stutter" self-loop on the last state; per-state truth chip + start-position badge |
 | Computation Tree Logic (CTL) | `temporal-ctl` | `feat/logic-lab-intuitionistic-modal-pack` | branching-frame model checker (Clarke / Emerson / Sistla labelling): EX / AX direct; EF / AF / EG / AG / EU / AU as least / greatest fixed points over forward + reverse adjacency; eight canonical CTL identities shipped as a regression panel; serial-frame diagnostic flags dead-end states | reuses KripkeModelView for the branching graph; per-state truth chips + designated-state badge + serial-frame chip |
 
-Fifteen systems with ~10 examples each, ~150 example inputs total
-(Peirce now ships seventeen examples — seven alpha + ten beta).
+Fifteen systems with ~10 examples each, ~160 example inputs total
+(Peirce ships seventeen examples — seven alpha + ten beta; Frege now
+ships fifteen examples — seven Part-I + eight Part-III).
 Slash-command editor (`LogicCmEditor`) reused across all fifteen.
-Test count after the Peirce EG Beta ticket: **999/999 passing.**
+Test count after the Frege higher-order ticket: **1044/1044 passing.**
 
 ---
 
@@ -122,7 +140,7 @@ round-trips.
 | `epistemic` | Common-knowledge `C` (least fixed point of "everyone knows" iterated); distributed-knowledge `K_D`; Muddy Children / coordinated-attack scenarios — see `work-history/feat-logic-lab-intuitionistic-modal-pack.md` §Notes |
 | `temporal-ltl` | Past-time operators (Y / O / H / S); fairness assumptions in the Lab UI; LTL → Büchi automaton view; CTL\* superset — see `work-history/feat-logic-lab-intuitionistic-modal-pack.md` §Notes |
 | `temporal-ctl` | Custom dagre layout for branching frames; CTL\* (path formulas inside A / E); µ-calculus; counterexample-as-trace witness when a property fails — see `work-history/feat-logic-lab-intuitionistic-modal-pack.md` §Notes |
-| `frege-bs` | Higher-order content; identity-of-content `≡` — `frege-begriffsschrift.md` |
+| `frege-bs` | ~~Higher-order content; identity-of-content `≡`~~ — shipped in `feat/logic-lab-frege-higher-order`. Remaining: Grundgesetze profile (value-ranges, Basic Law V, definite description); HOL validity engine (bounded Henkin model checker); Greek-glyph cavity letters for predicate sort; gfnotation export — see `work-history/feat-logic-lab-frege-higher-order.md` §Notes |
 | `aristotelian` | Term-distribution diagnostics in invalid moods — FEAT-009 §Notes |
 | `medieval` | Modal sorites; obligational disputation — FEAT-010 §Notes |
 | `modern-fol` | Function congruence under equality (Nelson-Oppen, ~100 lines); fairness-complete tableau strategy; budget knob in UI — FEAT-011 §Notes |

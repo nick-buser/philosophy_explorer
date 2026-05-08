@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parseFrege } from '../frege-parser';
+import { orderOf } from '../frege-types';
 import type { FregeFormula } from '../frege-types';
 
 function mustParse(src: string): FregeFormula {
@@ -56,12 +57,13 @@ describe('parseFrege — unary connectives', () => {
     });
   });
 
-  it('parses universal quantification', () => {
+  it('parses universal quantification with individual sort for lowercase variables', () => {
     expect(mustParse('|- all x. F(x)')).toEqual({
       kind: 'judgment',
       body: {
         kind: 'forall',
         variable: 'x',
+        sort: 'individual',
         body: { kind: 'atom', name: 'F', args: ['x'] },
       },
     });
@@ -73,9 +75,11 @@ describe('parseFrege — unary connectives', () => {
       body: {
         kind: 'forall',
         variable: 'x',
+        sort: 'individual',
         body: {
           kind: 'forall',
           variable: 'y',
+          sort: 'individual',
           body: { kind: 'atom', name: 'R', args: ['x', 'y'] },
         },
       },
@@ -143,6 +147,7 @@ describe('parseFrege — conditional', () => {
       body: {
         kind: 'forall',
         variable: 'x',
+        sort: 'individual',
         body: {
           kind: 'cond',
           antecedent: { kind: 'atom', name: 'F', args: ['x'] },
@@ -158,6 +163,157 @@ describe('parseFrege — conditional', () => {
     expect(f.kind).toBe('judgment');
     if (f.kind !== 'judgment') return;
     expect(f.body.kind).toBe('cond');
+  });
+});
+
+describe('parseFrege — existential', () => {
+  it('parses an existential with individual sort', () => {
+    expect(mustParse('|- exists x. F(x)')).toEqual({
+      kind: 'judgment',
+      body: {
+        kind: 'exists',
+        variable: 'x',
+        sort: 'individual',
+        body: { kind: 'atom', name: 'F', args: ['x'] },
+      },
+    });
+  });
+
+  it('treats `exists` as a keyword, not an identifier prefix', () => {
+    // `existsX` should still parse as an atom name (not the existential
+    // keyword followed by `X`).
+    const r = parseFrege('|- existsX');
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.formula).toEqual({
+      kind: 'judgment',
+      body: { kind: 'atom', name: 'existsX', args: [] },
+    });
+  });
+
+  it('mixes existential and universal under a single judgment', () => {
+    expect(mustParse('|- all x. exists y. R(x, y)')).toEqual({
+      kind: 'judgment',
+      body: {
+        kind: 'forall',
+        variable: 'x',
+        sort: 'individual',
+        body: {
+          kind: 'exists',
+          variable: 'y',
+          sort: 'individual',
+          body: { kind: 'atom', name: 'R', args: ['x', 'y'] },
+        },
+      },
+    });
+  });
+});
+
+describe('parseFrege — higher-order quantification', () => {
+  it('infers predicate sort from an uppercase bound variable', () => {
+    // `all F. F(a)` — F is bound and used as a predicate. Sort is
+    // 'predicate' purely because the head letter is uppercase.
+    expect(mustParse('|- all F. F(a)')).toEqual({
+      kind: 'judgment',
+      body: {
+        kind: 'forall',
+        variable: 'F',
+        sort: 'predicate',
+        body: { kind: 'atom', name: 'F', args: ['a'] },
+      },
+    });
+  });
+
+  it('infers predicate sort for higher-order existential', () => {
+    expect(mustParse('|- exists F. F(a)')).toEqual({
+      kind: 'judgment',
+      body: {
+        kind: 'exists',
+        variable: 'F',
+        sort: 'predicate',
+        body: { kind: 'atom', name: 'F', args: ['a'] },
+      },
+    });
+  });
+
+  it('mixes individual and predicate quantifiers', () => {
+    // |- all x. exists F. F(x) — every individual has some property
+    expect(mustParse('|- all x. exists F. F(x)')).toEqual({
+      kind: 'judgment',
+      body: {
+        kind: 'forall',
+        variable: 'x',
+        sort: 'individual',
+        body: {
+          kind: 'exists',
+          variable: 'F',
+          sort: 'predicate',
+          body: { kind: 'atom', name: 'F', args: ['x'] },
+        },
+      },
+    });
+  });
+});
+
+describe('parseFrege — identity of content', () => {
+  it('parses A == B as iden', () => {
+    expect(mustParse('|- p == q')).toEqual({
+      kind: 'judgment',
+      body: {
+        kind: 'iden',
+        left:  { kind: 'atom', name: 'p', args: [] },
+        right: { kind: 'atom', name: 'q', args: [] },
+      },
+    });
+  });
+
+  it('== is lower precedence than ->', () => {
+    // `A -> B == C` parses as `(A -> B) == C` because == sits at the
+    // outermost level.
+    const f = mustParse('|- A -> B == C');
+    expect(f.kind).toBe('judgment');
+    if (f.kind !== 'judgment') return;
+    expect(f.body.kind).toBe('iden');
+    if (f.body.kind !== 'iden') return;
+    expect(f.body.left.kind).toBe('cond');
+    expect(f.body.right.kind).toBe('atom');
+  });
+
+  it('== is right-associative', () => {
+    // a == b == c parses as a == (b == c)
+    const f = mustParse('|- a == b == c');
+    if (f.kind !== 'judgment' || f.body.kind !== 'iden') {
+      throw new Error('expected nested iden');
+    }
+    expect(f.body.right.kind).toBe('iden');
+  });
+
+  it('binds inside a quantifier body (Frege axiom 52 shape)', () => {
+    // |- (a == b) -> (P(a) -> P(b))
+    const f = mustParse('|- (a == b) -> (P(a) -> P(b))');
+    if (f.kind !== 'judgment' || f.body.kind !== 'cond') {
+      throw new Error('expected top-level conditional');
+    }
+    expect(f.body.antecedent.kind).toBe('iden');
+    expect(f.body.consequent.kind).toBe('cond');
+  });
+});
+
+describe('orderOf', () => {
+  it('classifies a propositional formula', () => {
+    expect(orderOf(mustParse('|- p -> q'))).toBe('propositional');
+  });
+
+  it('classifies a first-order formula', () => {
+    expect(orderOf(mustParse('|- all x. F(x) -> G(x)'))).toBe('first-order');
+  });
+
+  it('classifies a higher-order formula', () => {
+    expect(orderOf(mustParse('|- all F. F(a)'))).toBe('higher-order');
+  });
+
+  it('mixed orders report higher-order', () => {
+    expect(orderOf(mustParse('|- all x. exists F. F(x)'))).toBe('higher-order');
   });
 });
 
@@ -178,6 +334,10 @@ describe('parseFrege — error cases', () => {
     expect(parseFrege('|- all . F(x)').ok).toBe(false);
   });
 
+  it('rejects a missing variable after `exists`', () => {
+    expect(parseFrege('|- exists . F(x)').ok).toBe(false);
+  });
+
   it('rejects a missing dot after the bound variable', () => {
     expect(parseFrege('|- all x F(x)').ok).toBe(false);
   });
@@ -196,5 +356,9 @@ describe('parseFrege — error cases', () => {
 
   it('rejects a stray operator', () => {
     expect(parseFrege('|- ->').ok).toBe(false);
+  });
+
+  it('rejects a stray identity sign', () => {
+    expect(parseFrege('|- ==').ok).toBe(false);
   });
 });

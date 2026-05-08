@@ -27,8 +27,26 @@ const structural: SlashCommand[] = [
   {
     slug: 'forall',
     label: 'Insert generality',
-    detail: 'concavity with Gothic letter — all x. F(x)',
+    detail: 'concavity with Gothic individual letter — all x. F(x)',
     insert: 'all x. F(x)',
+  },
+  {
+    slug: 'exists',
+    label: 'Insert existential',
+    detail: 'derived shape ¬∀¬ — exists x. F(x)',
+    insert: 'exists x. F(x)',
+  },
+  {
+    slug: 'iden',
+    label: 'Insert identity-of-content',
+    detail: 'triple-bar ≡ between two contents — A == B',
+    insert: 'A == B',
+  },
+  {
+    slug: 'forall-pred',
+    label: 'Insert higher-order generality',
+    detail: 'predicate-bound concavity — all F. F(a)',
+    insert: 'all F. F(a)',
   },
 ];
 

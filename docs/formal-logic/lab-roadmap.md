@@ -355,7 +355,11 @@ investments in directions the spine already touches.
   rich)
 - Free logic, second-order logic (specialist)
 - Euler diagrams proper, Lewis Carroll diagrams (visual-history depth)
-- Full Frege higher-order system
+- ~~Full Frege higher-order system~~ — shipped 2026-05-08 in
+  `feat/logic-lab-frege-higher-order`. Begriffsschrift Part III
+  (identity-of-content + higher-order quantification + existential as
+  derived). Grundgesetze profile (value-ranges, Basic Law V,
+  definite description) remains as a separate ticket if pursued.
 
 ---
 
@@ -374,7 +378,7 @@ batched.
 | `epistemic` | Common-knowledge `C` (least fixed point of "everyone knows"); distributed-knowledge `K_D`; Muddy Children / coordinated-attack scenarios |
 | `temporal-ltl` | Past-time operators (Y / O / H / S); LTL → Büchi automaton view; CTL\* superset |
 | `temporal-ctl` | Custom dagre layout for branching frames; CTL\* (path formulas inside A / E); µ-calculus; counterexample-as-trace witness |
-| `frege-bs` | Higher-order content; identity-of-content `≡` |
+| `frege-bs` | ~~Higher-order content; identity-of-content `≡`~~ — shipped 2026-05-08 in `feat/logic-lab-frege-higher-order`. Remaining: Grundgesetze profile (value-ranges, Basic Law V, definite description); HOL validity engine; Greek-glyph cavity letters; gfnotation export |
 | `aristotelian` | Term-distribution diagnostics in invalid moods |
 | `medieval` | Modal sorites; obligational disputation |
 | `modern-fol` | Function congruence under equality (Nelson-Oppen, ~100 LOC); fairness-complete tableau strategy; budget knob in UI |
