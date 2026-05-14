@@ -1,3 +1,19 @@
+> **Status (2026-05-08):** Phase 1 (`Atom / Judgment / Conditional /
+> Negation / Generality`) shipped in FEAT-007. Phase 2 — Begriffsschrift
+> Part III: identity-of-content (`≡`), existential as derived `¬∀¬`,
+> higher-order quantification over predicate variables, plus a
+> Frege → FOL/HOL translation panel — shipped 2026-05-08 in
+> `feat/logic-lab-frege-higher-order`. The `FregeContent` AST in
+> `packages/web/src/logic/frege-types.ts` now matches the §4 sketch
+> below (with `iden`, `exists`, and a `sort: 'individual' |
+> 'predicate'` field on quantifiers). Phases 2 (gfnotation
+> short-form import), 3 (layout conformance), 4 (inference chains),
+> 5 (F# normalisation), and 6 (Grundgesetze profile + Part III
+> special constructs not covered by Begriffsschrift) remain
+> open. The text below is preserved as the original design memo.
+
+---
+
 The main move is: **treat gfnotation as a mature typographic reference implementation and compatibility target, not as your application’s core model.** Its real value is that Wermuth already solved a large amount of hard layout work for Frege’s notation: primitive line parts, spacing, inference chains, substitutions, formula numbering, and page-break behavior. But your app should still own a typed AST, semantic transforms, editor UX, SVG layout, and F# backend model.
 
 ## 1. What gfnotation actually gives you

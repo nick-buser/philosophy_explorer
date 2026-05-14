@@ -47,6 +47,51 @@ describe('layoutFormula — generality concavity', () => {
     expect(cavity).toBeDefined();
     if (cavity?.kind !== 'cavity') return;
     expect(cavity.letter).toBe('x');
+    expect(cavity.sort).toBe('individual');
+  });
+
+  it('marks an uppercase-bound cavity as predicate sort', () => {
+    const ps = primitives('|- all F. F(a)');
+    const cavity = ps.find(p => p.kind === 'cavity');
+    expect(cavity).toBeDefined();
+    if (cavity?.kind !== 'cavity') return;
+    expect(cavity.letter).toBe('F');
+    expect(cavity.sort).toBe('predicate');
+  });
+});
+
+describe('layoutFormula — existential lowers to ¬∀¬', () => {
+  it('emits a cavity plus two negation ticks for `exists x. F(x)`', () => {
+    const ps = primitives('|- exists x. F(x)');
+    expect(ps.filter(p => p.kind === 'cavity')).toHaveLength(1);
+    expect(ps.filter(p => p.kind === 'negTick')).toHaveLength(2);
+  });
+
+  it('preserves predicate sort through the lowering', () => {
+    const ps = primitives('|- exists F. F(a)');
+    const cavity = ps.find(p => p.kind === 'cavity');
+    expect(cavity).toBeDefined();
+    if (cavity?.kind !== 'cavity') return;
+    expect(cavity.sort).toBe('predicate');
+  });
+});
+
+describe('layoutFormula — identity of content', () => {
+  it('emits an idenSign between left and right contents', () => {
+    const ps = primitives('|- p == q');
+    const sign = ps.find(p => p.kind === 'idenSign');
+    expect(sign).toBeDefined();
+    // Two atom labels (p and q).
+    expect(ps.filter(p => p.kind === 'atomText')).toHaveLength(2);
+  });
+
+  it('supports nested iden inside a conditional', () => {
+    // |- (a == b) -> P(a)
+    const ps = primitives('|- (a == b) -> P(a)');
+    const signs = ps.filter(p => p.kind === 'idenSign');
+    expect(signs).toHaveLength(1);
+    // Cond contributes a vertical hub stroke.
+    expect(ps.some(p => p.kind === 'vstroke')).toBe(true);
   });
 });
 
@@ -112,6 +157,24 @@ describe('layoutFormula — bbox is non-trivial', () => {
           expect(p.y1).toBeGreaterThanOrEqual(0);
           expect(p.y2).toBeLessThanOrEqual(height);
           break;
+        case 'idenSign':
+          expect(p.x).toBeGreaterThanOrEqual(0);
+          expect(p.x).toBeLessThanOrEqual(width);
+          expect(p.y).toBeGreaterThanOrEqual(0);
+          expect(p.y).toBeLessThanOrEqual(height);
+          break;
+      }
+    }
+  });
+
+  it('keeps an iden formula primitives inside the bbox', () => {
+    const { width, height, primitives: ps } = lay(
+      '|- (a == b) -> (all F. F(a) -> F(b))',
+    );
+    for (const p of ps) {
+      if (p.kind === 'idenSign') {
+        expect(p.x).toBeLessThanOrEqual(width);
+        expect(p.y).toBeLessThanOrEqual(height);
       }
     }
   });

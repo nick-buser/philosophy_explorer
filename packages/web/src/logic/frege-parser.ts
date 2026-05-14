@@ -1,26 +1,39 @@
 import type { FregeContent, FregeFormula } from './frege-types';
+import { inferQuantifierSort } from './frege-types';
 
 // Recursive-descent parser for the Frege Begriffsschrift DSL.
 //
 // Grammar (lowest precedence first):
 //   formula  := '|-' content                    judgment
 //             | content                          mere content
-//   content  := unary ('->' content)?            right-assoc conditional
+//   content  := condExpr ('==' content)?         right-assoc identity-of-content
+//   condExpr := unary ('->' condExpr)?           right-assoc conditional
 //   unary    := '~' unary
-//             | 'all' ident '.' content          universal quantifier (wide scope)
+//             | 'all'    ident '.' content       universal quantifier (wide scope)
+//             | 'exists' ident '.' content       existential (rendered as ¬∀¬)
 //             | primary
 //   primary  := atom | '(' content ')'
 //   atom     := ident ( '(' ident (',' ident)* ')' )?
 //   ident    := [A-Za-z_][A-Za-z0-9_]*
 //
-// Scope convention: `all x.` binds the entire content to its right
-// (including any following `->`), matching Frege's diagrams where the
-// concavity governs the full content stroke that follows it. Use
-// parentheses to force narrow scope: `(all x. F(x)) -> G(a)`.
+// Precedence: `==` (identity-of-content) sits at the lowest level,
+// looser than `->`. So `A -> B == C` parses as `(A -> B) == C` and a
+// quantifier body extends through both `->` and `==`.
 //
-// `all` is a keyword. The identifier `allowed` is not the keyword
-// followed by a free variable name `owed` — keyword recognition
-// requires a non-identifier character after `all`.
+// Scope convention: `all x.` / `exists x.` bind the entire content to
+// their right (including any following `->` and `==`), matching Frege's
+// diagrams where the concavity governs the full content stroke that
+// follows it. Use parentheses to force narrow scope.
+//
+// Sort convention: the *first letter* of the bound variable determines
+// quantifier sort — uppercase = predicate variable (Frege's
+// "second-level" concept), lowercase = individual. This mirrors Frege's
+// typographic distinction between Gothic individual letters and Greek
+// predicate letters.
+//
+// `all` and `exists` are keywords; `allowed` is not the keyword
+// followed by a free variable name `owed`. Keyword recognition
+// requires a non-identifier character after the keyword.
 
 export type ParseError = { message: string; position: number };
 export type ParseResult =
@@ -95,9 +108,21 @@ class Parser {
   }
 
   parseContent(): FregeContent {
-    const left = this.parseUnary();
-    if (this.tryLit('->')) {
+    const left = this.parseCond();
+    if (this.tryLit('==')) {
       const right = this.parseContent();              // right-assoc
+      return { kind: 'iden', left, right };
+    }
+    return left;
+  }
+
+  parseCond(): FregeContent {
+    const left = this.parseUnary();
+    // Distinguish `->` from `==` cleanly: peek before consuming.
+    this.skipWs();
+    if (this.src.startsWith('->', this.pos)) {
+      this.pos += 2;
+      const right = this.parseCond();                 // right-assoc
       return { kind: 'cond', antecedent: left, consequent: right };
     }
     return left;
@@ -109,17 +134,25 @@ class Parser {
       return { kind: 'not', body: this.parseUnary() };
     }
     if (this.tryKeyword('all')) {
-      this.skipWs();
-      const v = this.parseIdent('expected variable name after `all`');
-      this.skipWs();
-      if (!this.tryLit('.')) {
-        throw new ParserError("expected '.' after quantified variable", this.pos);
-      }
-      // Wide-scope: bind a full content (including any following ->).
-      // Narrow scope is opt-in via parentheses.
-      return { kind: 'forall', variable: v, body: this.parseContent() };
+      return this.parseQuantBody('forall');
+    }
+    if (this.tryKeyword('exists')) {
+      return this.parseQuantBody('exists');
     }
     return this.parsePrimary();
+  }
+
+  // Shared `<var> '.' <content>` tail used by both `all` and `exists`.
+  parseQuantBody(kind: 'forall' | 'exists'): FregeContent {
+    this.skipWs();
+    const v = this.parseIdent(`expected variable name after \`${kind === 'forall' ? 'all' : 'exists'}\``);
+    this.skipWs();
+    if (!this.tryLit('.')) {
+      throw new ParserError("expected '.' after quantified variable", this.pos);
+    }
+    const sort = inferQuantifierSort(v);
+    // Wide-scope: bind a full content (including any following ->/==).
+    return { kind, variable: v, sort, body: this.parseContent() };
   }
 
   parsePrimary(): FregeContent {

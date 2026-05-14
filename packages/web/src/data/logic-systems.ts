@@ -285,13 +285,13 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
     slug: 'frege-bs',
     name: 'Frege\u2019s Begriffsschrift',
     shortDescription:
-      'The 1879 concept-script. 2D judgment-and-content strokes with condition strokes for implication and concavities for generality.',
+      'The 1879 concept-script. 2D judgment-and-content strokes with condition strokes for implication, concavities for generality, identity-of-content (\u2261), and higher-order quantification over predicate variables.',
     era: '1879',
-    keyPrimitive: 'judgment + content stroke',
+    keyPrimitive: 'judgment \u00b7 content stroke \u00b7 concavity \u00b7 \u2261',
     status: 'available',
     thinkerSlug: null,
     history:
-      'Gottlob Frege published the *Begriffsschrift* (\u201cconcept-script\u201d) in 1879 as a 2D notation \u201cmodelled on that of arithmetic\u201d for capturing logical structure directly. Frege took the universal quantifier as primitive (a concavity in the content stroke containing a Gothic letter) and built propositional structure from a horizontal content stroke, an attached vertical judgment stroke for assertion, a downward tick for negation, and a vertical condition stroke joining a consequent (top) to an antecedent (bottom). The notation was barely read for two decades \u2014 Russell rediscovered it in 1902 \u2014 and then mostly displaced by the linear Peano\u2013Russell style. Modern revivals trace Wermuth\u2019s `gfnotation` plain-TeX package (TUGboat 2015) and Sperberg-McQueen\u2019s 2023 Balisage paper on keyboarding Frege.',
+      'Gottlob Frege published the *Begriffsschrift* (\u201cconcept-script\u201d) in 1879 as a 2D notation \u201cmodelled on that of arithmetic\u201d for capturing logical structure directly. Frege took the universal quantifier as primitive (a concavity in the content stroke containing a Gothic letter) and built propositional structure from a horizontal content stroke, an attached vertical judgment stroke for assertion, a downward tick for negation, and a vertical condition stroke joining a consequent (top) to an antecedent (bottom). Part III added identity-of-content (\u2261) for sentence-level and term-level identity, the substitution principle as a primitive axiom, and quantification over predicate variables \u2014 the move that made the Begriffsschrift the first higher-order logic. The existential was always treated as derived (\u00ac\u2200\u00ac), not primitive. The notation was barely read for two decades \u2014 Russell rediscovered it in 1902 \u2014 and then mostly displaced by the linear Peano\u2013Russell style. Modern revivals trace Wermuth\u2019s `gfnotation` plain-TeX package (TUGboat 2015) and Sperberg-McQueen\u2019s 2023 Balisage paper on keyboarding Frege.',
     primitives: [
       {
         name: 'Content stroke',
@@ -317,6 +317,21 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
         name: 'Generality (concavity)',
         syntax: 'all x. F(x)',
         description: 'A small concave dip in the content stroke containing a Gothic letter. Universal quantification over the bound variable. Frege took the universal as primitive and derived the existential as \u00ac\u2200\u00ac.',
+      },
+      {
+        name: 'Existential (derived)',
+        syntax: 'exists x. F(x)',
+        description: 'Frege never introduced an existential glyph; the convention "there is an x such that F(x)" is rendered as \u00ac\u2200x.\u00acF(x) \u2014 an outer negation tick, then a concavity, then an inner negation tick, then F. The DSL accepts `exists x. \u03c6` for convenience; the diagram still draws the derived shape.',
+      },
+      {
+        name: 'Identity of content',
+        syntax: 'A == B',
+        description: 'A triple-bar (\u2261) joining two contents on a single content stroke. Frege used it both for term-level identity (a \u2261 b) and for sentence-level equivalence (\u03c6 \u2261 \u03c8); Part III\u2019s axiom 52 makes it interchangeable in any predicate position. The modern triple-bar \u2261 descends from this mark; later identity (=) and biconditional (\u2194) split off as separate operators.',
+      },
+      {
+        name: 'Higher-order generality',
+        syntax: 'all F. F(a)',
+        description: 'A concavity binding an upper-case Greek/Latin letter \u2014 a *predicate* variable rather than an individual one. Quantifies over Frege\u2019s "second-level concepts" rather than objects. The DSL infers the sort from the variable\u2019s capitalisation: lowercase = individual (Gothic), uppercase = predicate (Greek). The cavity letter renders in cyan when its sort is predicate.',
       },
     ],
     examples: [
@@ -359,6 +374,60 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
         natural: 'if (p \u2192 q) and (q \u2192 r) then (p \u2192 r), under universal F/G/H',
         dsl: '|- (all x. F(x) -> G(x)) -> (all x. G(x) -> H(x)) -> (all x. F(x) -> H(x))',
         note: 'A nested conditional under three concavities \u2014 the kind of layout the Begriffsschrift renders very legibly and the linear notation does not.',
+      },
+      {
+        slug: 'existential-basic',
+        natural: 'there exists x such that F(x)',
+        dsl: '|- exists x. F(x)',
+        note: 'The DSL accepts an `exists` keyword, but the diagram still draws Frege\u2019s derived shape: outer negation tick, concavity, inner negation tick, body \u2014 the visible form of \u00ac\u2200x.\u00acF(x).',
+      },
+      {
+        slug: 'existential-as-derived',
+        natural: 'existential is definitionally \u00ac\u2200\u00ac',
+        dsl: '|- exists x. F(x) == ~all x. ~F(x)',
+        note: 'A content-identity statement: the existential and its derived form are literally the same content. In Frege\u2019s practice, an identity of content like this licenses interchange in any context.',
+      },
+      {
+        slug: 'iden-reflexive',
+        natural: 'identity of content is reflexive',
+        dsl: '|- a == a',
+        note: 'Frege\u2019s axiom 54: the simplest fact about identity. Same role as `a = a` in modern logic.',
+      },
+      {
+        slug: 'iden-substitution',
+        natural: 'substitution under identity (Frege\u2019s axiom 52)',
+        dsl: '|- (a == b) -> P(a) -> P(b)',
+        note: 'If a and b have the same content, then any predicate true of a is true of b. The substitution principle is what makes \u2261 behave like identity rather than just material equivalence.',
+      },
+      {
+        slug: 'leibniz-indiscernibility',
+        natural: 'Leibniz\u2019s law (second-order) \u2014 identity is co-extensive with sharing every property',
+        dsl: '|- (a == b) -> all F. F(a) -> F(b)',
+        note: 'The same shape as axiom 52 but quantified over all predicates F. Becomes a higher-order formula \u2014 note the cyan capital in the concavity, marking F as a predicate variable rather than an individual.',
+      },
+      {
+        slug: 'ho-trivial-identity',
+        natural: 'every property entails itself',
+        dsl: '|- all F. F(a) -> F(a)',
+        note: 'The minimal higher-order formula: the same a, the same F, the same conclusion. Trivial as logic but illustrates the diagram of a predicate-bound concavity.',
+      },
+      {
+        slug: 'ho-comprehension',
+        natural: 'every individual satisfies some property',
+        dsl: '|- all x. exists F. F(x)',
+        note: 'A mixed quantification: outer \u2200 over individuals (gold concavity), inner \u2203 over predicates (cyan concavity, drawn as \u00ac\u2200\u00ac). Read literally: pick any x; some property F holds of it. Trivially true: take F = (\u03bby. y == x).',
+      },
+      {
+        slug: 'ho-universal-property',
+        natural: 'there is a property held by every individual',
+        dsl: '|- exists F. all x. F(x)',
+        note: 'Switching the quantifier order from the previous example yields a non-trivial higher-order claim. In set-theoretic semantics this is also true (take F = the always-true predicate), but unlike comprehension it depends on the existence of a particular concept.',
+      },
+      {
+        slug: 'iden-contraposition',
+        natural: 'contraposition stated as identity-of-content',
+        dsl: '|- (p -> q) == (~q -> ~p)',
+        note: 'Frege used identity-of-content as a definition mechanism, not just as a binary connective: stating `(p \u2192 q) \u2261 (\u00acq \u2192 \u00acp)` says the two contents are interchangeable everywhere. Renders the propositional axiom of contraposition as a single Begriffsschrift formula joined by \u2261.',
       },
     ],
     readingPointers: [

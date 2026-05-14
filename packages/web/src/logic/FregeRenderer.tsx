@@ -8,11 +8,18 @@ import { LAYOUT_CONSTS, layoutFormula, type Primitive } from './frege-layout';
 // list of SVG primitives. Strokes are drawn with a single stroke
 // colour and consistent width — Frege's notation has no polarity
 // shading the way Peirce's nested cuts do.
+//
+// Higher-order: cavities carry a `sort` field. Individual quantifiers
+// keep the original pale-gold letter; predicate quantifiers shift to
+// teal so a glance at the diagram reveals when a quantifier ranges
+// over concepts rather than objects.
 
-const STROKE_COLOR = '#e5e7eb';
-const STROKE_WIDTH = 1.6;
-const ATOM_FILL    = '#f3f4f6';
-const QUANT_FILL   = '#fde68a';   // pale gold for the bound variable inside the cavity
+const STROKE_COLOR  = '#e5e7eb';
+const STROKE_WIDTH  = 1.6;
+const ATOM_FILL     = '#f3f4f6';
+const QUANT_INDIV   = '#fde68a';   // pale gold for individual variables
+const QUANT_PRED    = '#67e8f9';   // light cyan for predicate variables
+const IDEN_FILL     = '#f3f4f6';
 
 type Props = {
   formula: FregeFormula;
@@ -83,6 +90,7 @@ function PrimitiveShape({ p }: { p: Primitive }) {
         `L ${p.x + p.w},${p.y}`;
       const letterX = p.x + p.w / 2;
       const letterY = p.y + p.depth - 3;
+      const fill    = p.sort === 'predicate' ? QUANT_PRED : QUANT_INDIV;
       return (
         <g>
           <path
@@ -100,13 +108,31 @@ function PrimitiveShape({ p }: { p: Primitive }) {
             fontFamily="Georgia, 'Times New Roman', serif"
             fontStyle="italic"
             fontSize={LAYOUT_CONSTS.FORALL_LETTER_PX}
-            fill={QUANT_FILL}
+            fontWeight={p.sort === 'predicate' ? 700 : 400}
+            fill={fill}
           >
             {p.letter}
           </text>
         </g>
       );
     }
+
+    case 'idenSign':
+      // Frege's identity-of-content (Part III §8): a triple-bar drawn
+      // mid-row between the two contents.
+      return (
+        <text
+          x={p.x}
+          y={p.y}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fontFamily="Georgia, 'Times New Roman', serif"
+          fontSize={p.size}
+          fill={IDEN_FILL}
+        >
+          {'≡'}
+        </text>
+      );
 
     case 'judgmentBar':
       return (

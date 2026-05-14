@@ -343,6 +343,30 @@ not need its own DL ticket.
 
 ---
 
+## Frege follow-ups (post-higher-order)
+
+The higher-order ticket (`feat/logic-lab-frege-higher-order`,
+shipped 2026-05-08) closes Begriffsschrift Part III. Five follow-ups
+are queued — independent, pick by appetite. Each has its own
+`.tickets/` file with build sketch + references.
+
+| Stage | Ticket | What | Size |
+|---|---|---|---|
+| Base (shipped) | `feat/logic-lab-frege-higher-order` | Identity-of-content (`≡`), existential as derived ¬∀¬, higher-order quantification over predicate variables, Frege → FOL/HOL translation panel, propositional / first-order / higher-order order chip. | L (shipped) |
+| HOL validity | [`.tickets/feat-logic-lab-frege-hol-validity.md`](../../.tickets/feat-logic-lab-frege-hol-validity.md) | Bounded Henkin model checker over a small finite domain; ⊨/⊭ verdict + countermodel panel. The one big functional gap vs Modern FOL. | M |
+| Inference chains | [`.tickets/feat-logic-lab-frege-inference-chains.md`](../../.tickets/feat-logic-lab-frege-inference-chains.md) | Formula numbers, cited references, substitution tables, inference rule lines — Frege's actual proof presentations from *Begriffsschrift*. Layout fidelity, not proof checking. | M–L |
+| Grundgesetze | [`.tickets/feat-logic-lab-frege-grundgesetze.md`](../../.tickets/feat-logic-lab-frege-grundgesetze.md) | Value-ranges, Basic Law V (with a flagged Russell-paradox demo), definite description, function abstraction, profile toggle. Completes the Frege corpus end-to-end. | L |
+| gfnotation interop | [`.tickets/feat-logic-lab-frege-gfnotation.md`](../../.tickets/feat-logic-lab-frege-gfnotation.md) | Import/export Wermuth's TeX short-form. Round-trip test corpus from TUGboat + GFnotation-doc. | M |
+| Polish | [`.tickets/feat-logic-lab-frege-polish.md`](../../.tickets/feat-logic-lab-frege-polish.md) | Remaining 5 of Frege's 9 axioms as examples; Greek capital glyphs in predicate-sort cavities; predicate-variable arity-coherence soft-warning chip. Batched. | S |
+
+Compare-view pairing (Frege ↔ Modern FOL) lands as part of
+`feat/logic-lab-compare-view` — does not need its own Frege ticket.
+Lean integration for proof checking (`feat/logic-lab-lean-fitch` in
+§Long term) is the natural pair for *Inference chains* once both
+ship.
+
+---
+
 ## Optional / lower-priority
 
 Not spine-completing in the way the above items are; depth
@@ -355,7 +379,11 @@ investments in directions the spine already touches.
   rich)
 - Free logic, second-order logic (specialist)
 - Euler diagrams proper, Lewis Carroll diagrams (visual-history depth)
-- Full Frege higher-order system
+- ~~Full Frege higher-order system~~ — base shipped 2026-05-08 in
+  `feat/logic-lab-frege-higher-order` (Begriffsschrift Part III).
+  Five follow-up tickets (Grundgesetze, inference chains, HOL
+  validity, gfnotation interop, polish) queued under §Frege
+  follow-ups (post-higher-order) above.
 
 ---
 
@@ -374,7 +402,7 @@ batched.
 | `epistemic` | Common-knowledge `C` (least fixed point of "everyone knows"); distributed-knowledge `K_D`; Muddy Children / coordinated-attack scenarios |
 | `temporal-ltl` | Past-time operators (Y / O / H / S); LTL → Büchi automaton view; CTL\* superset |
 | `temporal-ctl` | Custom dagre layout for branching frames; CTL\* (path formulas inside A / E); µ-calculus; counterexample-as-trace witness |
-| `frege-bs` | Higher-order content; identity-of-content `≡` |
+| `frege-bs` | ~~Higher-order content; identity-of-content `≡`~~ — shipped 2026-05-08 in `feat/logic-lab-frege-higher-order`. Remaining: Grundgesetze profile (value-ranges, Basic Law V, definite description); HOL validity engine; Greek-glyph cavity letters; gfnotation export |
 | `aristotelian` | Term-distribution diagnostics in invalid moods |
 | `medieval` | Modal sorites; obligational disputation |
 | `modern-fol` | Function congruence under equality (Nelson-Oppen, ~100 LOC); fairness-complete tableau strategy; budget knob in UI |

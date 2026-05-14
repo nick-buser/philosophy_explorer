@@ -5,10 +5,18 @@ import { parseFrege } from '../frege-parser';
 import { FregeRenderer } from '../FregeRenderer';
 import { FregeEditor } from '../FregeEditor';
 import { FREGE_COMMANDS, findFregeCommand } from '../frege-commands';
+import { fregeToKatex } from '../frege-fol';
+import { orderOf } from '../frege-types';
+import type { FregeOrder } from '../frege-types';
+import { KatexFormula } from '../KatexFormula';
 import { SectionHeading } from './shared';
 
 export default function FregeBsLab({ system }: { system: LogicSystem }) {
-  const initial = system.examples[2] ?? system.examples[0]!;
+  // Default to a higher-order example so a fresh visitor sees the new
+  // capability surfaced immediately.
+  const initial = system.examples.find(ex => ex.slug === 'leibniz-indiscernibility')
+    ?? system.examples[2]
+    ?? system.examples[0]!;
   const [src, setSrc] = useState<string>(initial.dsl);
 
   function runCommand(slug: string) {
@@ -89,6 +97,18 @@ export default function FregeBsLab({ system }: { system: LogicSystem }) {
   );
 }
 
+const ORDER_LABEL: Record<FregeOrder, string> = {
+  'propositional': 'propositional',
+  'first-order':   'first-order',
+  'higher-order':  'higher-order',
+};
+
+const ORDER_TONE: Record<FregeOrder, string> = {
+  'propositional': 'text-gray-500 border-gray-800',
+  'first-order':   'text-amber-300/80 border-amber-900/60',
+  'higher-order':  'text-cyan-300/80 border-cyan-900/60',
+};
+
 function FregeBsLabBody({
   src, onSrcChange, examples, onCommand,
 }: {
@@ -98,6 +118,8 @@ function FregeBsLabBody({
   onCommand: (slug: string) => void;
 }) {
   const parsed = useMemo(() => parseFrege(src), [src]);
+  const order  = useMemo(() => (parsed.ok ? orderOf(parsed.formula) : null), [parsed]);
+  const tex    = useMemo(() => (parsed.ok ? fregeToKatex(parsed.formula) : ''), [parsed]);
 
   return (
     <div className="space-y-4">
@@ -107,7 +129,7 @@ function FregeBsLabBody({
         <div className="rounded-lg border border-gray-800 bg-gray-950 overflow-hidden">
           <div className="px-3 py-2 border-b border-gray-800 text-xs text-gray-500 flex items-center justify-between">
             <span>DSL · type <code className="text-gray-400">/</code> for commands</span>
-            <span className="text-gray-600">Begriffsschrift 1879</span>
+            <span className="text-gray-600">Begriffsschrift 1879 · Part III</span>
           </div>
           <FregeEditor value={src} onChange={onSrcChange} className="min-h-[220px]" />
         </div>
@@ -116,7 +138,14 @@ function FregeBsLabBody({
           <div className="px-3 py-2 border-b border-gray-800 text-xs text-gray-500 flex items-center justify-between">
             <span>Rendering</span>
             {parsed.ok ? (
-              <span className="text-emerald-400">parsed</span>
+              <div className="flex items-center gap-2">
+                {order && (
+                  <span className={`text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded border ${ORDER_TONE[order]}`}>
+                    {ORDER_LABEL[order]}
+                  </span>
+                )}
+                <span className="text-emerald-400">parsed</span>
+              </div>
             ) : (
               <span className="text-amber-400">parse error</span>
             )}
@@ -133,14 +162,37 @@ function FregeBsLabBody({
         </div>
       </div>
 
+      <div className="rounded-lg border border-gray-800 bg-gray-900/40">
+        <div className="px-3 py-2 border-b border-gray-800 text-xs text-gray-500 flex items-center justify-between">
+          <span>Equivalent linear formula</span>
+          <span className="text-gray-600">
+            {order === 'higher-order' ? 'higher-order'
+             : order === 'first-order' ? 'first-order'
+             : order === 'propositional' ? 'propositional'
+             : 'awaiting parse'}
+          </span>
+        </div>
+        <div className="p-6 min-h-[64px] flex items-center justify-center overflow-auto">
+          {parsed.ok ? (
+            <KatexFormula tex={tex} className="text-gray-100" />
+          ) : (
+            <div className="text-xs text-gray-600">parse the input above to see its translation</div>
+          )}
+        </div>
+      </div>
+
       <p className="text-xs text-gray-500 leading-relaxed">
         Shorthand: <code className="text-gray-300">|- A</code> asserts A;
         <code className="ml-1 text-gray-300">~A</code> negates;
         <code className="ml-1 text-gray-300">A -&gt; B</code> is the conditional
         (Frege puts the consequent on top of the T-junction);
-        <code className="ml-1 text-gray-300">all x. F(x)</code> is universal generality.
-        Type <code className="text-gray-300">/</code> in the editor for templates and
-        examples.
+        <code className="ml-1 text-gray-300">all x. F(x)</code> is universal generality;
+        <code className="ml-1 text-gray-300">exists x. F(x)</code> renders as Frege’s derived ¬∀¬;
+        <code className="ml-1 text-gray-300">A == B</code> is identity-of-content (≡).
+        Capital-letter quantified variables (<code className="text-cyan-300">all F. F(a)</code>)
+        are read as predicate variables — the cavity letter turns cyan and the
+        formula promotes to higher-order. Type
+        <code className="text-gray-300">/</code> in the editor for templates and examples.
       </p>
     </div>
   );
