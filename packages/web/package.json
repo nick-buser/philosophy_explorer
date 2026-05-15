@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "gen:types": "openapi-typescript ../api/specs/openapi.json -o src/lib/api-types.ts"
+    "gen:types": "openapi-typescript ../specs/openapi.json -o src/lib/api-types.ts"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.1",

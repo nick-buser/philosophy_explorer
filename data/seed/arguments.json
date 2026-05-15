@@ -1,0 +1,296 @@
+[
+  {
+    "id": "aristotle/nicomachean-ethics/001-arts-aim-at-good",
+    "extractionId": "aristotle/nicomachean-ethics/001-arts-aim-at-good",
+    "workSlug": "nicomachean-ethics",
+    "sourceFile": "sources/aristotle/nicomachean-ethics/source.txt",
+    "sourceStartLine": 842,
+    "sourceEndLine": 844,
+    "sourceExcerpt": "Every art, and every science reduced to a teachable form, and in like\nmanner every action and moral choice, aims, it is thought, at some\ngood",
+    "intent": "Capture the opening sentence of the Nicomachean Ethics — the universal claim that every art, every (teachable) science, every action, and every moral choice aims at some good — as a single quantified FOL formula.",
+    "extractorNote": "Single-formula FOL render of one hedged universal. Lossy in (1) the modal hedging of 'it is thought' and (2) the teleological flavour of 'aims at', which is reduced to a flat binary relation. Compact and tractable; primarily exercises ∀x → ∃y nesting and a four-way disjunction in the antecedent — neither of which the Meno extraction touched.",
+    "clauses": [
+      {
+        "role": "claim",
+        "position": 0,
+        "verbalText": null,
+        "sourceExcerpt": null
+      }
+    ],
+    "formalizations": [
+      {
+        "formalism": "fol",
+        "isPrimary": true,
+        "reason": null,
+        "distortionRisk": null,
+        "fitScore": null,
+        "astJson": "{\"formula\":{\"kind\":\"forall\",\"variable\":\"x\",\"body\":{\"kind\":\"implies\",\"left\":{\"kind\":\"or\",\"left\":{\"kind\":\"or\",\"left\":{\"kind\":\"or\",\"left\":{\"kind\":\"pred\",\"name\":\"Art\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"}]},\"right\":{\"kind\":\"and\",\"left\":{\"kind\":\"pred\",\"name\":\"Science\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"}]},\"right\":{\"kind\":\"pred\",\"name\":\"TeachableForm\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"}]}}},\"right\":{\"kind\":\"pred\",\"name\":\"Action\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"}]}},\"right\":{\"kind\":\"pred\",\"name\":\"MoralChoice\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"}]}},\"right\":{\"kind\":\"exists\",\"variable\":\"y\",\"body\":{\"kind\":\"and\",\"left\":{\"kind\":\"pred\",\"name\":\"Good\",\"args\":[{\"kind\":\"var\",\"name\":\"y\"}]},\"right\":{\"kind\":\"pred\",\"name\":\"AimsAt\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"},{\"kind\":\"var\",\"name\":\"y\"}]}}}}}}"
+      }
+    ],
+    "assessments": [
+      {
+        "formalism": "aristotelian",
+        "fitScore": 0.25,
+        "reason": "On the surface 'all arts/sciences/actions/choices aim at some good' looks categorical and A-form. But the predicate 'aims at some good' hides a binary relation (AimsAt(x,y)) plus an existential over the aim. Term logic forces this into a unary predicate 'aimer-at-some-good', losing the relation between an art and its specific end — which is the whole point of the opening of NE.",
+        "distortionRisk": "Collapsing AimsAt(x,y) into a unary predicate cannot subsequently support Aristotle's chained reasoning (Chapter I) about hierarchies of ends and master-arts."
+      },
+      {
+        "formalism": "nd",
+        "fitScore": 0.15,
+        "reason": "The sentence asserts a single (hedged) universal — there is no inferential step from premises to conclusion. nd would treat this either as a premise-only argument (degenerate) or invent inferential structure that is not in the text.",
+        "distortionRisk": "Premise/conclusion machinery invites spurious reconstruction of an argument where the text only asserts."
+      }
+    ],
+    "reviewerNotes": [
+      "Speaker: Aristotle, expository. Hedged with 'it is thought' (δοκεῖ in the Greek), positioning the claim as endoxic / received opinion rather than a unilateral assertion. The hedge is not represented in the AST.",
+      "Restriction 'every science reduced to a teachable form' encoded as a conjunction Science(x) ∧ TeachableForm(x). This plausibly tracks Aristotle's distinction between technai/epistēmai with explicit method and looser uses of 'science'; the encoding does not preserve that further interpretive layer.",
+      "'Some good' rendered with an existential ∃y. Good(y); the question whether each art aims at a different good or all aim at one common Chief Good is not yet in view in this sentence and is therefore not encoded. The very next clause (lines 844–845, not in this extraction) connects the universal to the conventional description of the Chief Good as 'that which all things aim at'.",
+      "'Aims at' rendered as binary predicate AimsAt(x,y); the teleological background of 'telos' / 'end' that this verb carries elsewhere in the text is elided. A future Davidsonian event-semantics extraction mode (flagged in docs/formal_argument_parsing.md as not yet mirrored) would represent the 'aiming' as an event with goal/telos roles rather than a flat binary predicate.",
+      "Project Gutenberg edition uses 'art' for technē; 'science' for epistēmē; 'moral choice' for prohairesis. Predicate names follow the English translation rather than transliteration — this is a translation-layer decision and should be revisited if a multi-translation extraction strategy emerges."
+    ]
+  },
+  {
+    "id": "aristotle/nicomachean-ethics/002-good-of-man-function-argument",
+    "extractionId": "aristotle/nicomachean-ethics/002-good-of-man-function-argument",
+    "workSlug": "nicomachean-ethics",
+    "sourceFile": "sources/aristotle/nicomachean-ethics/source.txt",
+    "sourceStartLine": 1242,
+    "sourceEndLine": 1255,
+    "sourceExcerpt": "the work of any given subject, and of that subject good of its kind,\nare the same in kind",
+    "intent": "Capture Aristotle's function/ergon argument at NE I.5 (Chase translation, NE I.7 in standard numbering): given that the good of any kind consists in doing its characteristic work well, and that the work of Man is rational activity of soul, the Good of Man is rational activity of soul performed excellently.",
+    "extractorNote": "Compact nd with three FOL premises and one FOL conclusion — exercises function symbols (WorkOf, GoodOf, DoneWell), equality, and a universal premise instantiated at a constant (Man). Lossy in (1) the harp-player analogy that motivates the universal premise, (2) the modal hedge 'or at least not independently of reason', and (3) the superlative qualifier on Excellence. No Fitch proof attached: the nd-types.ts mirror is presently propositional only (no quantifier or equality rules), so a proof of this argument would require an extension. The argument structure is recorded; the proof gap is itself a finding.",
+    "clauses": [
+      {
+        "role": "premise",
+        "position": 0,
+        "verbalText": null,
+        "sourceExcerpt": null
+      },
+      {
+        "role": "premise",
+        "position": 1,
+        "verbalText": null,
+        "sourceExcerpt": null
+      },
+      {
+        "role": "premise",
+        "position": 2,
+        "verbalText": null,
+        "sourceExcerpt": null
+      },
+      {
+        "role": "conclusion",
+        "position": 3,
+        "verbalText": null,
+        "sourceExcerpt": null
+      }
+    ],
+    "formalizations": [
+      {
+        "formalism": "nd",
+        "isPrimary": true,
+        "reason": null,
+        "distortionRisk": null,
+        "fitScore": null,
+        "astJson": "{\"argument\":{\"premises\":[{\"kind\":\"forall\",\"variable\":\"x\",\"body\":{\"kind\":\"implies\",\"left\":{\"kind\":\"pred\",\"name\":\"HasWork\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"}]},\"right\":{\"kind\":\"eq\",\"left\":{\"kind\":\"fn\",\"name\":\"GoodOf\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"}]},\"right\":{\"kind\":\"fn\",\"name\":\"DoneWell\",\"args\":[{\"kind\":\"fn\",\"name\":\"WorkOf\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"}]}]}}}},{\"kind\":\"eq\",\"left\":{\"kind\":\"fn\",\"name\":\"WorkOf\",\"args\":[{\"kind\":\"const\",\"name\":\"Man\"}]},\"right\":{\"kind\":\"const\",\"name\":\"WorkingOfSoulWithReason\"}},{\"kind\":\"pred\",\"name\":\"HasWork\",\"args\":[{\"kind\":\"const\",\"name\":\"Man\"}]}],\"conclusion\":{\"kind\":\"eq\",\"left\":{\"kind\":\"fn\",\"name\":\"GoodOf\",\"args\":[{\"kind\":\"const\",\"name\":\"Man\"}]},\"right\":{\"kind\":\"fn\",\"name\":\"DoneWell\",\"args\":[{\"kind\":\"const\",\"name\":\"WorkingOfSoulWithReason\"}]}}},\"proof\":null}"
+      }
+    ],
+    "assessments": [
+      {
+        "formalism": "aristotelian",
+        "fitScore": 0.2,
+        "reason": "The passage's central inference turns on identity claims (GoodOf(Man) = DoneWell(WorkOf(Man))) and on applying a function (WorkOf, GoodOf) to a particular term (Man). Term logic carries neither: it has no equality and no function-application structure.",
+        "distortionRisk": "Forcing into syllogistic shape would require reifying 'good of x' as a unary predicate 'is-good-of-its-kind' and dropping the identity with 'doing the work well' — losing the very content of the argument."
+      },
+      {
+        "formalism": "fol",
+        "fitScore": 0.6,
+        "reason": "FOL is the formula language used here, but a single FOL formula collapses the explicit 'if-then... if... then... if all this is so, then...' structure that the prose deploys. nd records the inferential step as primary; FOL is its formula language.",
+        "distortionRisk": "Compressing into one big implication loses the staged conditional structure Aristotle actually writes."
+      }
+    ],
+    "reviewerNotes": [
+      "Speaker: Aristotle, expository; the prose stages the argument as 'if then... if... then... if all this is so, then...'. The three premises here are extracted from that staged conditional; they are not labelled as such in the text.",
+      "Premise 1 ('∀x. HasWork(x) → GoodOf(x) = DoneWell(WorkOf(x))') is reconstructed from two adjacent claims in the text: 'the work of any given subject, and of that subject good of its kind, are the same in kind' (1244-1245) and 'adding to the work eminence in the way of excellence' (1246-1247). The harp-player and good-harp-player example (1245-1248) is the analogical evidence Aristotle gives for this premise; it is dropped from the AST.",
+      "Premise 2 ('WorkOf(Man) = WorkingOfSoulWithReason') is hedged in the text by 'or at least not independently of reason' (1242-1243). The hedge — a modal weakening of the identity — is not encoded; encoding it would need a graded or modal extension.",
+      "Premise 3 ('HasWork(Man)') is not stated in this exact passage — it is established earlier in the chapter (lines 1225-1230, the 'Man as Man' has a work argument). It is included here as an explicit premise because the conclusion does not follow without it.",
+      "The conclusion's qualifier 'if Excellence admits of degrees, in the way of the best and most perfect Excellence' (1254-1255) is not encoded. It introduces graded / superlative structure that flat FOL does not naturally carry; a Kripke-style modal or comparative extension would be needed.",
+      "Translation note: Chase's 'work' renders Aristotle's ergon, sometimes also translated 'function'. 'GoodOf' and 'DoneWell' are translation-layer names following Chase's vocabulary ('good of its kind', 'do these things well and nobly'). A multi-translation extraction strategy would normalise these.",
+      "Standard Stephanus / Bekker numbering for this passage is approximately NE 1098a7-18 (Chapter I.7 in the Bekker chapter division); the Chase edition labels it Chapter V because it merges some chapters earlier in Book I."
+    ]
+  },
+  {
+    "id": "plato/meno/001-virtue-same-in-all",
+    "extractionId": "plato/meno/001-virtue-same-in-all",
+    "workSlug": null,
+    "sourceFile": "sources/plato/meno/source.txt",
+    "sourceStartLine": 999,
+    "sourceEndLine": 1019,
+    "sourceExcerpt": "SOCRATES: Then all men are good in the same way, and by participation in\nthe same virtues?\n\nMENO: Such is the inference.",
+    "intent": "Capture Socrates' chain inference at Meno 73a–c that virtue is the same in all (men, women, young, old) because the same virtues — temperance and justice — are required for any of them to be good.",
+    "extractorNote": "Lossy in three places: (1) the elenctic rhythm of concession-by-concession; (2) the generalising move from four enumerated cases to a universal; (3) the implicit bridge premise (shared virtues ⇒ 'same way') which had to be reconstructed to make the argument valid. All three would be carried natively by a Platonic dialogical / commitment-tracking extraction mode; per docs/formal_argument_parsing.md that mode is flagged but not yet mirrored. First-pass extraction surfaces the inferential skeleton suitable for nd and documents where flattening occurred so the gaps can drive future schema work.",
+    "clauses": [
+      {
+        "role": "premise",
+        "position": 0,
+        "verbalText": null,
+        "sourceExcerpt": null
+      },
+      {
+        "role": "premise",
+        "position": 1,
+        "verbalText": null,
+        "sourceExcerpt": null
+      },
+      {
+        "role": "conclusion",
+        "position": 2,
+        "verbalText": null,
+        "sourceExcerpt": null
+      }
+    ],
+    "formalizations": [
+      {
+        "formalism": "nd",
+        "isPrimary": true,
+        "reason": null,
+        "distortionRisk": null,
+        "fitScore": null,
+        "astJson": "{\"argument\":{\"premises\":[{\"kind\":\"forall\",\"variable\":\"x\",\"body\":{\"kind\":\"implies\",\"left\":{\"kind\":\"pred\",\"name\":\"Good\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"}]},\"right\":{\"kind\":\"and\",\"left\":{\"kind\":\"pred\",\"name\":\"Temperate\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"}]},\"right\":{\"kind\":\"pred\",\"name\":\"Just\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"}]}}}},{\"kind\":\"forall\",\"variable\":\"x\",\"body\":{\"kind\":\"forall\",\"variable\":\"y\",\"body\":{\"kind\":\"implies\",\"left\":{\"kind\":\"and\",\"left\":{\"kind\":\"and\",\"left\":{\"kind\":\"pred\",\"name\":\"Temperate\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"}]},\"right\":{\"kind\":\"pred\",\"name\":\"Just\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"}]}},\"right\":{\"kind\":\"and\",\"left\":{\"kind\":\"pred\",\"name\":\"Temperate\",\"args\":[{\"kind\":\"var\",\"name\":\"y\"}]},\"right\":{\"kind\":\"pred\",\"name\":\"Just\",\"args\":[{\"kind\":\"var\",\"name\":\"y\"}]}}},\"right\":{\"kind\":\"pred\",\"name\":\"SameVirtuesAs\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"},{\"kind\":\"var\",\"name\":\"y\"}]}}}}],\"conclusion\":{\"kind\":\"forall\",\"variable\":\"x\",\"body\":{\"kind\":\"forall\",\"variable\":\"y\",\"body\":{\"kind\":\"implies\",\"left\":{\"kind\":\"and\",\"left\":{\"kind\":\"pred\",\"name\":\"Good\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"}]},\"right\":{\"kind\":\"pred\",\"name\":\"Good\",\"args\":[{\"kind\":\"var\",\"name\":\"y\"}]}},\"right\":{\"kind\":\"pred\",\"name\":\"SameVirtuesAs\",\"args\":[{\"kind\":\"var\",\"name\":\"x\"},{\"kind\":\"var\",\"name\":\"y\"}]}}}}},\"proof\":null}"
+      }
+    ],
+    "assessments": [
+      {
+        "formalism": "aristotelian",
+        "fitScore": 0.4,
+        "reason": "The serial concessions are categorical-shaped ('all good people are temperate and just'), but the conclusion turns on a binary relation between persons (sharing virtues / being good 'in the same way'). Term logic cannot represent that.",
+        "distortionRisk": "Forcing this into a syllogism would require collapsing the binary 'same way as' relation into a unary predicate, losing the cross-comparative claim that the passage is making."
+      },
+      {
+        "formalism": "fol",
+        "fitScore": 0.55,
+        "reason": "FOL handles the universal quantifiers, the predicates Good/Temperate/Just, and the binary SameVirtuesAs cleanly — and is in fact the formula language used inside the nd argument here.",
+        "distortionRisk": "A single FOL formula cannot represent the inferential step the passage performs; the argument structure is what the nd wrapper records."
+      }
+    ],
+    "reviewerNotes": [
+      "Speakers: SOCRATES leads, MENO concedes throughout. The argument advances by serial concession, not unilateral assertion. The dialectical role of Meno granting each step in turn is not represented in the AST.",
+      "Plato's 'all men are good in the same way' is interpreted here as 'any two good people share the same virtues' — encoded as the binary predicate SameVirtuesAs(x,y). The phrase 'by participation in the same virtues' (line 1014) is the bridge between sharing temperance/justice and being 'good in the same way'; that bridge is made explicit as the second premise.",
+      "The case-enumeration in lines 999–1011 (men, women, young men, elders) is collapsed into the universal premise '∀x. Good(x) → (Temperate(x) ∧ Just(x))'. Socrates' generalising move from four discussed cases to 'all men' (line 1013) is therefore not represented inside the AST.",
+      "Lines 1018–1019 ('they would not have been good in the same way, unless their virtue had been the same') restate the converse direction of the dependency between sameness-of-way and sameness-of-virtue; not encoded separately in this extraction.",
+      "Argument is enthymematic. Premise 2 (sharing temperance and justice ⇒ same virtues) makes Plato's implicit bridge explicit; Plato himself does not state it as a separate premise. A future commitment-tracking extraction would attribute it to a tacit Socratic commitment rather than a stated premise.",
+      "Stephanus reference 73a–c is approximate; the manifest does not yet record Stephanus boundaries, so this is a paraphrase of the standard locator."
+    ]
+  },
+  {
+    "id": "plato/meno/002-double-square-from-diagonal",
+    "extractionId": "plato/meno/002-double-square-from-diagonal",
+    "workSlug": null,
+    "sourceFile": "sources/plato/meno/source.txt",
+    "sourceStartLine": 1781,
+    "sourceEndLine": 1860,
+    "sourceExcerpt": "And that is the line which the learned call the diagonal.\nAnd if this is the proper name, then you, Meno's slave, are prepared to\naffirm that the double space is the square of the diagonal?",
+    "intent": "Record the theorem the slave-boy demonstration proves: for any square, the area of the square built on its diagonal is twice the area of the original square. The demonstration itself — the geometric construction and the elenctic recovery of the answer from the boy — is documented in reviewer_notes as a known schema gap.",
+    "extractorNote": "Deliberately minimal extraction. The single FOL formula records the THEOREM the demonstration proves; the demonstration itself is documented as known schema loss. This is the clearest case yet for adding a Platonic dialogical / commitment-tracking mode AND a constructive-geometric / diagrammatic mode. Either alone would carry part of the passage; together they would carry most of it. Until then, this extraction is honest about what it captures (the theorem) and what it doesn't (the proof, the dialogue, the aporia, and the recollection-thesis framing). If the corpus accumulates 2-3 more passages with this character, the case for mirroring at least dialogical commitment-tracking becomes concrete.",
+    "clauses": [
+      {
+        "role": "claim",
+        "position": 0,
+        "verbalText": null,
+        "sourceExcerpt": null
+      }
+    ],
+    "formalizations": [
+      {
+        "formalism": "fol",
+        "isPrimary": true,
+        "reason": null,
+        "distortionRisk": null,
+        "fitScore": null,
+        "astJson": "{\"formula\":{\"kind\":\"forall\",\"variable\":\"s\",\"body\":{\"kind\":\"implies\",\"left\":{\"kind\":\"pred\",\"name\":\"Square\",\"args\":[{\"kind\":\"var\",\"name\":\"s\"}]},\"right\":{\"kind\":\"eq\",\"left\":{\"kind\":\"fn\",\"name\":\"AreaOf\",\"args\":[{\"kind\":\"fn\",\"name\":\"SquareOn\",\"args\":[{\"kind\":\"fn\",\"name\":\"DiagonalOf\",\"args\":[{\"kind\":\"var\",\"name\":\"s\"}]}]}]},\"right\":{\"kind\":\"fn\",\"name\":\"Mult\",\"args\":[{\"kind\":\"const\",\"name\":\"2\"},{\"kind\":\"fn\",\"name\":\"AreaOf\",\"args\":[{\"kind\":\"var\",\"name\":\"s\"}]}]}}}}}"
+      }
+    ],
+    "assessments": [
+      {
+        "formalism": "aristotelian",
+        "fitScore": 0.1,
+        "reason": "The theorem turns on equality between magnitudes, function application (AreaOf, DiagonalOf, SquareOn), and arithmetic multiplication — none of which term logic carries. Even reformulated as 'all squares-on-the-diagonal-of-X are squares-of-double-area-of-X', the binary relations between square, diagonal, and area cannot be preserved.",
+        "distortionRisk": "Forces a geometric-arithmetic identity into a categorical mould that loses every numerical relation."
+      },
+      {
+        "formalism": "nd",
+        "fitScore": 0.35,
+        "reason": "The slave-boy passage is a constructive demonstration with explicit step-by-step structure, which superficially fits nd. But the steps are diagrammatic (drawing squares, bisecting with diagonals, observing equal sub-regions), not deductive in the propositional/quantifier sense. The mirrored nd Fitch system is propositional and cannot represent geometric construction or numerical computation as proof rules. nd would record an empty premise/conclusion shell and lose the entire demonstration.",
+        "distortionRisk": "Recording 'premises' that the boy concedes verbally without their geometric grounding would misrepresent the demonstration as a chain of arbitrary stipulations."
+      }
+    ],
+    "reviewerNotes": [
+      "This passage is the strongest case in the corpus so far for a not-yet-mirrored extraction mode. The demonstration is simultaneously: (i) DIAGRAMMATIC — Socrates literally draws figures and the proof depends on visible bisection of unit squares; (ii) CONSTRUCTIVE — the proof proceeds by building a 2x2 grid and identifying an inscribed square, not by deduction from prior axioms; (iii) DIALOGICAL — every step is established by Socratic question and slave-boy concession; (iv) APORETIC IN STRUCTURE — the demonstration is preceded by two false starts (lines 1614-1744) where the boy proposes side=2L for area=2A (gives 4A, refuted) and side=3 (gives 9, refuted), and the demonstration is in service of the recollection thesis (lines 1875-1887), not the geometric theorem itself.",
+      "What the FOL formula records: the static theorem ∀s. Square(s) → AreaOf(SquareOn(DiagonalOf(s))) = 2 × AreaOf(s). What it loses: the proof.",
+      "The proof in the text proceeds as: (a) construct a 2x2 grid of unit squares (4 unit squares, total area 4A); (b) draw the diagonal of each unit square, jointly forming a square inscribed inside the grid; (c) observe that each diagonal cuts its unit square into two equal halves; (d) observe that the inscribed square contains exactly 4 such halves, one from each unit square; (e) conclude that the inscribed square has area 4 × (A/2) = 2A; (f) note that the side of the inscribed square is the diagonal of a unit square. None of (a)-(f) can be carried as nd or fol proof steps — they require diagrammatic and arithmetic reasoning that the mirrored systems do not have.",
+      "Speakers: SOCRATES leads, BOY answers, MENO observes. The dialogue runs three movements: failed double-line hypothesis (1614-1676), failed three-foot hypothesis (1681-1738), aporia (1741-1779), then the constructive solution (1781-1860). Only the third movement is in this source span; the first two are independently extractable but would face the same schema limitations.",
+      "Plato's framing: the demonstration is evidence for the recollection thesis (anamnēsis) — the boy 'recovers' geometric truth without prior teaching. The recollection thesis is a separate claim, abductively supported by this demonstration; it is not the conclusion of the geometric proof but the philosophical claim the proof is intended to support. Lines 1875-1887 (just outside this span) state it explicitly.",
+      "The theorem, formalised here, is a special case of Pythagoras: the diagonal of a square of side s has length s√2, so the square on it has area 2s². Plato uses unit squares (s=1, area=1) but the result generalises; the FOL formula is written at the general level.",
+      "Predicate / function names follow English geometric vocabulary (Square, AreaOf, DiagonalOf, SquareOn, Mult). 'Mult' is a binary function symbol on terms; treating numerical 2 as a const term named '2' is a translation-layer convenience, not a commitment to a specific arithmetic schema.",
+      "Stephanus reference for the slave-boy demonstration is approximately Meno 82b-85b; this extraction's source span (Chase line numbers 1781-1860) covers the latter portion (~84d-85b) where the diagonal answer is constructed."
+    ]
+  },
+  {
+    "id": "plato/meno/003-diagonal-construction-dialogue",
+    "extractionId": "plato/meno/003-diagonal-construction-dialogue",
+    "workSlug": null,
+    "sourceFile": "sources/plato/meno/source.txt",
+    "sourceStartLine": 1781,
+    "sourceEndLine": 1860,
+    "sourceExcerpt": "Mark now the farther development. I shall only ask him, and\nnot teach him, and he shall share the enquiry with me",
+    "intent": "Re-extract the third movement of the slave-boy demonstration as a dialogical exchange — preserving the move-by-move structure that the companion fol extraction (002) deliberately discards. Direct test of the new dialogical schema's v1 act vocabulary against the corpus's most paradigmatically dialectical passage.",
+    "extractorNote": "First substantive use of `dialogical`. Findings against the v1 schema:\n\n(1) **Closed act vocabulary mostly worked.** 35 of 37 moves landed in 4 acts (`question` × 17, `concession` × 18, `objection` × 1, `aporia` × 1) plus `assertion` × 1 and `inference` × 1. No move forced an invented act. The closed vocabulary is doing its job for this passage.\n\n(2) **Friction: Socrates' construction-by-question is invisible to the schema.** Moves 2-10 are speech-act-wise questions ('is not this a square of four feet which I have drawn?'), but content-wise constructive — Socrates is literally drawing the figure and then verifying it with the boy. Both `question` and `example` were considered for these; `question` won because the speech act is interrogative, but the diagrammatic content is unrecorded. If the corpus accumulates more passages where construction-as-question is load-bearing, that's evidence for either a `construction` act or a separate diagrammatic-content layer.\n\n(3) **Friction: cross-span reference.** Move 14 ('it ought to have been twice only, as you will remember') depends on a commitment established outside this source span (the boy's earlier wrong claim that double-side = double-area, refuted at lines 1614-1676 of the same dialogue). The `cites` field can only point at internal move_nos. A future extension might allow `external_cites` referring to other extraction_ids, but for now this is documented in reviewer_notes.\n\n(4) **Friction: speaker-silence and audience-shifting.** MENO is a participant but silent in this movement; move 1 is addressed to MENO while the rest are between SOCRATES and BOY. The schema currently has no audience-of-move field. Low-priority — handled adequately by reviewer_notes for now.\n\n(5) **No friction on `summary`.** The optional `summary` field carried the meta-narrative (three-movement structure of the demonstration, this extraction covering only the third) cleanly. Whether this counts as 'doing harm' (per docs/formalisms.md's note on summary) — i.e., whether the summary content should instead be encoded as moves or movement objects — is something to revisit after a second extraction.",
+    "clauses": [
+      {
+        "role": "composite",
+        "position": 0,
+        "verbalText": null,
+        "sourceExcerpt": null
+      }
+    ],
+    "formalizations": [
+      {
+        "formalism": "dialogical",
+        "isPrimary": true,
+        "reason": null,
+        "distortionRisk": null,
+        "fitScore": null,
+        "astJson": "{\"dialogue\":{\"participants\":[\"SOCRATES\",\"BOY\",\"MENO\"],\"summary\":\"Third movement of the slave-boy demonstration. After two failed hypotheses (double-line, three-foot side) and aporia, Socrates leads the boy through a fresh construction: a 2x2 grid of unit squares (area 4A), then the inscribed square formed by the four diagonals. By observing that each diagonal bisects its unit square and the inscribed square contains exactly four such halves, the boy concludes the inscribed square has area 8 — i.e. double the unit square — and identifies its side as the diagonal of the unit square. Socrates closes by naming this line 'the diagonal' and securing the boy's affirmation of the theorem 'the double space is the square of the diagonal'.\",\"moves\":[{\"move_no\":1,\"speaker\":\"SOCRATES\",\"act\":\"assertion\",\"content\":\"I shall only ask him, and not teach him, and he shall share the enquiry with me; do you watch and see if you find me telling or explaining anything to him, instead of eliciting his opinion. (Addressed to MENO — meta-claim about the elenctic method.)\",\"cites\":[]},{\"move_no\":2,\"speaker\":\"SOCRATES\",\"act\":\"question\",\"content\":\"Tell me, boy, is not this a square of four feet which I have drawn?\",\"cites\":[]},{\"move_no\":3,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"Yes.\",\"cites\":[2]},{\"move_no\":4,\"speaker\":\"SOCRATES\",\"act\":\"question\",\"content\":\"And now I add another square equal to the former one?\",\"cites\":[2]},{\"move_no\":5,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"Yes.\",\"cites\":[4]},{\"move_no\":6,\"speaker\":\"SOCRATES\",\"act\":\"question\",\"content\":\"And a third, which is equal to either of them?\",\"cites\":[4]},{\"move_no\":7,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"Yes.\",\"cites\":[6]},{\"move_no\":8,\"speaker\":\"SOCRATES\",\"act\":\"question\",\"content\":\"Suppose that we fill up the vacant corner?\",\"cites\":[6]},{\"move_no\":9,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"Very good.\",\"cites\":[8]},{\"move_no\":10,\"speaker\":\"SOCRATES\",\"act\":\"question\",\"content\":\"Here, then, there are four equal spaces?\",\"cites\":[2,4,6,8]},{\"move_no\":11,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"Yes.\",\"cites\":[10]},{\"move_no\":12,\"speaker\":\"SOCRATES\",\"act\":\"question\",\"content\":\"And how many times larger is this space than this other?\",\"cites\":[10]},{\"move_no\":13,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"Four times.\",\"cites\":[12]},{\"move_no\":14,\"speaker\":\"SOCRATES\",\"act\":\"objection\",\"content\":\"But it ought to have been twice only, as you will remember. (References the dialogue's earlier aim — finding the side of a square of double area — which is established outside this source span.)\",\"cites\":[13]},{\"move_no\":15,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"True.\",\"cites\":[14]},{\"move_no\":16,\"speaker\":\"SOCRATES\",\"act\":\"question\",\"content\":\"And does not this line, reaching from corner to corner, bisect each of these spaces?\",\"cites\":[10]},{\"move_no\":17,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"Yes.\",\"cites\":[16]},{\"move_no\":18,\"speaker\":\"SOCRATES\",\"act\":\"question\",\"content\":\"And are there not here four equal lines which contain this space? (Identifies the inscribed square formed by the four diagonals.)\",\"cites\":[16]},{\"move_no\":19,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"There are.\",\"cites\":[18]},{\"move_no\":20,\"speaker\":\"SOCRATES\",\"act\":\"question\",\"content\":\"Look and see how much this space is.\",\"cites\":[18]},{\"move_no\":21,\"speaker\":\"BOY\",\"act\":\"aporia\",\"content\":\"I do not understand.\",\"cites\":[20]},{\"move_no\":22,\"speaker\":\"SOCRATES\",\"act\":\"question\",\"content\":\"Has not each interior line cut off half of the four spaces?\",\"cites\":[16,21]},{\"move_no\":23,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"Yes.\",\"cites\":[22]},{\"move_no\":24,\"speaker\":\"SOCRATES\",\"act\":\"question\",\"content\":\"And how many spaces are there in this section? (Counting the four unit-squares of the 2x2 grid.)\",\"cites\":[10]},{\"move_no\":25,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"Four.\",\"cites\":[24]},{\"move_no\":26,\"speaker\":\"SOCRATES\",\"act\":\"question\",\"content\":\"And how many in this? (Counting the half-unit-squares contained in the inscribed square.)\",\"cites\":[22]},{\"move_no\":27,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"Two.\",\"cites\":[26]},{\"move_no\":28,\"speaker\":\"SOCRATES\",\"act\":\"question\",\"content\":\"And four is how many times two?\",\"cites\":[25,27]},{\"move_no\":29,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"Twice.\",\"cites\":[28]},{\"move_no\":30,\"speaker\":\"SOCRATES\",\"act\":\"question\",\"content\":\"And this space is of how many feet? (The inscribed square's area.)\",\"cites\":[29]},{\"move_no\":31,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"Of eight feet.\",\"cites\":[30]},{\"move_no\":32,\"speaker\":\"SOCRATES\",\"act\":\"question\",\"content\":\"And from what line do you get this figure?\",\"cites\":[31]},{\"move_no\":33,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"From this. (Indicating the line.)\",\"cites\":[32]},{\"move_no\":34,\"speaker\":\"SOCRATES\",\"act\":\"question\",\"content\":\"That is, from the line which extends from corner to corner of the figure of four feet?\",\"cites\":[33]},{\"move_no\":35,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"Yes.\",\"cites\":[34]},{\"move_no\":36,\"speaker\":\"SOCRATES\",\"act\":\"inference\",\"content\":\"And that is the line which the learned call the diagonal. And if this is the proper name, then you, Meno's slave, are prepared to affirm that the double space is the square of the diagonal?\",\"cites\":[31,35]},{\"move_no\":37,\"speaker\":\"BOY\",\"act\":\"concession\",\"content\":\"Certainly, Socrates.\",\"cites\":[36]}]}}"
+      }
+    ],
+    "assessments": [
+      {
+        "formalism": "fol",
+        "fitScore": 0.5,
+        "reason": "FOL captures the static theorem the demonstration concludes with (∀s. Square(s) → AreaOf(SquareOn(DiagonalOf(s))) = 2 × AreaOf(s)) — recorded in the companion extraction 002-double-square-from-diagonal. But it cannot represent the move-by-move structure: the boy's serial concessions, his aporia at move 21, Socrates' objection at move 14 referring back to a prior aim, or the constructive build-up of the figure across moves 2-10.",
+        "distortionRisk": "Restricting to FOL leaves only the conclusion and discards the demonstration."
+      },
+      {
+        "formalism": "nd",
+        "fitScore": 0.3,
+        "reason": "nd's premises/conclusion structure is closer than fol but still loses turn-taking and aporia. nd would also misrepresent the geometric/diagrammatic 'proof rules' (bisection, counting half-unit-squares) as if they were quantifier-free deductive steps.",
+        "distortionRisk": "Recording boy's concessions as 'premises' obscures the dialectical procedure of eliciting them; the construction steps (drawing squares, identifying the inscribed square) become invisible."
+      },
+      {
+        "formalism": "aristotelian",
+        "fitScore": 0.05,
+        "reason": "No categorical structure; identity, area arithmetic, and binary geometric relations dominate.",
+        "distortionRisk": "Forcing into syllogistic form would discard substantially everything in the passage."
+      }
+    ],
+    "reviewerNotes": [
+      "Same source span as extraction 002-double-square-from-diagonal (lines 1781-1860). 002 records the static theorem in fol; 003 (this extraction) records the demonstration in dialogical. The pair is the apples-to-apples comparison the new formalism was added to enable.",
+      "37 moves cover the whole movement at fine granularity. Most are question/concession pairs — the dominant elenctic rhythm. Three moves use less common acts: move 14 (objection — Socrates reminds the boy that the figure should be twice the original, not four times), move 21 (aporia — boy confesses 'I do not understand' when first asked the area of the inscribed square), and move 36 (inference — Socrates names the diagonal and draws the conclusion).",
+      "Move 1 is meta — Socrates addresses MENO, not the BOY, declaring his elenctic method ('I shall only ask him, and not teach him'). Classified as `assertion` because the speech act is declarative and the audience (MENO) is a participant. The schema does not currently mark audience-of-move; if multi-audience attribution becomes important, that's a candidate addition.",
+      "Move 14's objection cites move 13 ('four times') as the immediately objectionable claim, but its full force depends on a prior commitment from outside this source span — namely that the boy was looking for a square of double area. The schema's `cites` field can only reference moves WITHIN the same DialogueStructure; cross-extraction references are not yet representable.",
+      "Moves 22-23 introduce the key geometric insight (each diagonal bisects its unit square). The bisection itself is a diagrammatic fact that the schema cannot carry — only the speech act 'Socrates asks, boy concedes' is recorded. The bisection's geometric truth is presupposed but not represented.",
+      "Move 21 ('I do not understand') is classified `aporia`. This is local — boy is momentarily stuck on a sub-question, not in global definitional impasse — and Socrates resolves it within three moves. The act covers both global and local aporia; if those need distinguishing, that's a candidate refinement.",
+      "Speakers: SOCRATES (lead), BOY (interlocutor), MENO (silent observer in this movement, addressed only at move 1). MENO's silence is itself dialectical — he is being shown the method — but the schema does not currently model silence or audience-shifts."
+    ]
+  }
+]

@@ -41,6 +41,36 @@ module Seed =
           PhilosopherSlug: string; SchoolSlug: string; WorkSlug: string
           SourceName: string; SourceUrl: string }
 
+    // Argument seed shapes — produced by scripts/build-arguments-seed.mjs
+    // from claim_extractor extractions. AST payloads stay as raw JSON strings.
+
+    [<CLIMutable>]
+    type ArgumentClauseSeed =
+        { Role: string; Position: int
+          VerbalText: string; SourceExcerpt: string }
+
+    [<CLIMutable>]
+    type ArgumentFormalizationSeed =
+        { Formalism: string; IsPrimary: bool
+          FitScore: Nullable<double>; Reason: string; DistortionRisk: string
+          AstJson: string }
+
+    [<CLIMutable>]
+    type ArgumentAssessmentSeed =
+        { Formalism: string; FitScore: double
+          Reason: string; DistortionRisk: string }
+
+    [<CLIMutable>]
+    type ArgumentSeed =
+        { Id: string; ExtractionId: string; WorkSlug: string
+          SourceFile: string
+          SourceStartLine: Nullable<int>; SourceEndLine: Nullable<int>
+          SourceExcerpt: string; Intent: string; ExtractorNote: string
+          Clauses: ArgumentClauseSeed array
+          Formalizations: ArgumentFormalizationSeed array
+          Assessments: ArgumentAssessmentSeed array
+          ReviewerNotes: string array }
+
     let private jsonOpts =
         let opts = JsonSerializerOptions(PropertyNameCaseInsensitive = true)
         opts.PropertyNamingPolicy <- JsonNamingPolicy.CamelCase
@@ -134,6 +164,63 @@ module Seed =
                 created_at TEXT NOT NULL DEFAULT (datetime('now')),
                 updated_at TEXT NOT NULL DEFAULT (datetime('now'))
             );
+            CREATE TABLE IF NOT EXISTS arguments (
+                id TEXT PRIMARY KEY,
+                extraction_id TEXT NOT NULL UNIQUE,
+                work_id TEXT REFERENCES works(id) ON DELETE SET NULL,
+                source_file TEXT,
+                source_start_line INTEGER,
+                source_end_line INTEGER,
+                source_excerpt TEXT,
+                intent TEXT NOT NULL,
+                extractor_note TEXT,
+                created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+            CREATE TABLE IF NOT EXISTS argument_clauses (
+                id TEXT PRIMARY KEY,
+                argument_id TEXT NOT NULL REFERENCES arguments(id) ON DELETE CASCADE,
+                role TEXT NOT NULL,
+                position INTEGER NOT NULL,
+                verbal_text TEXT,
+                source_excerpt TEXT,
+                created_at TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+            CREATE UNIQUE INDEX IF NOT EXISTS argument_clauses_pos_idx
+                ON argument_clauses(argument_id, position);
+            CREATE TABLE IF NOT EXISTS argument_formalizations (
+                id TEXT PRIMARY KEY,
+                argument_id TEXT NOT NULL REFERENCES arguments(id) ON DELETE CASCADE,
+                formalism TEXT NOT NULL,
+                is_primary INTEGER NOT NULL DEFAULT 0,
+                fit_score REAL,
+                reason TEXT,
+                distortion_risk TEXT,
+                ast_json TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+            CREATE UNIQUE INDEX IF NOT EXISTS argument_formalizations_arg_form_idx
+                ON argument_formalizations(argument_id, formalism, is_primary);
+            CREATE TABLE IF NOT EXISTS argument_formalism_assessments (
+                id TEXT PRIMARY KEY,
+                argument_id TEXT NOT NULL REFERENCES arguments(id) ON DELETE CASCADE,
+                formalism TEXT NOT NULL,
+                fit_score REAL NOT NULL,
+                reason TEXT NOT NULL,
+                distortion_risk TEXT,
+                created_at TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+            CREATE UNIQUE INDEX IF NOT EXISTS argument_assessments_arg_form_idx
+                ON argument_formalism_assessments(argument_id, formalism);
+            CREATE TABLE IF NOT EXISTS argument_reviewer_notes (
+                id TEXT PRIMARY KEY,
+                argument_id TEXT NOT NULL REFERENCES arguments(id) ON DELETE CASCADE,
+                position INTEGER NOT NULL,
+                note TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+            CREATE UNIQUE INDEX IF NOT EXISTS argument_reviewer_notes_pos_idx
+                ON argument_reviewer_notes(argument_id, position);
         """
         cmd.ExecuteNonQuery() |> ignore
 
@@ -142,6 +229,7 @@ module Seed =
 
     let run (seedDir: string) =
         printfn "Seeding database..."
+        Queries.configureDapper ()
         use conn = DbFactory.createConnection ()
         conn.Open()
 
@@ -236,5 +324,66 @@ module Seed =
                 {| Id = id; Content = n.Content; NType = n.NoteType; SName = n.SourceName
                    SUrl = n.SourceUrl; PhilId = philId; WorkId = workId; SchoolId = schoolId |}) |> ignore
         printfn $"  + notes ({notesData.Length})"
+
+        // ── Arguments ────────────────────────────────────────────────────────
+        // Optional — only loads if data/seed/arguments.json exists. Built by
+        // scripts/build-arguments-seed.mjs from the claim_extractor extractions.
+        let argsPath = Path.Combine(seedDir, "arguments.json")
+        if File.Exists argsPath then
+            let argsData = readJson<ArgumentSeed array>(argsPath)
+            let mutable insertedArgs = 0
+            for a in argsData do
+                let workId =
+                    if String.IsNullOrEmpty a.WorkSlug then null
+                    else match workMap.TryGetValue(a.WorkSlug) with true, v -> v | _ -> null
+                let inserted =
+                    conn.Execute(
+                        "INSERT OR IGNORE INTO arguments
+                            (id, extraction_id, work_id, source_file, source_start_line, source_end_line,
+                             source_excerpt, intent, extractor_note)
+                         VALUES (@Id, @Eid, @Wid, @Sf, @Ssl, @Sel, @Sex, @Int, @En)",
+                        {| Id = a.Id; Eid = a.ExtractionId; Wid = workId
+                           Sf = a.SourceFile; Ssl = a.SourceStartLine; Sel = a.SourceEndLine
+                           Sex = a.SourceExcerpt; Int = a.Intent; En = a.ExtractorNote |})
+                if inserted = 0 then () // already present — skip children too, keep idempotent
+                else
+                    insertedArgs <- insertedArgs + 1
+                    for c in a.Clauses do
+                        let cid = $"{a.Id}:clause:{c.Position}"
+                        conn.Execute(
+                            "INSERT OR IGNORE INTO argument_clauses
+                                (id, argument_id, role, position, verbal_text, source_excerpt)
+                             VALUES (@Id, @Aid, @Role, @Pos, @Vt, @Sex)",
+                            {| Id = cid; Aid = a.Id; Role = c.Role; Pos = c.Position
+                               Vt = c.VerbalText; Sex = c.SourceExcerpt |}) |> ignore
+                    for f in a.Formalizations do
+                        let label = if f.IsPrimary then "primary" else "alt"
+                        let fid = $"{a.Id}:form:{f.Formalism}:{label}"
+                        conn.Execute(
+                            "INSERT OR IGNORE INTO argument_formalizations
+                                (id, argument_id, formalism, is_primary, fit_score, reason, distortion_risk, ast_json)
+                             VALUES (@Id, @Aid, @Form, @IsP, @Fs, @R, @Dr, @Ast)",
+                            {| Id = fid; Aid = a.Id; Form = f.Formalism
+                               IsP = (if f.IsPrimary then 1 else 0)
+                               Fs = f.FitScore; R = f.Reason; Dr = f.DistortionRisk
+                               Ast = f.AstJson |}) |> ignore
+                    for asmt in a.Assessments do
+                        let aid = $"{a.Id}:assess:{asmt.Formalism}"
+                        conn.Execute(
+                            "INSERT OR IGNORE INTO argument_formalism_assessments
+                                (id, argument_id, formalism, fit_score, reason, distortion_risk)
+                             VALUES (@Id, @Aid, @Form, @Fs, @R, @Dr)",
+                            {| Id = aid; Aid = a.Id; Form = asmt.Formalism
+                               Fs = asmt.FitScore; R = asmt.Reason; Dr = asmt.DistortionRisk |}) |> ignore
+                    a.ReviewerNotes |> Array.iteri (fun i note ->
+                        let nid = $"{a.Id}:note:{i}"
+                        conn.Execute(
+                            "INSERT OR IGNORE INTO argument_reviewer_notes
+                                (id, argument_id, position, note)
+                             VALUES (@Id, @Aid, @Pos, @Note)",
+                            {| Id = nid; Aid = a.Id; Pos = i; Note = note |}) |> ignore)
+            printfn $"  + arguments ({insertedArgs} new / {argsData.Length} total)"
+        else
+            printfn "  ~ arguments.json not present — skip (run npm run arguments:build first)"
 
         printfn "Done."

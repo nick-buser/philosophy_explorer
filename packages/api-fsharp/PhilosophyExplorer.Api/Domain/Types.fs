@@ -144,3 +144,64 @@ type User =
       Name: string
       Email: string
       CreatedAt: string }
+
+// Argument persistence — see work-history/feat-argument-persistence.md.
+// An Argument lifts above any single formalism: a verbal clause sequence
+// (premises + conclusion) plus one or more Formalizations that re-encode
+// the structure formally. AST payloads are stored as raw JSON to keep the
+// F# side independent of the per-formalism shapes (web side parses with
+// the existing TS types).
+
+[<CLIMutable>]
+type ArgumentRow =
+    { Id: string
+      ExtractionId: string
+      WorkId: string
+      SourceFile: string
+      SourceStartLine: Nullable<int>
+      SourceEndLine: Nullable<int>
+      SourceExcerpt: string
+      Intent: string
+      ExtractorNote: string
+      CreatedAt: string
+      UpdatedAt: string }
+
+[<CLIMutable>]
+type ArgumentClauseRow =
+    { Id: string
+      ArgumentId: string
+      Role: string
+      Position: int
+      VerbalText: string
+      SourceExcerpt: string
+      CreatedAt: string }
+
+[<CLIMutable>]
+type ArgumentFormalizationRow =
+    { Id: string
+      ArgumentId: string
+      Formalism: string
+      IsPrimary: bool
+      FitScore: Nullable<double>
+      Reason: string
+      DistortionRisk: string
+      AstJson: string
+      CreatedAt: string }
+
+[<CLIMutable>]
+type ArgumentAssessmentRow =
+    { Id: string
+      ArgumentId: string
+      Formalism: string
+      FitScore: double
+      Reason: string
+      DistortionRisk: string
+      CreatedAt: string }
+
+[<CLIMutable>]
+type ArgumentReviewerNoteRow =
+    { Id: string
+      ArgumentId: string
+      Position: int
+      Note: string
+      CreatedAt: string }

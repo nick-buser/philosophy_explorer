@@ -8,8 +8,14 @@ open PhilosophyExplorer.Domain
 /// Column names match the DB schema (snake_case); Dapper maps to PascalCase via DefaultTypeMap.
 module Queries =
 
-    // Configure Dapper to map snake_case columns to PascalCase properties
-    do Dapper.DefaultTypeMap.MatchNamesWithUnderscores <- true
+    // Configure Dapper to map snake_case columns to PascalCase properties.
+    // This must be called explicitly at each process entry point. A bare
+    // module-level `do` is not reliable here: the `Queries` module's other
+    // bindings are all functions, so nothing forces the module's static
+    // initializer to run before the first query — leaving the flag unset and
+    // every snake_case column silently mapping to null.
+    let configureDapper () =
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores <- true
 
     let private openConn () =
         let conn = DbFactory.createConnection ()
@@ -231,5 +237,135 @@ module Queries =
                      ORDER BY p.born_year ASC NULLS LAST",
                     {| SchoolId = schoolId |}
                 )
+            return rows |> Seq.toList
+        }
+
+    // ── Arguments ────────────────────────────────────────────────────────
+
+    [<CLIMutable>]
+    type ArgumentSummaryRow =
+        { Id: string; ExtractionId: string; WorkId: string
+          WorkSlug: string; WorkTitle: string
+          Intent: string
+          PrimaryFormalism: string; ClauseCount: int }
+
+    let private summarySql =
+        "SELECT a.id, a.extraction_id, a.work_id,
+                w.slug AS work_slug, w.title AS work_title,
+                a.intent,
+                (SELECT f.formalism FROM argument_formalizations f
+                 WHERE f.argument_id = a.id AND f.is_primary = 1 LIMIT 1) AS primary_formalism,
+                (SELECT COUNT(*) FROM argument_clauses c WHERE c.argument_id = a.id) AS clause_count
+         FROM arguments a
+         LEFT JOIN works w ON a.work_id = w.id"
+
+    let listArguments () =
+        task {
+            use conn = openConn ()
+            let! rows =
+                conn.QueryAsync<ArgumentSummaryRow>(
+                    summarySql + " ORDER BY a.extraction_id ASC")
+            return rows |> Seq.toList
+        }
+
+    let listArgumentsByWorkSlug (slug: string) =
+        task {
+            use conn = openConn ()
+            let! rows =
+                conn.QueryAsync<ArgumentSummaryRow>(
+                    summarySql + " WHERE w.slug = @Slug ORDER BY a.extraction_id ASC",
+                    {| Slug = slug |})
+            return rows |> Seq.toList
+        }
+
+    [<CLIMutable>]
+    type ArgumentHeaderRow =
+        { Id: string; ExtractionId: string; WorkId: string
+          WorkSlug: string; WorkTitle: string
+          SourceFile: string
+          SourceStartLine: System.Nullable<int>; SourceEndLine: System.Nullable<int>
+          SourceExcerpt: string
+          Intent: string; ExtractorNote: string }
+
+    let getArgumentHeader (id: string) =
+        task {
+            use conn = openConn ()
+            let! rows =
+                conn.QueryAsync<ArgumentHeaderRow>(
+                    "SELECT a.id, a.extraction_id, a.work_id,
+                            w.slug AS work_slug, w.title AS work_title,
+                            a.source_file, a.source_start_line, a.source_end_line, a.source_excerpt,
+                            a.intent, a.extractor_note
+                     FROM arguments a
+                     LEFT JOIN works w ON a.work_id = w.id
+                     WHERE a.id = @Id",
+                    {| Id = id |})
+            return rows |> Seq.tryHead
+        }
+
+    [<CLIMutable>]
+    type ArgumentClauseQueryRow =
+        { Id: string; Role: string; Position: int
+          VerbalText: string; SourceExcerpt: string }
+
+    let getArgumentClauses (argumentId: string) =
+        task {
+            use conn = openConn ()
+            let! rows =
+                conn.QueryAsync<ArgumentClauseQueryRow>(
+                    "SELECT id, role, position, verbal_text, source_excerpt
+                     FROM argument_clauses
+                     WHERE argument_id = @Aid
+                     ORDER BY position ASC",
+                    {| Aid = argumentId |})
+            return rows |> Seq.toList
+        }
+
+    [<CLIMutable>]
+    type ArgumentFormalizationQueryRow =
+        { Id: string; Formalism: string; IsPrimary: bool
+          FitScore: System.Nullable<double>
+          Reason: string; DistortionRisk: string; AstJson: string }
+
+    let getArgumentFormalizations (argumentId: string) =
+        task {
+            use conn = openConn ()
+            let! rows =
+                conn.QueryAsync<ArgumentFormalizationQueryRow>(
+                    "SELECT id, formalism, is_primary, fit_score, reason, distortion_risk, ast_json
+                     FROM argument_formalizations
+                     WHERE argument_id = @Aid
+                     ORDER BY is_primary DESC, formalism ASC",
+                    {| Aid = argumentId |})
+            return rows |> Seq.toList
+        }
+
+    [<CLIMutable>]
+    type ArgumentAssessmentQueryRow =
+        { Formalism: string; FitScore: double
+          Reason: string; DistortionRisk: string }
+
+    let getArgumentAssessments (argumentId: string) =
+        task {
+            use conn = openConn ()
+            let! rows =
+                conn.QueryAsync<ArgumentAssessmentQueryRow>(
+                    "SELECT formalism, fit_score, reason, distortion_risk
+                     FROM argument_formalism_assessments
+                     WHERE argument_id = @Aid
+                     ORDER BY fit_score DESC",
+                    {| Aid = argumentId |})
+            return rows |> Seq.toList
+        }
+
+    let getArgumentReviewerNotes (argumentId: string) =
+        task {
+            use conn = openConn ()
+            let! rows =
+                conn.QueryAsync<string>(
+                    "SELECT note FROM argument_reviewer_notes
+                     WHERE argument_id = @Aid
+                     ORDER BY position ASC",
+                    {| Aid = argumentId |})
             return rows |> Seq.toList
         }
