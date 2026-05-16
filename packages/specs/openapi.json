@@ -1,883 +1,357 @@
 {
-  "openapi": "3.0.0",
-  "info": {
-    "title": "Philosophy Explorer API",
-    "version": "0.0.1"
-  },
-  "components": {
-    "schemas": {},
-    "parameters": {}
-  },
-  "paths": {
-    "/api/health": {
-      "get": {
-        "tags": [
-          "Health"
-        ],
-        "summary": "Health check — reports DB connectivity and env var presence",
-        "responses": {
-          "200": {
-            "description": "Server is healthy",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "db": {
-                      "type": "string"
-                    },
-                    "env": {
-                      "type": "object",
-                      "properties": {
-                        "DATABASE_URL": {
-                          "type": "boolean"
-                        },
-                        "ALLOWED_ORIGINS": {
-                          "type": "boolean"
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Philosophy Explorer API",
+        "version": "0.0.1"
+    },
+    "paths": {
+        "/api/graph/stats": {
+            "get": {
+                "tags": [
+                    "Pipe #1 input at line 42@42"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/ping": {
+            "get": {
+                "tags": [
+                    "Pipe #10 input at line 62@62"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Boolean<>f__AnonymousType1113642371"
+                                }
+                            }
                         }
-                      },
-                      "required": [
-                        "DATABASE_URL",
-                        "ALLOWED_ORIGINS"
-                      ]
                     }
-                  },
-                  "required": [
-                    "status",
-                    "db",
-                    "env"
-                  ]
                 }
-              }
             }
-          },
-          "503": {
-            "description": "Service unavailable",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    },
-                    "env": {
-                      "type": "object",
-                      "properties": {
-                        "DATABASE_URL": {
-                          "type": "boolean"
-                        },
-                        "ALLOWED_ORIGINS": {
-                          "type": "boolean"
+        },
+        "/api/graph/path": {
+            "get": {
+                "tags": [
+                    "Pipe #13 input at line 69@69"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/graph/influence/{slug}": {
+            "get": {
+                "tags": [
+                    "Pipe #15 input at line 89@89"
+                ],
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
                         }
-                      },
-                      "required": [
-                        "DATABASE_URL",
-                        "ALLOWED_ORIGINS"
-                      ]
                     }
-                  },
-                  "required": [
-                    "status",
-                    "error",
-                    "env"
-                  ]
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
                 }
-              }
             }
-          }
+        },
+        "/api/graph/school/{slug}": {
+            "get": {
+                "tags": [
+                    "Pipe #16 input at line 97@97"
+                ],
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/graph/curriculum/{slug}": {
+            "get": {
+                "tags": [
+                    "Pipe #17 input at line 103@103"
+                ],
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/graph/influence-network": {
+            "get": {
+                "tags": [
+                    "Pipe #18 input at line 109@109"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/health": {
+            "get": {
+                "tags": [
+                    "Pipe #2 input at line 16@16"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/philosophers": {
+            "get": {
+                "tags": [
+                    "Pipe #2 input at line 26@26"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/works": {
+            "get": {
+                "tags": [
+                    "Pipe #2 input at line 28@28"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/graph/node/{key}": {
+            "get": {
+                "tags": [
+                    "Pipe #2 input at line 48@48"
+                ],
+                "parameters": [
+                    {
+                        "name": "key",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/arguments": {
+            "get": {
+                "tags": [
+                    "Pipe #2 input at line 51@51"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/philosophers/{slug}": {
+            "get": {
+                "tags": [
+                    "Pipe #4 input at line 34@34"
+                ],
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/works/{slug}": {
+            "get": {
+                "tags": [
+                    "Pipe #4 input at line 37@37"
+                ],
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/arguments/{id}": {
+            "get": {
+                "tags": [
+                    "Pipe #4 input at line 67@67"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/works/{slug}/arguments": {
+            "get": {
+                "tags": [
+                    "Pipe #6 input at line 100@100"
+                ],
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/graph/neighbors/{key}": {
+            "get": {
+                "tags": [
+                    "Pipe #6 input at line 55@55"
+                ],
+                "parameters": [
+                    {
+                        "name": "key",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/schools": {
+            "get": {
+                "tags": [
+                    "Pipe #6 input at line 67@67"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/schools/{slug}": {
+            "get": {
+                "tags": [
+                    "Pipe #8 input at line 83@83"
+                ],
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
         }
-      }
     },
-    "/api/philosophers": {
-      "get": {
-        "tags": [
-          "Philosophers"
-        ],
-        "summary": "List all philosophers",
-        "responses": {
-          "200": {
-            "description": "All philosophers, ordered by birth year",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string"
-                      },
-                      "slug": {
-                        "type": "string"
-                      },
-                      "name": {
-                        "type": "string"
-                      },
-                      "alsoKnownAs": {
-                        "type": "string",
-                        "nullable": true
-                      },
-                      "bornYear": {
-                        "type": "number",
-                        "nullable": true
-                      },
-                      "bornCertainty": {
-                        "type": "string"
-                      },
-                      "diedYear": {
-                        "type": "number",
-                        "nullable": true
-                      },
-                      "diedCertainty": {
-                        "type": "string"
-                      },
-                      "nationality": {
-                        "type": "string",
-                        "nullable": true
-                      },
-                      "bioShort": {
-                        "type": "string",
-                        "nullable": true
-                      }
-                    },
-                    "required": [
-                      "id",
-                      "slug",
-                      "name",
-                      "alsoKnownAs",
-                      "bornYear",
-                      "bornCertainty",
-                      "diedYear",
-                      "diedCertainty",
-                      "nationality",
-                      "bioShort"
-                    ]
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/philosophers/{slug}": {
-      "get": {
-        "tags": [
-          "Philosophers"
-        ],
-        "summary": "Get a philosopher by slug with works, schools, influences, and notes",
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "name": "slug",
-            "in": "path"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Philosopher detail",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "slug": {
-                      "type": "string"
-                    },
-                    "name": {
-                      "type": "string"
-                    },
-                    "alsoKnownAs": {
-                      "type": "string",
-                      "nullable": true
-                    },
-                    "bornYear": {
-                      "type": "number",
-                      "nullable": true
-                    },
-                    "bornCertainty": {
-                      "type": "string"
-                    },
-                    "diedYear": {
-                      "type": "number",
-                      "nullable": true
-                    },
-                    "diedCertainty": {
-                      "type": "string"
-                    },
-                    "nationality": {
-                      "type": "string",
-                      "nullable": true
-                    },
-                    "bioShort": {
-                      "type": "string",
-                      "nullable": true
-                    },
-                    "works": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "slug": {
-                            "type": "string"
-                          },
-                          "title": {
-                            "type": "string"
-                          },
-                          "originalTitle": {
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "workType": {
-                            "type": "string"
-                          },
-                          "composedYear": {
-                            "type": "number",
-                            "nullable": true
-                          },
-                          "composedYearEnd": {
-                            "type": "number",
-                            "nullable": true
-                          },
-                          "composedCertainty": {
-                            "type": "string"
-                          },
-                          "originalLanguage": {
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "descriptionShort": {
-                            "type": "string",
-                            "nullable": true
-                          }
-                        },
-                        "required": [
-                          "id",
-                          "slug",
-                          "title",
-                          "originalTitle",
-                          "workType",
-                          "composedYear",
-                          "composedYearEnd",
-                          "composedCertainty",
-                          "originalLanguage",
-                          "descriptionShort"
-                        ]
-                      }
-                    },
-                    "schools": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "slug": {
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string"
-                          },
-                          "role": {
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "id",
-                          "slug",
-                          "name",
-                          "role"
-                        ]
-                      }
-                    },
-                    "influences": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "slug": {
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string"
-                          },
-                          "influenceType": {
-                            "type": "string"
-                          },
-                          "description": {
-                            "type": "string",
-                            "nullable": true
-                          }
-                        },
-                        "required": [
-                          "id",
-                          "slug",
-                          "name",
-                          "influenceType",
-                          "description"
-                        ]
-                      }
-                    },
-                    "influencedBy": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "slug": {
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string"
-                          },
-                          "influenceType": {
-                            "type": "string"
-                          },
-                          "description": {
-                            "type": "string",
-                            "nullable": true
-                          }
-                        },
-                        "required": [
-                          "id",
-                          "slug",
-                          "name",
-                          "influenceType",
-                          "description"
-                        ]
-                      }
-                    },
-                    "notes": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "content": {
-                            "type": "string"
-                          },
-                          "noteType": {
-                            "type": "string"
-                          },
-                          "sourceType": {
-                            "type": "string"
-                          },
-                          "sourceName": {
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "sourceUrl": {
-                            "type": "string",
-                            "nullable": true
-                          }
-                        },
-                        "required": [
-                          "id",
-                          "content",
-                          "noteType",
-                          "sourceType",
-                          "sourceName",
-                          "sourceUrl"
-                        ]
-                      }
+    "components": {
+        "schemas": {
+            "Boolean<>f__AnonymousType1113642371": {
+                "type": "object",
+                "properties": {
+                    "ok": {
+                        "type": "boolean"
                     }
-                  },
-                  "required": [
-                    "id",
-                    "slug",
-                    "name",
-                    "alsoKnownAs",
-                    "bornYear",
-                    "bornCertainty",
-                    "diedYear",
-                    "diedCertainty",
-                    "nationality",
-                    "bioShort",
-                    "works",
-                    "schools",
-                    "influences",
-                    "influencedBy",
-                    "notes"
-                  ]
-                }
-              }
+                },
+                "additionalProperties": false
             }
-          },
-          "404": {
-            "description": "Philosopher not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "error"
-                  ]
-                }
-              }
-            }
-          }
         }
-      }
-    },
-    "/api/works": {
-      "get": {
-        "tags": [
-          "Works"
-        ],
-        "summary": "List all works with their philosopher",
-        "responses": {
-          "200": {
-            "description": "All works, ordered by philosopher name then composition year",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string"
-                      },
-                      "slug": {
-                        "type": "string"
-                      },
-                      "title": {
-                        "type": "string"
-                      },
-                      "originalTitle": {
-                        "type": "string",
-                        "nullable": true
-                      },
-                      "workType": {
-                        "type": "string"
-                      },
-                      "composedYear": {
-                        "type": "number",
-                        "nullable": true
-                      },
-                      "composedYearEnd": {
-                        "type": "number",
-                        "nullable": true
-                      },
-                      "composedCertainty": {
-                        "type": "string"
-                      },
-                      "originalLanguage": {
-                        "type": "string",
-                        "nullable": true
-                      },
-                      "descriptionShort": {
-                        "type": "string",
-                        "nullable": true
-                      },
-                      "philosopherId": {
-                        "type": "string"
-                      },
-                      "philosopherName": {
-                        "type": "string"
-                      },
-                      "philosopherSlug": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "id",
-                      "slug",
-                      "title",
-                      "originalTitle",
-                      "workType",
-                      "composedYear",
-                      "composedYearEnd",
-                      "composedCertainty",
-                      "originalLanguage",
-                      "descriptionShort",
-                      "philosopherId",
-                      "philosopherName",
-                      "philosopherSlug"
-                    ]
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/works/{slug}": {
-      "get": {
-        "tags": [
-          "Works"
-        ],
-        "summary": "Get a work by slug with philosopher and notes",
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "name": "slug",
-            "in": "path"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Work detail",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "slug": {
-                      "type": "string"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "originalTitle": {
-                      "type": "string",
-                      "nullable": true
-                    },
-                    "workType": {
-                      "type": "string"
-                    },
-                    "composedYear": {
-                      "type": "number",
-                      "nullable": true
-                    },
-                    "composedYearEnd": {
-                      "type": "number",
-                      "nullable": true
-                    },
-                    "composedCertainty": {
-                      "type": "string"
-                    },
-                    "originalLanguage": {
-                      "type": "string",
-                      "nullable": true
-                    },
-                    "descriptionShort": {
-                      "type": "string",
-                      "nullable": true
-                    },
-                    "philosopherId": {
-                      "type": "string"
-                    },
-                    "philosopherName": {
-                      "type": "string"
-                    },
-                    "philosopherSlug": {
-                      "type": "string"
-                    },
-                    "notes": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "content": {
-                            "type": "string"
-                          },
-                          "noteType": {
-                            "type": "string"
-                          },
-                          "sourceType": {
-                            "type": "string"
-                          },
-                          "sourceName": {
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "sourceUrl": {
-                            "type": "string",
-                            "nullable": true
-                          }
-                        },
-                        "required": [
-                          "id",
-                          "content",
-                          "noteType",
-                          "sourceType",
-                          "sourceName",
-                          "sourceUrl"
-                        ]
-                      }
-                    }
-                  },
-                  "required": [
-                    "id",
-                    "slug",
-                    "title",
-                    "originalTitle",
-                    "workType",
-                    "composedYear",
-                    "composedYearEnd",
-                    "composedCertainty",
-                    "originalLanguage",
-                    "descriptionShort",
-                    "philosopherId",
-                    "philosopherName",
-                    "philosopherSlug",
-                    "notes"
-                  ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Work not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "error"
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/schools": {
-      "get": {
-        "tags": [
-          "Schools"
-        ],
-        "summary": "List all schools, ordered by period start year",
-        "responses": {
-          "200": {
-            "description": "All schools",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string"
-                      },
-                      "slug": {
-                        "type": "string"
-                      },
-                      "name": {
-                        "type": "string"
-                      },
-                      "alsoKnownAs": {
-                        "type": "string",
-                        "nullable": true
-                      },
-                      "periodStartYear": {
-                        "type": "number",
-                        "nullable": true
-                      },
-                      "periodEndYear": {
-                        "type": "number",
-                        "nullable": true
-                      },
-                      "periodCertainty": {
-                        "type": "string"
-                      },
-                      "description": {
-                        "type": "string",
-                        "nullable": true
-                      }
-                    },
-                    "required": [
-                      "id",
-                      "slug",
-                      "name",
-                      "alsoKnownAs",
-                      "periodStartYear",
-                      "periodEndYear",
-                      "periodCertainty",
-                      "description"
-                    ]
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/schools/{slug}": {
-      "get": {
-        "tags": [
-          "Schools"
-        ],
-        "summary": "Get a school by slug with member philosophers",
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "name": "slug",
-            "in": "path"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "School detail",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "slug": {
-                      "type": "string"
-                    },
-                    "name": {
-                      "type": "string"
-                    },
-                    "alsoKnownAs": {
-                      "type": "string",
-                      "nullable": true
-                    },
-                    "periodStartYear": {
-                      "type": "number",
-                      "nullable": true
-                    },
-                    "periodEndYear": {
-                      "type": "number",
-                      "nullable": true
-                    },
-                    "periodCertainty": {
-                      "type": "string"
-                    },
-                    "description": {
-                      "type": "string",
-                      "nullable": true
-                    },
-                    "members": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "slug": {
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string"
-                          },
-                          "nationality": {
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "bornYear": {
-                            "type": "number",
-                            "nullable": true
-                          },
-                          "bornCertainty": {
-                            "type": "string"
-                          },
-                          "diedYear": {
-                            "type": "number",
-                            "nullable": true
-                          },
-                          "diedCertainty": {
-                            "type": "string"
-                          },
-                          "role": {
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "id",
-                          "slug",
-                          "name",
-                          "nationality",
-                          "bornYear",
-                          "bornCertainty",
-                          "diedYear",
-                          "diedCertainty",
-                          "role"
-                        ]
-                      }
-                    }
-                  },
-                  "required": [
-                    "id",
-                    "slug",
-                    "name",
-                    "alsoKnownAs",
-                    "periodStartYear",
-                    "periodEndYear",
-                    "periodCertainty",
-                    "description",
-                    "members"
-                  ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "School not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "error"
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
     }
-  }
 }

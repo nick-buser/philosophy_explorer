@@ -1,6 +1,8 @@
 import { createRoute, Link } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { rootRoute } from './__root';
+import { ArgumentCard } from '../components/ArgumentCard';
+import type { ArgumentSummary } from '../lib/argument-types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -50,6 +52,15 @@ function WorkDetailPage() {
         throw new Error(`API error ${res.status}`);
       }
       return res.json() as Promise<WorkDetail>;
+    },
+  });
+
+  const { data: argumentsData } = useQuery<ArgumentSummary[]>({
+    queryKey: ['work-arguments', slug],
+    queryFn: async () => {
+      const res = await fetch(`${API}/api/works/${slug}/arguments`);
+      if (!res.ok) throw new Error(`API error ${res.status}`);
+      return res.json() as Promise<ArgumentSummary[]>;
     },
   });
 
@@ -115,6 +126,18 @@ function WorkDetailPage() {
             <p className="mt-5 text-gray-300 leading-relaxed">{data.descriptionShort}</p>
           )}
         </header>
+
+        {/* Arguments */}
+        {argumentsData && argumentsData.length > 0 && (
+          <section className="space-y-4">
+            <h2 className="text-xs font-semibold tracking-widest uppercase text-gray-500">
+              Arguments
+            </h2>
+            {argumentsData.map(a => (
+              <ArgumentCard key={a.id} argumentId={a.id} />
+            ))}
+          </section>
+        )}
 
         {/* Notes */}
         {data.notes.length > 0 && (

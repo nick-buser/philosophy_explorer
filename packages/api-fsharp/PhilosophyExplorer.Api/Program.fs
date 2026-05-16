@@ -21,6 +21,8 @@ let main args =
         0
     else
 
+    PhilosophyExplorer.Db.Queries.configureDapper ()
+
     let builder = WebApplication.CreateBuilder(args)
 
     let jsonOptions = JsonSerializerOptions(PropertyNamingPolicy = JsonNamingPolicy.CamelCase)
@@ -72,6 +74,7 @@ let main args =
     HealthRoutes.register app
     PhilosopherRoutes.register app
     CatalogRoutes.register app
+    ArgumentRoutes.register app
     GraphRoutes.register graphService app
 
     // Swagger / OpenAPI

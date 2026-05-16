@@ -1,5 +1,6 @@
 namespace PhilosophyExplorer.Domain
 
+open System.Text.Json.Nodes
 open System.Text.Json.Serialization
 
 /// API response DTOs — these define the wire format and must stay in sync
@@ -186,3 +187,61 @@ type HealthErrorResponseDto =
 
 type ErrorResponseDto =
     { [<JsonPropertyName("error")>] Error: string }
+
+// Argument DTOs. The `ast` field on a formalization is opaque to the F# side
+// (JsonNode) — the web client narrows it via the `formalism` discriminator and
+// parses it with the existing TS logic types. This keeps the wire schema
+// stable as new formalisms are added without dragging every AST through
+// Swashbuckle.
+
+type ArgumentClauseDto =
+    { [<JsonPropertyName("id")>] Id: string
+      [<JsonPropertyName("role")>] Role: string
+      [<JsonPropertyName("position")>] Position: int
+      [<JsonPropertyName("verbalText")>] VerbalText: string option
+      [<JsonPropertyName("sourceExcerpt")>] SourceExcerpt: string option }
+
+type ArgumentFormalizationDto =
+    { [<JsonPropertyName("id")>] Id: string
+      [<JsonPropertyName("formalism")>] Formalism: string
+      [<JsonPropertyName("isPrimary")>] IsPrimary: bool
+      [<JsonPropertyName("fitScore")>] FitScore: float option
+      [<JsonPropertyName("reason")>] Reason: string option
+      [<JsonPropertyName("distortionRisk")>] DistortionRisk: string option
+      [<JsonPropertyName("ast")>] Ast: JsonNode }
+
+type ArgumentAssessmentDto =
+    { [<JsonPropertyName("formalism")>] Formalism: string
+      [<JsonPropertyName("fitScore")>] FitScore: float
+      [<JsonPropertyName("reason")>] Reason: string
+      [<JsonPropertyName("distortionRisk")>] DistortionRisk: string option }
+
+type ArgumentSourceSpanDto =
+    { [<JsonPropertyName("file")>] File: string option
+      [<JsonPropertyName("startLine")>] StartLine: int option
+      [<JsonPropertyName("endLine")>] EndLine: int option
+      [<JsonPropertyName("excerpt")>] Excerpt: string option }
+
+type ArgumentSummaryDto =
+    { [<JsonPropertyName("id")>] Id: string
+      [<JsonPropertyName("extractionId")>] ExtractionId: string
+      [<JsonPropertyName("workId")>] WorkId: string option
+      [<JsonPropertyName("workSlug")>] WorkSlug: string option
+      [<JsonPropertyName("workTitle")>] WorkTitle: string option
+      [<JsonPropertyName("intent")>] Intent: string
+      [<JsonPropertyName("primaryFormalism")>] PrimaryFormalism: string
+      [<JsonPropertyName("clauseCount")>] ClauseCount: int }
+
+type ArgumentDetailDto =
+    { [<JsonPropertyName("id")>] Id: string
+      [<JsonPropertyName("extractionId")>] ExtractionId: string
+      [<JsonPropertyName("workId")>] WorkId: string option
+      [<JsonPropertyName("workSlug")>] WorkSlug: string option
+      [<JsonPropertyName("workTitle")>] WorkTitle: string option
+      [<JsonPropertyName("source")>] Source: ArgumentSourceSpanDto
+      [<JsonPropertyName("intent")>] Intent: string
+      [<JsonPropertyName("extractorNote")>] ExtractorNote: string option
+      [<JsonPropertyName("clauses")>] Clauses: ArgumentClauseDto list
+      [<JsonPropertyName("formalizations")>] Formalizations: ArgumentFormalizationDto list
+      [<JsonPropertyName("assessments")>] Assessments: ArgumentAssessmentDto list
+      [<JsonPropertyName("reviewerNotes")>] ReviewerNotes: string list }
