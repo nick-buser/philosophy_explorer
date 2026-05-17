@@ -369,3 +369,29 @@ module Queries =
                     {| Aid = argumentId |})
             return rows |> Seq.toList
         }
+
+    [<CLIMutable>]
+    type ArgumentAttributionQueryRow =
+        { Id: string
+          PhilosopherId: string; PhilosopherSlug: string; PhilosopherName: string
+          WorkId: string; WorkSlug: string; WorkTitle: string
+          FormalizationId: string
+          Provenance: string; SourceText: string; Note: string }
+
+    let getArgumentAttributions (argumentId: string) =
+        task {
+            use conn = openConn ()
+            let! rows =
+                conn.QueryAsync<ArgumentAttributionQueryRow>(
+                    "SELECT a.id,
+                            p.id AS philosopher_id, p.slug AS philosopher_slug, p.name AS philosopher_name,
+                            a.work_id, w.slug AS work_slug, w.title AS work_title,
+                            a.formalization_id, a.provenance, a.source_text, a.note
+                     FROM argument_attributions a
+                     INNER JOIN philosophers p ON a.philosopher_id = p.id
+                     LEFT JOIN works w ON a.work_id = w.id
+                     WHERE a.argument_id = @Aid
+                     ORDER BY a.created_at ASC",
+                    {| Aid = argumentId |})
+            return rows |> Seq.toList
+        }

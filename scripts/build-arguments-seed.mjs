@@ -29,6 +29,7 @@ const __dirname = dirname(__filename);
 const REPO = resolve(__dirname, '..');
 const EXTRACTIONS_DIR = resolve(REPO, '..', 'claim_extractor', 'extractions');
 const WORKS_SEED = resolve(REPO, 'data', 'seed', 'works.json');
+const PHILOSOPHERS_SEED = resolve(REPO, 'data', 'seed', 'philosophers.json');
 const OUT = resolve(REPO, 'data', 'seed', 'arguments.json');
 
 function findExtractions(root) {
@@ -48,6 +49,11 @@ function findExtractions(root) {
 function loadWorkSlugs() {
   const works = JSON.parse(readFileSync(WORKS_SEED, 'utf8'));
   return new Set(works.map(w => w.slug));
+}
+
+function loadPhilosopherSlugs() {
+  const phils = JSON.parse(readFileSync(PHILOSOPHERS_SEED, 'utf8'));
+  return new Set(phils.map(p => p.slug));
 }
 
 // Resolve a claim_extractor work_id like "plato/meno" against the works.json
@@ -108,6 +114,7 @@ function astFor(primary) {
 
 function build() {
   const knownSlugs = loadWorkSlugs();
+  const knownPhilSlugs = loadPhilosopherSlugs();
   const paths = findExtractions(EXTRACTIONS_DIR);
   console.log(`Found ${paths.length} extractions under ${EXTRACTIONS_DIR}`);
 
@@ -148,6 +155,25 @@ function build() {
       distortionRisk: a.distortion_risk ?? null,
     }));
 
+    // Auto-attribution: extraction_id is "<author-slug>/<work-slug>/<NNN>-...",
+    // so the first segment is the philosopher slug. The seeder resolves it
+    // against the philosophers table; unknown slugs cause the attribution row
+    // to be skipped with a warning (the argument still seeds without it).
+    const authorSlug = extraction.work_id.split('/')[0];
+    const attributions = [];
+    if (knownPhilSlugs.has(authorSlug)) {
+      attributions.push({
+        philosopherSlug: authorSlug,
+        workSlug: workSlug ?? '',
+        formalizationLabel: 'primary',
+        provenance: 'auto',
+        sourceText: extraction.source_span.excerpt ?? null,
+        note: null,
+      });
+    } else {
+      console.warn(`  ~ no philosopher matches author slug '${authorSlug}' for ${extraction.extraction_id} — no attribution emitted`);
+    }
+
     out.push({
       id,
       extractionId: extraction.extraction_id,
@@ -162,6 +188,7 @@ function build() {
       formalizations,
       assessments,
       reviewerNotes: extraction.reviewer_notes ?? [],
+      attributions,
     });
   }
 

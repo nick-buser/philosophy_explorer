@@ -67,6 +67,22 @@ export type ArgumentAssessment = {
   distortionRisk: string | null;
 };
 
+export type Provenance = 'auto' | 'sanity_checked' | 'hand_written';
+
+export type ArgumentAttribution = {
+  id: string;
+  philosopherId: string;
+  philosopherSlug: string;
+  philosopherName: string;
+  workId: string | null;
+  workSlug: string | null;
+  workTitle: string | null;
+  formalizationId: string | null;
+  provenance: Provenance;
+  sourceText: string | null;
+  note: string | null;
+};
+
 export type ArgumentSource = {
   file: string | null;
   startLine: number | null;
@@ -98,6 +114,7 @@ export type ArgumentDetail = {
   formalizations: Formalization[];
   assessments: ArgumentAssessment[];
   reviewerNotes: string[];
+  attributions: ArgumentAttribution[];
 };
 
 // Pick the formula a given clause maps to within a whole-AST formalization.

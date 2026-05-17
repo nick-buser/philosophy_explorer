@@ -187,7 +187,7 @@
         "/api/arguments": {
             "get": {
                 "tags": [
-                    "Pipe #2 input at line 51@51"
+                    "Pipe #2 input at line 64@64"
                 ],
                 "responses": {
                     "200": {
@@ -243,7 +243,7 @@
         "/api/arguments/{id}": {
             "get": {
                 "tags": [
-                    "Pipe #4 input at line 67@67"
+                    "Pipe #4 input at line 80@80"
                 ],
                 "parameters": [
                     {
@@ -265,7 +265,7 @@
         "/api/works/{slug}/arguments": {
             "get": {
                 "tags": [
-                    "Pipe #6 input at line 100@100"
+                    "Pipe #6 input at line 115@115"
                 ],
                 "parameters": [
                     {

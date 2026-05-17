@@ -205,3 +205,19 @@ type ArgumentReviewerNoteRow =
       Position: int
       Note: string
       CreatedAt: string }
+
+// Attribution: who (philosopher) made this argument, where (work, may differ
+// from arguments.work_id if the same argument is cited across works), under
+// which formalization (optional), and how the record was produced (provenance).
+// One argument can have many attribution rows.
+[<CLIMutable>]
+type ArgumentAttributionRow =
+    { Id: string
+      ArgumentId: string
+      PhilosopherId: string
+      WorkId: string
+      FormalizationId: string
+      Provenance: string
+      SourceText: string
+      Note: string
+      CreatedAt: string }

@@ -46,6 +46,19 @@ module ArgumentRoutes =
           Reason = r.Reason
           DistortionRisk = Option.ofObj r.DistortionRisk }
 
+    let private toAttributionDto (r: Queries.ArgumentAttributionQueryRow) : ArgumentAttributionDto =
+        { Id = r.Id
+          PhilosopherId = r.PhilosopherId
+          PhilosopherSlug = r.PhilosopherSlug
+          PhilosopherName = r.PhilosopherName
+          WorkId = Option.ofObj r.WorkId
+          WorkSlug = Option.ofObj r.WorkSlug
+          WorkTitle = Option.ofObj r.WorkTitle
+          FormalizationId = Option.ofObj r.FormalizationId
+          Provenance = r.Provenance
+          SourceText = Option.ofObj r.SourceText
+          Note = Option.ofObj r.Note }
+
     let register (app: WebApplication) =
         // GET /api/arguments  (optional ?workSlug= filter)
         app.MapGet("/api/arguments", Func<HttpContext, IResult>(fun ctx ->
@@ -75,6 +88,7 @@ module ArgumentRoutes =
                     let! formalizations = Queries.getArgumentFormalizations h.Id
                     let! assessments = Queries.getArgumentAssessments h.Id
                     let! notes = Queries.getArgumentReviewerNotes h.Id
+                    let! attributions = Queries.getArgumentAttributions h.Id
                     let dto: ArgumentDetailDto =
                         { Id = h.Id
                           ExtractionId = h.ExtractionId
@@ -91,7 +105,8 @@ module ArgumentRoutes =
                           Clauses = clauses |> List.map toClauseDto
                           Formalizations = formalizations |> List.map toFormalizationDto
                           Assessments = assessments |> List.map toAssessmentDto
-                          ReviewerNotes = notes }
+                          ReviewerNotes = notes
+                          Attributions = attributions |> List.map toAttributionDto }
                     return Results.Json(dto, statusCode = 200)
             } |> _.Result
         )) |> ignore

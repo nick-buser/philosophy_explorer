@@ -2,6 +2,15 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// Stub TanStack router's Link — the component renders it inside attribution
+// lines and the real Link needs a RouterProvider that's overkill for unit tests.
+vi.mock('@tanstack/react-router', () => ({
+  Link: ({ children, ...rest }: { children: React.ReactNode } & Record<string, unknown>) => (
+    <a {...(rest as object)}>{children}</a>
+  ),
+}));
+
 import { ArgumentCard } from '../ArgumentCard';
 import type { ArgumentDetail } from '../../lib/argument-types';
 
@@ -43,6 +52,21 @@ const folArgument: ArgumentDetail = {
     { formalism: 'aristotelian', fitScore: 0.3, reason: 'term logic loses the relation', distortionRisk: null },
   ],
   reviewerNotes: ['Hedged in the original by "it is thought".'],
+  attributions: [
+    {
+      id: 'at0',
+      philosopherId: 'p1',
+      philosopherSlug: 'aristotle',
+      philosopherName: 'Aristotle',
+      workId: 'w1',
+      workSlug: 'nicomachean-ethics',
+      workTitle: 'Nicomachean Ethics',
+      formalizationId: 'f0',
+      provenance: 'auto',
+      sourceText: 'Every art, and every science … aims, it is thought, at some good',
+      note: null,
+    },
+  ],
 };
 
 // nd: 1 premise + 1 conclusion, premise has a human verbalization.
@@ -78,6 +102,21 @@ const ndArgument: ArgumentDetail = {
   ],
   assessments: [],
   reviewerNotes: [],
+  attributions: [
+    {
+      id: 'at0',
+      philosopherId: 'p2',
+      philosopherSlug: 'plato',
+      philosopherName: 'Plato',
+      workId: null,
+      workSlug: null,
+      workTitle: null,
+      formalizationId: 'f0',
+      provenance: 'sanity_checked',
+      sourceText: null,
+      note: null,
+    },
+  ],
 };
 
 // dialogical: rendered as a move list, not a clause table.
@@ -113,6 +152,7 @@ const dialogicalArgument: ArgumentDetail = {
   ],
   assessments: [],
   reviewerNotes: [],
+  attributions: [],
 };
 
 function renderCard(argumentId: string) {
@@ -174,6 +214,41 @@ describe('ArgumentCard', () => {
     expect(screen.getByText('Socrates')).toBeInTheDocument();
     // No clause-table headers for dialogical.
     expect(screen.queryByText('Premise')).not.toBeInTheDocument();
+  });
+
+  it('renders attribution with philosopher, work, and a provenance badge', async () => {
+    mockFetch(folArgument);
+    renderCard(folArgument.id);
+
+    await waitFor(() => expect(screen.getByText('Aristotle')).toBeInTheDocument());
+    expect(screen.getByText('Nicomachean Ethics')).toBeInTheDocument();
+    expect(screen.getByText('auto-generated')).toBeInTheDocument();
+  });
+
+  it('shows the sanity_checked provenance label when set', async () => {
+    mockFetch(ndArgument);
+    renderCard(ndArgument.id);
+
+    await waitFor(() => expect(screen.getByText('Plato')).toBeInTheDocument());
+    expect(screen.getByText('sanity-checked')).toBeInTheDocument();
+  });
+
+  it('renders the attribution source-text quote when present', async () => {
+    mockFetch(folArgument);
+    renderCard(folArgument.id);
+
+    await waitFor(() => expect(screen.getByText('Aristotle')).toBeInTheDocument());
+    expect(
+      screen.getByText(/Every art, and every science … aims, it is thought, at some good/)
+    ).toBeInTheDocument();
+  });
+
+  it('omits the attribution quote when sourceText is null', async () => {
+    mockFetch(ndArgument);
+    const { container } = renderCard(ndArgument.id);
+
+    await waitFor(() => expect(screen.getByText('Plato')).toBeInTheDocument());
+    expect(container.querySelector('blockquote')).toBeNull();
   });
 
   it('reveals source, assessments and reviewer notes when context is expanded', async () => {

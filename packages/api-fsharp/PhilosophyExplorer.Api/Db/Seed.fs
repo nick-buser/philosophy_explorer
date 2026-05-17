@@ -61,6 +61,18 @@ module Seed =
           Reason: string; DistortionRisk: string }
 
     [<CLIMutable>]
+    type ArgumentAttributionSeed =
+        { PhilosopherSlug: string
+          WorkSlug: string
+          // FormalizationLabel: "primary" or "alt:<formalism>" — resolved to a
+          // formalization_id at seed time using the same id scheme as the
+          // formalizations themselves.
+          FormalizationLabel: string
+          Provenance: string
+          SourceText: string
+          Note: string }
+
+    [<CLIMutable>]
     type ArgumentSeed =
         { Id: string; ExtractionId: string; WorkSlug: string
           SourceFile: string
@@ -69,7 +81,8 @@ module Seed =
           Clauses: ArgumentClauseSeed array
           Formalizations: ArgumentFormalizationSeed array
           Assessments: ArgumentAssessmentSeed array
-          ReviewerNotes: string array }
+          ReviewerNotes: string array
+          Attributions: ArgumentAttributionSeed array }
 
     let private jsonOpts =
         let opts = JsonSerializerOptions(PropertyNameCaseInsensitive = true)
@@ -221,6 +234,21 @@ module Seed =
             );
             CREATE UNIQUE INDEX IF NOT EXISTS argument_reviewer_notes_pos_idx
                 ON argument_reviewer_notes(argument_id, position);
+            CREATE TABLE IF NOT EXISTS argument_attributions (
+                id TEXT PRIMARY KEY,
+                argument_id TEXT NOT NULL REFERENCES arguments(id) ON DELETE CASCADE,
+                philosopher_id TEXT NOT NULL REFERENCES philosophers(id) ON DELETE RESTRICT,
+                work_id TEXT REFERENCES works(id) ON DELETE SET NULL,
+                formalization_id TEXT REFERENCES argument_formalizations(id) ON DELETE SET NULL,
+                provenance TEXT NOT NULL DEFAULT 'auto',
+                source_text TEXT,
+                note TEXT,
+                created_at TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+            CREATE INDEX IF NOT EXISTS argument_attributions_arg_idx
+                ON argument_attributions(argument_id);
+            CREATE INDEX IF NOT EXISTS argument_attributions_phil_idx
+                ON argument_attributions(philosopher_id);
         """
         cmd.ExecuteNonQuery() |> ignore
 
@@ -382,6 +410,37 @@ module Seed =
                                 (id, argument_id, position, note)
                              VALUES (@Id, @Aid, @Pos, @Note)",
                             {| Id = nid; Aid = a.Id; Pos = i; Note = note |}) |> ignore)
+                    if not (isNull (box a.Attributions)) then
+                        a.Attributions |> Array.iteri (fun i at ->
+                            let philId =
+                                match philMap.TryGetValue(at.PhilosopherSlug) with
+                                | true, v -> v
+                                | _ -> null
+                            if isNull philId then
+                                eprintfn $"  ! attribution skipped: unknown philosopher slug '{at.PhilosopherSlug}' for {a.Id}"
+                            else
+                                let workIdAt =
+                                    if String.IsNullOrEmpty at.WorkSlug then null
+                                    else match workMap.TryGetValue(at.WorkSlug) with
+                                         | true, v -> v
+                                         | _ -> null
+                                let formalizationId =
+                                    if String.IsNullOrEmpty at.FormalizationLabel then null
+                                    elif at.FormalizationLabel = "primary" then
+                                        // primary formalization id = "{argId}:form:{formalism}:primary"
+                                        a.Formalizations
+                                        |> Array.tryFind (fun f -> f.IsPrimary)
+                                        |> Option.map (fun f -> $"{a.Id}:form:{f.Formalism}:primary")
+                                        |> Option.defaultValue null
+                                    else null
+                                let aid = $"{a.Id}:attr:{i}"
+                                conn.Execute(
+                                    "INSERT OR IGNORE INTO argument_attributions
+                                        (id, argument_id, philosopher_id, work_id, formalization_id, provenance, source_text, note)
+                                     VALUES (@Id, @Aid, @Pid, @Wid, @Fid, @Prov, @Src, @Note)",
+                                    {| Id = aid; Aid = a.Id; Pid = philId; Wid = workIdAt
+                                       Fid = formalizationId; Prov = at.Provenance
+                                       Src = at.SourceText; Note = at.Note |}) |> ignore)
             printfn $"  + arguments ({insertedArgs} new / {argsData.Length} total)"
         else
             printfn "  ~ arguments.json not present — skip (run npm run arguments:build first)"
