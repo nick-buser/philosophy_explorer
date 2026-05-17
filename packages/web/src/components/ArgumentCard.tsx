@@ -6,6 +6,7 @@ import type { FolFormula } from '../logic/fol-types';
 import type { AristotelianFormula, CategoricalProposition } from '../logic/aristotelian-types';
 import {
   clauseFormula,
+  isDialogueAct,
   type ArgumentDetail,
   type ArgumentAttribution,
   type Formalization,
@@ -147,16 +148,23 @@ function DialogicalView({ formalization }: { formalization: Extract<Formalizatio
   const { moves, summary } = formalization.ast.dialogue;
   return (
     <div className="space-y-2">
-      {moves.map(m => (
+      {moves.map(m => {
+        const known = isDialogueAct(m.act);
+        return (
         <div key={m.move_no} className="grid grid-cols-[2rem_6rem_1fr] gap-3 py-1.5 border-t border-gray-800 first:border-t-0 text-sm">
           <div className="text-gray-600 tabular-nums">{m.move_no}</div>
           <div className="text-gray-400">
             <span className="text-gray-300">{m.speaker}</span>
-            <span className="block text-[10px] uppercase tracking-wider text-gray-600">{m.act}</span>
+            <span
+              className={`block text-[10px] uppercase tracking-wider ${known ? 'text-gray-600' : 'text-amber-500'}`}
+              title={known ? undefined : 'Unknown dialogue act — not in DIALOGUE_ACTS'}
+              data-testid={known ? undefined : 'unknown-act'}
+            >{m.act}</span>
           </div>
           <div className="text-gray-300 leading-relaxed">{m.content}</div>
         </div>
-      ))}
+        );
+      })}
       {summary && <p className="text-sm text-gray-400 italic pt-2 border-t border-gray-800">{summary}</p>}
     </div>
   );

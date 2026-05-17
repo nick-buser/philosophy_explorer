@@ -29,10 +29,35 @@ export type AristotelianAst = { formula: AristotelianFormula };
 
 // dialogical has no Logic Lab AST yet — it's first-party in claim_extractor.
 // Mirror its v1 shape here until/unless it gets a dialogical-types.ts.
+// DIALOGUE_ACTS mirrors claim_extractor/schemas/dialogical.py DialogueAct
+// literal exactly. If the python side evolves the vocabulary, update here
+// and the cross-repo fixture test will flag any extraction using an act
+// we don't know about.
+export const DIALOGUE_ACTS = [
+  'assertion',
+  'question',
+  'proposal',
+  'concession',
+  'objection',
+  'refutation',
+  'retraction',
+  'inference',
+  'appeal_to_endoxa',
+  'aporia',
+  'example',
+  'hedge',
+] as const;
+
+export type DialogueAct = typeof DIALOGUE_ACTS[number];
+
+export function isDialogueAct(s: string): s is DialogueAct {
+  return (DIALOGUE_ACTS as readonly string[]).includes(s);
+}
+
 export type DialogicalMove = {
   move_no: number;
   speaker: string;
-  act: string;
+  act: DialogueAct;
   content: string;
   cites: number[];
 };

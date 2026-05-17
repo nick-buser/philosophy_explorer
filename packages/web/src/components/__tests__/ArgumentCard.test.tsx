@@ -216,6 +216,22 @@ describe('ArgumentCard', () => {
     expect(screen.queryByText('Premise')).not.toBeInTheDocument();
   });
 
+  it('flags an unknown dialogue act (outside DIALOGUE_ACTS)', async () => {
+    // Simulate an extraction whose `act` is not in the closed vocabulary —
+    // e.g. claim_extractor evolves and adds an act the UI doesn't yet know.
+    // The runtime can't reject the data wholesale, but it must not render it
+    // as if it were known. Cast through unknown so the test bypasses the
+    // closed DialogueAct type and exercises the runtime guard.
+    const rogue = JSON.parse(JSON.stringify(dialogicalArgument)) as ArgumentDetail;
+    (rogue.formalizations[0].ast as { dialogue: { moves: { act: string }[] } })
+      .dialogue.moves[0].act = 'meta_question';
+    mockFetch(rogue);
+    renderCard(rogue.id);
+
+    await waitFor(() => expect(screen.getByText(rogue.intent)).toBeInTheDocument());
+    expect(screen.getByTestId('unknown-act')).toHaveTextContent('meta_question');
+  });
+
   it('renders attribution with philosopher, work, and a provenance badge', async () => {
     mockFetch(folArgument);
     renderCard(folArgument.id);
