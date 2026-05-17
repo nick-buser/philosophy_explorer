@@ -47,6 +47,16 @@
       "'Some good' rendered with an existential ∃y. Good(y); the question whether each art aims at a different good or all aim at one common Chief Good is not yet in view in this sentence and is therefore not encoded. The very next clause (lines 844–845, not in this extraction) connects the universal to the conventional description of the Chief Good as 'that which all things aim at'.",
       "'Aims at' rendered as binary predicate AimsAt(x,y); the teleological background of 'telos' / 'end' that this verb carries elsewhere in the text is elided. A future Davidsonian event-semantics extraction mode (flagged in docs/formal_argument_parsing.md as not yet mirrored) would represent the 'aiming' as an event with goal/telos roles rather than a flat binary predicate.",
       "Project Gutenberg edition uses 'art' for technē; 'science' for epistēmē; 'moral choice' for prohairesis. Predicate names follow the English translation rather than transliteration — this is a translation-layer decision and should be revisited if a multi-translation extraction strategy emerges."
+    ],
+    "attributions": [
+      {
+        "philosopherSlug": "aristotle",
+        "workSlug": "nicomachean-ethics",
+        "formalizationLabel": "primary",
+        "provenance": "auto",
+        "sourceText": "Every art, and every science reduced to a teachable form, and in like\nmanner every action and moral choice, aims, it is thought, at some\ngood",
+        "note": null
+      }
     ]
   },
   {
@@ -117,6 +127,16 @@
       "The conclusion's qualifier 'if Excellence admits of degrees, in the way of the best and most perfect Excellence' (1254-1255) is not encoded. It introduces graded / superlative structure that flat FOL does not naturally carry; a Kripke-style modal or comparative extension would be needed.",
       "Translation note: Chase's 'work' renders Aristotle's ergon, sometimes also translated 'function'. 'GoodOf' and 'DoneWell' are translation-layer names following Chase's vocabulary ('good of its kind', 'do these things well and nobly'). A multi-translation extraction strategy would normalise these.",
       "Standard Stephanus / Bekker numbering for this passage is approximately NE 1098a7-18 (Chapter I.7 in the Bekker chapter division); the Chase edition labels it Chapter V because it merges some chapters earlier in Book I."
+    ],
+    "attributions": [
+      {
+        "philosopherSlug": "aristotle",
+        "workSlug": "nicomachean-ethics",
+        "formalizationLabel": "primary",
+        "provenance": "auto",
+        "sourceText": "the work of any given subject, and of that subject good of its kind,\nare the same in kind",
+        "note": null
+      }
     ]
   },
   {
@@ -180,6 +200,16 @@
       "Lines 1018–1019 ('they would not have been good in the same way, unless their virtue had been the same') restate the converse direction of the dependency between sameness-of-way and sameness-of-virtue; not encoded separately in this extraction.",
       "Argument is enthymematic. Premise 2 (sharing temperance and justice ⇒ same virtues) makes Plato's implicit bridge explicit; Plato himself does not state it as a separate premise. A future commitment-tracking extraction would attribute it to a tacit Socratic commitment rather than a stated premise.",
       "Stephanus reference 73a–c is approximate; the manifest does not yet record Stephanus boundaries, so this is a paraphrase of the standard locator."
+    ],
+    "attributions": [
+      {
+        "philosopherSlug": "plato",
+        "workSlug": "",
+        "formalizationLabel": "primary",
+        "provenance": "auto",
+        "sourceText": "SOCRATES: Then all men are good in the same way, and by participation in\nthe same virtues?\n\nMENO: Such is the inference.",
+        "note": null
+      }
     ]
   },
   {
@@ -233,6 +263,16 @@
       "The theorem, formalised here, is a special case of Pythagoras: the diagonal of a square of side s has length s√2, so the square on it has area 2s². Plato uses unit squares (s=1, area=1) but the result generalises; the FOL formula is written at the general level.",
       "Predicate / function names follow English geometric vocabulary (Square, AreaOf, DiagonalOf, SquareOn, Mult). 'Mult' is a binary function symbol on terms; treating numerical 2 as a const term named '2' is a translation-layer convenience, not a commitment to a specific arithmetic schema.",
       "Stephanus reference for the slave-boy demonstration is approximately Meno 82b-85b; this extraction's source span (Chase line numbers 1781-1860) covers the latter portion (~84d-85b) where the diagonal answer is constructed."
+    ],
+    "attributions": [
+      {
+        "philosopherSlug": "plato",
+        "workSlug": "",
+        "formalizationLabel": "primary",
+        "provenance": "auto",
+        "sourceText": "And that is the line which the learned call the diagonal.\nAnd if this is the proper name, then you, Meno's slave, are prepared to\naffirm that the double space is the square of the diagonal?",
+        "note": null
+      }
     ]
   },
   {
@@ -291,6 +331,16 @@
       "Moves 22-23 introduce the key geometric insight (each diagonal bisects its unit square). The bisection itself is a diagrammatic fact that the schema cannot carry — only the speech act 'Socrates asks, boy concedes' is recorded. The bisection's geometric truth is presupposed but not represented.",
       "Move 21 ('I do not understand') is classified `aporia`. This is local — boy is momentarily stuck on a sub-question, not in global definitional impasse — and Socrates resolves it within three moves. The act covers both global and local aporia; if those need distinguishing, that's a candidate refinement.",
       "Speakers: SOCRATES (lead), BOY (interlocutor), MENO (silent observer in this movement, addressed only at move 1). MENO's silence is itself dialectical — he is being shown the method — but the schema does not currently model silence or audience-shifts."
+    ],
+    "attributions": [
+      {
+        "philosopherSlug": "plato",
+        "workSlug": "",
+        "formalizationLabel": "primary",
+        "provenance": "auto",
+        "sourceText": "Mark now the farther development. I shall only ask him, and\nnot teach him, and he shall share the enquiry with me",
+        "note": null
+      }
     ]
   }
 ]

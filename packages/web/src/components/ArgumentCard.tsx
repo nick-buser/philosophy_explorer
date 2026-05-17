@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
 import { renderUnicode } from '../logic/fol-render';
 import type { FolFormula } from '../logic/fol-types';
 import type { AristotelianFormula, CategoricalProposition } from '../logic/aristotelian-types';
 import {
   clauseFormula,
+  isDialogueAct,
   type ArgumentDetail,
+  type ArgumentAttribution,
   type Formalization,
   type ArgumentClause,
+  type Provenance,
 } from '../lib/argument-types';
 
 const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
@@ -25,6 +29,19 @@ const ROLE_LABEL: Record<string, string> = {
   lemma: 'Lemma',
   claim: 'Claim',
   composite: 'Dialogue',
+};
+
+const PROVENANCE_LABEL: Record<Provenance, string> = {
+  auto: 'auto-generated',
+  sanity_checked: 'sanity-checked',
+  hand_written: 'hand-written',
+};
+
+// Auto = muted; sanity-checked = neutral; hand-written = strongest.
+const PROVENANCE_TONE: Record<Provenance, string> = {
+  auto: 'border-gray-800 text-gray-500',
+  sanity_checked: 'border-gray-700 text-gray-400',
+  hand_written: 'border-gray-600 text-gray-300',
 };
 
 // ── Formula rendering ─────────────────────────────────────────────────────
@@ -82,22 +99,72 @@ function ClauseRow({
   );
 }
 
+// ── Attribution ───────────────────────────────────────────────────────────
+
+function AttributionLine({ a }: { a: ArgumentAttribution }) {
+  const prov = a.provenance as Provenance;
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center gap-2 text-xs text-gray-500 flex-wrap">
+        <span className="uppercase tracking-wider text-[10px] text-gray-600">attributed to</span>
+        <Link
+          to="/philosophers/$slug"
+          params={{ slug: a.philosopherSlug }}
+          className="text-gray-300 hover:text-white transition-colors"
+        >
+          {a.philosopherName}
+        </Link>
+        {a.workTitle && a.workSlug && (
+          <>
+            <span className="text-gray-700">·</span>
+            <Link
+              to="/works/$slug"
+              params={{ slug: a.workSlug }}
+              className="text-gray-400 hover:text-gray-200 transition-colors italic"
+            >
+              {a.workTitle}
+            </Link>
+          </>
+        )}
+        <span
+          className={`ml-auto text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded border ${PROVENANCE_TONE[prov] ?? PROVENANCE_TONE.auto}`}
+          title={a.note ?? undefined}
+        >
+          {PROVENANCE_LABEL[prov] ?? prov}
+        </span>
+      </div>
+      {a.sourceText && (
+        <blockquote className="text-xs text-gray-500 italic border-l-2 border-gray-800 pl-3 whitespace-pre-line">
+          {a.sourceText}
+        </blockquote>
+      )}
+    </div>
+  );
+}
+
 // ── Dialogical moves ──────────────────────────────────────────────────────
 
 function DialogicalView({ formalization }: { formalization: Extract<Formalization, { formalism: 'dialogical' }> }) {
   const { moves, summary } = formalization.ast.dialogue;
   return (
     <div className="space-y-2">
-      {moves.map(m => (
+      {moves.map(m => {
+        const known = isDialogueAct(m.act);
+        return (
         <div key={m.move_no} className="grid grid-cols-[2rem_6rem_1fr] gap-3 py-1.5 border-t border-gray-800 first:border-t-0 text-sm">
           <div className="text-gray-600 tabular-nums">{m.move_no}</div>
           <div className="text-gray-400">
             <span className="text-gray-300">{m.speaker}</span>
-            <span className="block text-[10px] uppercase tracking-wider text-gray-600">{m.act}</span>
+            <span
+              className={`block text-[10px] uppercase tracking-wider ${known ? 'text-gray-600' : 'text-amber-500'}`}
+              title={known ? undefined : 'Unknown dialogue act — not in DIALOGUE_ACTS'}
+              data-testid={known ? undefined : 'unknown-act'}
+            >{m.act}</span>
           </div>
           <div className="text-gray-300 leading-relaxed">{m.content}</div>
         </div>
-      ))}
+        );
+      })}
       {summary && <p className="text-sm text-gray-400 italic pt-2 border-t border-gray-800">{summary}</p>}
     </div>
   );
@@ -135,6 +202,15 @@ export function ArgumentCard({ argumentId }: { argumentId: string }) {
     <div className="rounded-lg border border-gray-800 bg-gray-900/50 p-5 space-y-4">
       {/* Intent */}
       <p className="text-sm text-gray-300 leading-relaxed">{data.intent}</p>
+
+      {/* Attributions */}
+      {data.attributions.length > 0 && (
+        <div className="space-y-1">
+          {data.attributions.map(a => (
+            <AttributionLine key={a.id} a={a} />
+          ))}
+        </div>
+      )}
 
       {/* Formalization switcher */}
       <div className="flex items-center gap-2 flex-wrap">

@@ -29,10 +29,35 @@ export type AristotelianAst = { formula: AristotelianFormula };
 
 // dialogical has no Logic Lab AST yet — it's first-party in claim_extractor.
 // Mirror its v1 shape here until/unless it gets a dialogical-types.ts.
+// DIALOGUE_ACTS mirrors claim_extractor/schemas/dialogical.py DialogueAct
+// literal exactly. If the python side evolves the vocabulary, update here
+// and the cross-repo fixture test will flag any extraction using an act
+// we don't know about.
+export const DIALOGUE_ACTS = [
+  'assertion',
+  'question',
+  'proposal',
+  'concession',
+  'objection',
+  'refutation',
+  'retraction',
+  'inference',
+  'appeal_to_endoxa',
+  'aporia',
+  'example',
+  'hedge',
+] as const;
+
+export type DialogueAct = typeof DIALOGUE_ACTS[number];
+
+export function isDialogueAct(s: string): s is DialogueAct {
+  return (DIALOGUE_ACTS as readonly string[]).includes(s);
+}
+
 export type DialogicalMove = {
   move_no: number;
   speaker: string;
-  act: string;
+  act: DialogueAct;
   content: string;
   cites: number[];
 };
@@ -67,6 +92,22 @@ export type ArgumentAssessment = {
   distortionRisk: string | null;
 };
 
+export type Provenance = 'auto' | 'sanity_checked' | 'hand_written';
+
+export type ArgumentAttribution = {
+  id: string;
+  philosopherId: string;
+  philosopherSlug: string;
+  philosopherName: string;
+  workId: string | null;
+  workSlug: string | null;
+  workTitle: string | null;
+  formalizationId: string | null;
+  provenance: Provenance;
+  sourceText: string | null;
+  note: string | null;
+};
+
 export type ArgumentSource = {
   file: string | null;
   startLine: number | null;
@@ -98,6 +139,7 @@ export type ArgumentDetail = {
   formalizations: Formalization[];
   assessments: ArgumentAssessment[];
   reviewerNotes: string[];
+  attributions: ArgumentAttribution[];
 };
 
 // Pick the formula a given clause maps to within a whole-AST formalization.

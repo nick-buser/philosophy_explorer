@@ -232,6 +232,19 @@ type ArgumentSummaryDto =
       [<JsonPropertyName("primaryFormalism")>] PrimaryFormalism: string
       [<JsonPropertyName("clauseCount")>] ClauseCount: int }
 
+type ArgumentAttributionDto =
+    { [<JsonPropertyName("id")>] Id: string
+      [<JsonPropertyName("philosopherId")>] PhilosopherId: string
+      [<JsonPropertyName("philosopherSlug")>] PhilosopherSlug: string
+      [<JsonPropertyName("philosopherName")>] PhilosopherName: string
+      [<JsonPropertyName("workId")>] WorkId: string option
+      [<JsonPropertyName("workSlug")>] WorkSlug: string option
+      [<JsonPropertyName("workTitle")>] WorkTitle: string option
+      [<JsonPropertyName("formalizationId")>] FormalizationId: string option
+      [<JsonPropertyName("provenance")>] Provenance: string
+      [<JsonPropertyName("sourceText")>] SourceText: string option
+      [<JsonPropertyName("note")>] Note: string option }
+
 type ArgumentDetailDto =
     { [<JsonPropertyName("id")>] Id: string
       [<JsonPropertyName("extractionId")>] ExtractionId: string
@@ -244,4 +257,5 @@ type ArgumentDetailDto =
       [<JsonPropertyName("clauses")>] Clauses: ArgumentClauseDto list
       [<JsonPropertyName("formalizations")>] Formalizations: ArgumentFormalizationDto list
       [<JsonPropertyName("assessments")>] Assessments: ArgumentAssessmentDto list
-      [<JsonPropertyName("reviewerNotes")>] ReviewerNotes: string list }
+      [<JsonPropertyName("reviewerNotes")>] ReviewerNotes: string list
+      [<JsonPropertyName("attributions")>] Attributions: ArgumentAttributionDto list }
