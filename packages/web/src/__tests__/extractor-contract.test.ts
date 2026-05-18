@@ -20,6 +20,12 @@ import { renderUnicode } from '../logic/fol-render';
 import { formulaKey } from '../logic/nd-types';
 import type { AristotelianFormula, Syllogism } from '../logic/aristotelian-types';
 import { checkSyllogism } from '../logic/aristotelian-validity';
+import type { BoolFormula } from '../logic/boolean-types';
+import { canonicalKey as boolCanonicalKey } from '../logic/boolean-types';
+import type { ModalFormula, KripkeModel } from '../logic/kripke-types';
+import { renderUnicode as renderModal } from '../logic/kripke-render';
+import type { MedievalFormula } from '../logic/medieval-types';
+import { checkModalSyllogism } from '../logic/medieval-validity';
 import { DIALOGUE_ACTS } from '../lib/argument-types';
 
 const EXTRACTIONS_DIR =
@@ -47,6 +53,9 @@ type Extraction = {
     | { formalism: 'fol'; formula: FolFormula }
     | { formalism: 'nd'; argument: { premises: FolFormula[]; conclusion: FolFormula }; proof: FitchProofLike | null }
     | { formalism: 'aristotelian'; formula: AristotelianFormula }
+    | { formalism: 'boolean'; formula: BoolFormula }
+    | { formalism: 'kripke'; formula: ModalFormula; model: KripkeModel | null }
+    | { formalism: 'medieval'; formula: MedievalFormula }
     | { formalism: 'dialogical'; dialogue: { participants: string[]; moves: DialogueMoveLike[] } };
 };
 
@@ -83,9 +92,10 @@ describeIf(`extractor contract (${EXTRACTIONS_DIR})`, () => {
         case 'fol': {
           // renderUnicode and freeVars are total over a structurally valid FolFormula —
           // throwing means the extractor produced something Logic Lab can't process.
-          const rendered = renderUnicode(ext.primary.formula);
+          const formula = ext.primary.formula;
+          const rendered = renderUnicode(formula);
           expect(rendered).toBeTruthy();
-          expect(() => freeVars(ext.primary.formula as FolFormula)).not.toThrow();
+          expect(() => freeVars(formula)).not.toThrow();
           break;
         }
         case 'nd': {
@@ -135,6 +145,50 @@ describeIf(`extractor contract (${EXTRACTIONS_DIR})`, () => {
             ).toBe(true);
             expect(participants.has(m.speaker)).toBe(true);
           }
+          break;
+        }
+        case 'boolean': {
+          // canonicalKey is total over a structurally valid BoolFormula —
+          // throwing means the extractor's kind tag drifted from the TS union.
+          expect(boolCanonicalKey(ext.primary.formula)).toBeTruthy();
+          break;
+        }
+        case 'kripke': {
+          // renderUnicode is total over ModalFormula.
+          expect(renderModal(ext.primary.formula)).toBeTruthy();
+          // If a model is attached, every edge endpoint must be a known world,
+          // and the designated world (if set) must exist. Cheap structural
+          // sanity that pydantic doesn't do.
+          const model = ext.primary.model;
+          if (model) {
+            const worldIds = new Set(model.worlds.map(w => w.id));
+            for (const e of model.edges) {
+              expect(worldIds.has(e.from), `edge ${e.from}->${e.to} references unknown 'from'`).toBe(true);
+              expect(worldIds.has(e.to), `edge ${e.from}->${e.to} references unknown 'to'`).toBe(true);
+            }
+            if (model.designated) {
+              expect(worldIds.has(model.designated)).toBe(true);
+            }
+          }
+          break;
+        }
+        case 'medieval': {
+          const formula = ext.primary.formula;
+          if (formula.kind === 'modal-syllogism') {
+            const result = checkModalSyllogism(formula.syllogism);
+            // We don't require validity (Buridan deliberately writes invalid
+            // modal syllogisms as counter-examples). We do require the
+            // validity engine to return a defined verdict — non-undefined
+            // means the (modalMood, figure, reading, assertoricMood) tuple
+            // is recognized, not silently falling through.
+            expect(result, `checkModalSyllogism returned undefined`).toBeTruthy();
+          }
+          if (formula.kind === 'sorites') {
+            // Pydantic already enforced premises.length >= 3; nothing further
+            // to check structurally that's worth a contract test.
+            expect(formula.chain.premises.length).toBeGreaterThanOrEqual(3);
+          }
+          // modal-proposition is structurally trivial after pydantic parse.
           break;
         }
       }
