@@ -25,6 +25,9 @@ import { canonicalKey as boolCanonicalKey } from '../logic/boolean-types';
 import type { EgNode } from '../logic/eg-ast';
 import { collectHooks } from '../logic/eg-ast';
 import { egToFol } from '../logic/eg-fol';
+import type { FregeFormula, FregeContent } from '../logic/frege-types';
+import { orderOf } from '../logic/frege-types';
+import { fregeToUnicode } from '../logic/frege-fol';
 import type { ModalFormula, KripkeModel } from '../logic/kripke-types';
 import { renderUnicode as renderModal } from '../logic/kripke-render';
 import type { MedievalFormula } from '../logic/medieval-types';
@@ -74,6 +77,7 @@ type Extraction = {
     | { formalism: 'aristotelian'; formula: AristotelianFormula }
     | { formalism: 'boolean'; formula: BoolFormula }
     | { formalism: 'eg'; graph: EgNode }
+    | { formalism: 'frege'; formula: FregeFormula }
     | { formalism: 'kripke'; formula: ModalFormula; model: KripkeModel | null }
     | { formalism: 'medieval'; formula: MedievalFormula }
     | { formalism: 'dialogical'; dialogue: { participants: string[]; moves: DialogueMoveLike[] } };
@@ -210,6 +214,42 @@ describeIf(`extractor contract (${EXTRACTIONS_DIR})`, () => {
               `eq references line of identity '${h}' that no atom hooks`,
             ).toBe(true);
           }
+          break;
+        }
+        case 'frege': {
+          // fregeToUnicode is total over a structurally valid FregeFormula —
+          // throwing or returning empty means the extractor's kind tags
+          // (judgment/content + atom/not/cond/iden/forall/exists) drifted
+          // from the TS union.
+          const formula = ext.primary.formula;
+          expect(fregeToUnicode(formula)).toBeTruthy();
+          // orderOf returns the propositional/first-order/higher-order chip
+          // value the Lab UI surfaces. Any new content kind that the
+          // extractor produces would either fall through the switch
+          // (returning the default 'propositional' even when quantified) or
+          // throw — running it here surfaces that drift.
+          const order = orderOf(formula);
+          expect(['propositional', 'first-order', 'higher-order']).toContain(order);
+          // Cross-check the order tag against the body's quantifier content
+          // by walking it ourselves. If `orderOf` ever drifts from the
+          // mirrored AST shape, the two walks disagree.
+          let observed: 'propositional' | 'first-order' | 'higher-order' = 'propositional';
+          function walk(c: FregeContent): void {
+            switch (c.kind) {
+              case 'atom': return;
+              case 'not':  walk(c.body); return;
+              case 'cond': walk(c.antecedent); walk(c.consequent); return;
+              case 'iden': walk(c.left); walk(c.right); return;
+              case 'forall':
+              case 'exists':
+                if (c.sort === 'predicate') observed = 'higher-order';
+                else if (observed !== 'higher-order') observed = 'first-order';
+                walk(c.body);
+                return;
+            }
+          }
+          walk(formula.body);
+          expect(order).toBe(observed);
           break;
         }
         case 'medieval': {
