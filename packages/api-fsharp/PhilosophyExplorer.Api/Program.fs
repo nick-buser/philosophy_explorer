@@ -58,6 +58,12 @@ let main args =
         |> ignore
     ) |> ignore
 
+    // Static SPA assets from wwwroot/. UseDefaultFiles rewrites `/` to
+    // `/index.html`; UseStaticFiles serves the files. Both no-op when
+    // wwwroot/ is absent (dev runs against `npm run dev:web` instead).
+    app.UseDefaultFiles() |> ignore
+    app.UseStaticFiles() |> ignore
+
     // /ping — startup diagnostic, matches original
     app.MapGet("/ping", Func<{| ok: bool |}>(fun () -> {| ok = true |})) |> ignore
 
@@ -83,6 +89,11 @@ let main args =
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Philosophy Explorer API v1")
         c.RoutePrefix <- "api/doc"
     ) |> ignore
+
+    // SPA client-routing fallback. Any unmatched non-API request is served
+    // index.html so TanStack Router can resolve the route on the client.
+    // Must come after all `Map*` endpoint registrations.
+    app.MapFallbackToFile("index.html") |> ignore
 
     let port = Environment.GetEnvironmentVariable("PORT") |> Option.ofObj |> Option.defaultValue "3001"
     app.Urls.Add($"http://0.0.0.0:{port}")
