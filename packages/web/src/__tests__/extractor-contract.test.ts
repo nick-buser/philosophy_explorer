@@ -22,6 +22,9 @@ import type { AristotelianFormula, Syllogism } from '../logic/aristotelian-types
 import { checkSyllogism } from '../logic/aristotelian-validity';
 import type { BoolFormula } from '../logic/boolean-types';
 import { canonicalKey as boolCanonicalKey } from '../logic/boolean-types';
+import type { EgNode } from '../logic/eg-ast';
+import { collectHooks } from '../logic/eg-ast';
+import { egToFol } from '../logic/eg-fol';
 import type { ModalFormula, KripkeModel } from '../logic/kripke-types';
 import { renderUnicode as renderModal } from '../logic/kripke-render';
 import type { MedievalFormula } from '../logic/medieval-types';
@@ -47,6 +50,22 @@ function walk(root: string): string[] {
   return out;
 }
 
+// Hooks referenced inside `eq` nodes (left + right). Used by the eg contract
+// check below — every identity-line side should appear on some atom too.
+function collectEqHooks(n: EgNode): string[] {
+  const out: string[] = [];
+  function walk(node: EgNode): void {
+    if (node.kind === 'eq') {
+      out.push(node.left, node.right);
+      return;
+    }
+    if (node.kind === 'atom') return;
+    for (const c of node.children) walk(c);
+  }
+  walk(n);
+  return out;
+}
+
 type Extraction = {
   extraction_id: string;
   primary:
@@ -54,6 +73,7 @@ type Extraction = {
     | { formalism: 'nd'; argument: { premises: FolFormula[]; conclusion: FolFormula }; proof: FitchProofLike | null }
     | { formalism: 'aristotelian'; formula: AristotelianFormula }
     | { formalism: 'boolean'; formula: BoolFormula }
+    | { formalism: 'eg'; graph: EgNode }
     | { formalism: 'kripke'; formula: ModalFormula; model: KripkeModel | null }
     | { formalism: 'medieval'; formula: MedievalFormula }
     | { formalism: 'dialogical'; dialogue: { participants: string[]; moves: DialogueMoveLike[] } };
@@ -169,6 +189,26 @@ describeIf(`extractor contract (${EXTRACTIONS_DIR})`, () => {
             if (model.designated) {
               expect(worldIds.has(model.designated)).toBe(true);
             }
+          }
+          break;
+        }
+        case 'eg': {
+          // egToFol is total over a structurally valid EgNode and is the
+          // strongest cross-check we have — if the AST drifted, this
+          // translation either throws or returns a malformed FolFormula.
+          const fol = egToFol(ext.primary.graph);
+          expect(fol).toBeTruthy();
+          // Every hook referenced inside an `eq` node should also appear as a
+          // hook on at least one atom — a line of identity that doesn't
+          // connect to a predicate is meaningless. Symmetric across both eq
+          // sides; we collect once and check membership.
+          const allHooks = new Set(collectHooks(ext.primary.graph));
+          const eqHooks = collectEqHooks(ext.primary.graph);
+          for (const h of eqHooks) {
+            expect(
+              allHooks.has(h),
+              `eq references line of identity '${h}' that no atom hooks`,
+            ).toBe(true);
           }
           break;
         }
