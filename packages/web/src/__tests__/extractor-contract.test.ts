@@ -30,6 +30,11 @@ import { orderOf } from '../logic/frege-types';
 import { fregeToUnicode } from '../logic/frege-fol';
 import type { ModalFormula, KripkeModel } from '../logic/kripke-types';
 import { renderUnicode as renderModal } from '../logic/kripke-render';
+import type { EpistemicFormula, EpistemicModel } from '../logic/epistemic-types';
+import { renderUnicodeE } from '../logic/epistemic-render';
+import { intuitionisticDiagnostics } from '../logic/intuitionistic-frames';
+import type { TemporalFormula, Trace } from '../logic/temporal-types';
+import { renderUnicodeT } from '../logic/temporal-render';
 import type { MedievalFormula } from '../logic/medieval-types';
 import { checkModalSyllogism } from '../logic/medieval-validity';
 import { DIALOGUE_ACTS } from '../lib/argument-types';
@@ -79,6 +84,9 @@ type Extraction = {
     | { formalism: 'eg'; graph: EgNode }
     | { formalism: 'frege'; formula: FregeFormula }
     | { formalism: 'kripke'; formula: ModalFormula; model: KripkeModel | null }
+    | { formalism: 'epistemic'; formula: EpistemicFormula; model: EpistemicModel | null }
+    | { formalism: 'intuitionistic'; formula: ModalFormula; model: KripkeModel | null }
+    | { formalism: 'temporal'; formula: TemporalFormula; trace: Trace | null }
     | { formalism: 'medieval'; formula: MedievalFormula }
     | { formalism: 'dialogical'; dialogue: { participants: string[]; moves: DialogueMoveLike[] } };
 };
@@ -250,6 +258,132 @@ describeIf(`extractor contract (${EXTRACTIONS_DIR})`, () => {
           }
           walk(formula.body);
           expect(order).toBe(observed);
+          break;
+        }
+        case 'epistemic': {
+          // renderUnicodeE is total over a structurally valid EpistemicFormula —
+          // throwing means the extractor's kind tags
+          // (atom/not/know/consider/and/or/implies/iff) drifted from the TS
+          // union or an agent-indexed operator is missing its `agent` field.
+          const rendered = renderUnicodeE(ext.primary.formula);
+          expect(rendered).toBeTruthy();
+          // Every know/consider node carries an agent string — empty agents
+          // would render as bare 'K' / 'M' and break the per-agent palette
+          // on the Lab side, so reject them as structurally invalid for
+          // cross-repo purposes.
+          function walkAgents(n: EpistemicFormula): void {
+            switch (n.kind) {
+              case 'atom':     return;
+              case 'not':      walkAgents(n.body); return;
+              case 'know':
+              case 'consider':
+                expect(n.agent.length, `${n.kind} node has empty agent`).toBeGreaterThan(0);
+                walkAgents(n.body);
+                return;
+              case 'and':
+              case 'or':
+              case 'implies':
+              case 'iff':
+                walkAgents(n.left);
+                walkAgents(n.right);
+                return;
+            }
+          }
+          walkAgents(ext.primary.formula);
+          // If a model is attached, every edge endpoint must be a known
+          // world, the designated world (if set) must exist, and every edge
+          // agent must appear in the declared roster. The TS side silently
+          // ignores edges referencing undeclared agents at eval time; the
+          // contract check is stricter because that drift would be invisible
+          // to consumers otherwise.
+          const model = ext.primary.model;
+          if (model) {
+            const worldIds = new Set(model.worlds.map(w => w.id));
+            const agents = new Set(model.agents);
+            for (const e of model.edges) {
+              expect(worldIds.has(e.from), `edge ${e.from}->${e.to} references unknown 'from'`).toBe(true);
+              expect(worldIds.has(e.to), `edge ${e.from}->${e.to} references unknown 'to'`).toBe(true);
+              expect(
+                agents.has(e.agent),
+                `edge ${e.from}->${e.to} references undeclared agent '${e.agent}'`,
+              ).toBe(true);
+            }
+            if (model.designated) {
+              expect(worldIds.has(model.designated)).toBe(true);
+            }
+          }
+          break;
+        }
+        case 'intuitionistic': {
+          // Intuitionistic reuses the kripke ModalFormula AST on the TS side
+          // but the Pydantic mirror forbids box/dia (no intuitionistic
+          // reading). Cross-check that here: renderModal accepts every
+          // ModalFormula, but a well-formed intuitionistic extraction must
+          // not contain a box or dia node.
+          const formula = ext.primary.formula;
+          expect(renderModal(formula)).toBeTruthy();
+          function containsModal(n: ModalFormula): boolean {
+            switch (n.kind) {
+              case 'atom':    return false;
+              case 'box':
+              case 'dia':     return true;
+              case 'not':     return containsModal(n.body);
+              case 'and':
+              case 'or':
+              case 'implies':
+              case 'iff':     return containsModal(n.left) || containsModal(n.right);
+            }
+          }
+          expect(
+            containsModal(formula),
+            'intuitionistic extraction contains box/dia — those have no intuitionistic reading',
+          ).toBe(false);
+          // If a model is attached we don't require it to be a valid
+          // intuitionistic frame (reflexive + transitive + monotone) — the
+          // Lab can close it on the fly — but we do run the diagnostics so
+          // a drift in the diagnostic shape surfaces here. World endpoints
+          // are still required to be well-formed.
+          const model = ext.primary.model;
+          if (model) {
+            const worldIds = new Set(model.worlds.map(w => w.id));
+            for (const e of model.edges) {
+              expect(worldIds.has(e.from), `edge ${e.from}->${e.to} references unknown 'from'`).toBe(true);
+              expect(worldIds.has(e.to), `edge ${e.from}->${e.to} references unknown 'to'`).toBe(true);
+            }
+            if (model.designated) {
+              expect(worldIds.has(model.designated)).toBe(true);
+            }
+            const diag = intuitionisticDiagnostics(model);
+            expect(typeof diag.isValidFrame).toBe('boolean');
+          }
+          break;
+        }
+        case 'temporal': {
+          // renderUnicodeT is total over a structurally valid TemporalFormula
+          // — throwing means the kind discriminator
+          // (atom/not/and/or/implies/iff/next/eventually/always/until)
+          // drifted from the TS union.
+          expect(renderUnicodeT(ext.primary.formula)).toBeTruthy();
+          // The Pydantic mirror enforces lasso-trace invariants
+          // (0 ≤ loopBack < states.length, non-empty states, 0 ≤ start <
+          // states.length). Re-check here so a TS-side change to those
+          // invariants surfaces on the contract boundary instead of in
+          // production rendering.
+          const trace = ext.primary.trace;
+          if (trace) {
+            const n = trace.states.length;
+            expect(n).toBeGreaterThan(0);
+            expect(trace.loopBack).toBeGreaterThanOrEqual(0);
+            expect(trace.loopBack).toBeLessThan(n);
+            if (trace.start !== undefined && trace.start !== null) {
+              expect(trace.start).toBeGreaterThanOrEqual(0);
+              expect(trace.start).toBeLessThan(n);
+            }
+            // State ids must be unique — duplicate ids would silently
+            // collapse states on the visualization side.
+            const ids = new Set(trace.states.map(s => s.id));
+            expect(ids.size).toBe(n);
+          }
           break;
         }
         case 'medieval': {
