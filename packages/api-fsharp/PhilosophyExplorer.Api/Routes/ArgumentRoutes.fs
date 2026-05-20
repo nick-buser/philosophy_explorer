@@ -6,8 +6,12 @@ open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Http
 open PhilosophyExplorer.Domain
 open PhilosophyExplorer.Db
+open PhilosophyExplorer.Telemetry
 
 module ArgumentRoutes =
+
+    let private countLookup (kind: string) =
+        Diagnostics.ArgumentLookups.Add(1L, Diagnostics.tag "kind" kind)
 
     let private nToOpt (n: Nullable<int>) = if n.HasValue then Some n.Value else None
     let private ndToOpt (n: Nullable<double>) = if n.HasValue then Some n.Value else None
@@ -63,6 +67,7 @@ module ArgumentRoutes =
         // GET /api/arguments  (optional ?workSlug= filter)
         app.MapGet("/api/arguments", Func<HttpContext, IResult>(fun ctx ->
             task {
+                countLookup "list"
                 let workSlug =
                     match ctx.Request.Query.TryGetValue("workSlug") with
                     | true, v when not (String.IsNullOrWhiteSpace(v.ToString())) -> Some (v.ToString())
@@ -79,6 +84,7 @@ module ArgumentRoutes =
         // extraction_id verbatim, which contains slashes (author/work/slug).
         app.MapGet("/api/arguments/{*id}", Func<string, IResult>(fun id ->
             task {
+                countLookup "detail"
                 let! header = Queries.getArgumentHeader id
                 match header with
                 | None ->
@@ -114,6 +120,7 @@ module ArgumentRoutes =
         // GET /api/works/{slug}/arguments
         app.MapGet("/api/works/{slug}/arguments", Func<string, IResult>(fun slug ->
             task {
+                countLookup "by-work"
                 let! rows = Queries.listArgumentsByWorkSlug slug
                 return Results.Json(rows |> List.map toSummaryDto, statusCode = 200)
             } |> _.Result
