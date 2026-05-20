@@ -37,6 +37,13 @@ import type { TemporalFormula, Trace } from '../logic/temporal-types';
 import { renderUnicodeT } from '../logic/temporal-render';
 import type { MedievalFormula } from '../logic/medieval-types';
 import { checkModalSyllogism } from '../logic/medieval-validity';
+import type { CtlFormula } from '../logic/ctl-types';
+import { renderUnicodeCtl } from '../logic/ctl-render';
+import type { Inference } from '../logic/indian-types';
+import { fiveSteps } from '../logic/indian-render';
+import { classify as classifyIndian } from '../logic/indian-engine';
+import type { Program } from '../logic/resolution-types';
+import { formatClause, formatRule, formatGoal, atomHasFunctor } from '../logic/resolution-types';
 import { DIALOGUE_ACTS } from '../lib/argument-types';
 
 const EXTRACTIONS_DIR =
@@ -88,6 +95,9 @@ type Extraction = {
     | { formalism: 'intuitionistic'; formula: ModalFormula; model: KripkeModel | null }
     | { formalism: 'temporal'; formula: TemporalFormula; trace: Trace | null }
     | { formalism: 'medieval'; formula: MedievalFormula }
+    | { formalism: 'ctl'; formula: CtlFormula; model: KripkeModel | null }
+    | { formalism: 'indian'; inference: Inference }
+    | { formalism: 'resolution'; program: Program }
     | { formalism: 'dialogical'; dialogue: { participants: string[]; moves: DialogueMoveLike[] } };
 };
 
@@ -403,6 +413,100 @@ describeIf(`extractor contract (${EXTRACTIONS_DIR})`, () => {
             expect(formula.chain.premises.length).toBeGreaterThanOrEqual(3);
           }
           // modal-proposition is structurally trivial after pydantic parse.
+          break;
+        }
+        case 'ctl': {
+          // renderUnicodeCtl is total over a structurally valid CtlFormula —
+          // throwing means the discriminator (the propositional kinds plus the
+          // uppercase path-quantified operators AX/EX/AF/EF/AG/EG/AU/EU)
+          // drifted from the TS union.
+          expect(renderUnicodeCtl(ext.primary.formula)).toBeTruthy();
+          // CTL reuses KripkeModel. If a model is attached, every edge
+          // endpoint must be a known world and the designated world (if set)
+          // must exist. CTL evaluation expects a *serial* frame (every state
+          // has a successor), but a non-serial model is a legitimate payload
+          // for a passage that argues about closing the frame — seriality is
+          // a Lab-side diagnostic (ctlAxiomVerdicts), not a contract invariant.
+          const model = ext.primary.model;
+          if (model) {
+            const worldIds = new Set(model.worlds.map(w => w.id));
+            for (const e of model.edges) {
+              expect(worldIds.has(e.from), `edge ${e.from}->${e.to} references unknown 'from'`).toBe(true);
+              expect(worldIds.has(e.to), `edge ${e.from}->${e.to} references unknown 'to'`).toBe(true);
+            }
+            if (model.designated) {
+              expect(worldIds.has(model.designated)).toBe(true);
+            }
+          }
+          break;
+        }
+        case 'indian': {
+          // fiveSteps builds the canonical pañcāvayava (the five-membered
+          // Nyāya inference) and is total over a structurally valid
+          // Inference. It must return exactly five steps in ordinal order —
+          // a drift in the Inference field names would throw or misbuild.
+          const steps = fiveSteps(ext.primary.inference);
+          expect(steps.map(s => s.ordinal)).toEqual([1, 2, 3, 4, 5]);
+          // classify runs trairūpya and places the hetu on Dignāga's
+          // nine-cell wheel. Invoke it so a drift in the Inference shape
+          // surfaces here; the verdict must be one of the four kinds the
+          // engine emits (an unrecognised kind would mean the engine and
+          // the mirror disagree on the wheel).
+          const { verdict } = classifyIndian(ext.primary.inference);
+          expect(['valid', 'inconclusive', 'contradictory', 'unestablished']).toContain(
+            verdict.kind,
+          );
+          // Every example sits on a declared side. The engine's hetu counts
+          // silently skip an example whose `side` it doesn't recognise, so a
+          // drift in the ExampleSide tag would otherwise vanish — pydantic
+          // enforces the literal, and the contract re-checks it on the joint.
+          for (const example of ext.primary.inference.examples) {
+            expect(
+              ['sapaksha', 'vipaksha'],
+              `example '${example.name}' has unknown side '${example.side}'`,
+            ).toContain(example.side);
+          }
+          break;
+        }
+        case 'resolution': {
+          // The format* helpers are total renderers over a structurally
+          // valid program — throwing means a Term `kind` (var/const/compound)
+          // or the `mode` discriminator drifted from the TS union. The empty
+          // clause renders as ⊥ and the empty goal as □, both truthy.
+          const program = ext.primary.program;
+          if (program.mode === 'clauses') {
+            for (const c of program.clauses) expect(formatClause(c)).toBeTruthy();
+            for (const g of program.goals) expect(formatClause(g)).toBeTruthy();
+          } else if (program.mode === 'horn') {
+            for (const r of program.rules) expect(formatRule(r)).toBeTruthy();
+            expect(formatGoal(program.query)).toBeTruthy();
+          } else {
+            // datalog. Render every rule, and enforce the function-symbol-
+            // free restriction: datalog evaluation (semi-naïve forward
+            // chaining) relies on a finite Herbrand base, which a compound
+            // functor breaks. The pydantic mirror rejects this at validation;
+            // re-checking here catches a drift between the two checks.
+            for (const r of program.rules) {
+              expect(formatRule(r)).toBeTruthy();
+              expect(
+                atomHasFunctor(r.head),
+                'datalog rule head carries a function symbol',
+              ).toBe(false);
+              for (const b of r.body) {
+                expect(atomHasFunctor(b), 'datalog rule body carries a function symbol').toBe(
+                  false,
+                );
+              }
+            }
+            if (program.query) {
+              for (const a of program.query.atoms) {
+                expect(
+                  atomHasFunctor(a),
+                  'datalog query carries a function symbol',
+                ).toBe(false);
+              }
+            }
+          }
           break;
         }
       }
