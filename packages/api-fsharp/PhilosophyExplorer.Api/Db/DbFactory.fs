@@ -27,6 +27,25 @@ module DbFactory =
         else
             Postgres
 
+    /// Npgsql's connection-string parser accepts only key-value form
+    /// (`Host=...;Username=...`), not the `postgresql://user:pw@host/db` URL
+    /// that psycopg / postgres-js take. DATABASE_URL is a URL by homelab
+    /// convention, so translate it here; a non-URL string passes through.
+    let toNpgsqlConnectionString (url: string) : string =
+        if url.Contains("://") then
+            let uri = Uri(url)
+            let userInfo = uri.UserInfo.Split(':', 2)
+            let builder = NpgsqlConnectionStringBuilder()
+            builder.Host <- uri.Host
+            builder.Port <- (if uri.Port > 0 then uri.Port else 5432)
+            builder.Username <- Uri.UnescapeDataString(userInfo.[0])
+            if userInfo.Length > 1 then
+                builder.Password <- Uri.UnescapeDataString(userInfo.[1])
+            builder.Database <- Uri.UnescapeDataString(uri.AbsolutePath.TrimStart('/'))
+            builder.ConnectionString
+        else
+            url
+
     let createConnection () : IDbConnection =
         match dialect with
         | SQLite ->
@@ -38,7 +57,7 @@ module DbFactory =
                     $"Data Source={databaseUrl}"
             new SqliteConnection(connStr) :> IDbConnection
         | Postgres ->
-            new NpgsqlConnection(databaseUrl) :> IDbConnection
+            new NpgsqlConnection(toNpgsqlConnectionString databaseUrl) :> IDbConnection
 
     let testConnection () =
         task {
