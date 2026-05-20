@@ -16,6 +16,7 @@
     "db:seed":     "cd packages/api-fsharp/PhilosophyExplorer.Api && DATABASE_URL=file:./dev.db SEED_DATA_PATH=$(pwd)/../../../data/seed dotnet run -- --seed",
     "arguments:build": "node scripts/build-arguments-seed.mjs",
     "gen:spec":    "bash scripts/gen-spec.sh",
-    "gen:types":   "npm run gen:types   --workspace=packages/web"
+    "gen:types":   "npm run gen:types   --workspace=packages/web",
+    "ci:precheck": "bash scripts/ci-precheck.sh"
   }
 }

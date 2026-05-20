@@ -1,7 +1,7 @@
 # infra: Woodpecker pipeline for build/test/push/redeploy
 
 **Branch slug:** `infra/woodpecker-pipeline`
-**Status:** queued
+**Status:** in-progress
 **Size:** S–M
 **Depends on:** `infra/dockerize-monorepo`
 

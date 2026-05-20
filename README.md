@@ -27,3 +27,15 @@ npm run gen:spec   # regenerate packages/api/specs/openapi.json (API must be run
 npm run gen:types  # regenerate packages/web/src/lib/api-types.ts from spec
 # commit both files
 ```
+
+## CI / Deploy
+
+CI runs on the homelab Woodpecker instance (`ci.lab`), driven by
+`.woodpecker.yml`: it tests both packages, builds the Docker image,
+pushes it to the Gitea registry, and pokes Dokploy to redeploy.
+`.deploy-target` maps `dev` / `prod` to the Dokploy slots.
+
+```bash
+npm run ci:precheck   # fast local lint of .woodpecker.yml before pushing
+./scripts/smoke-deployed.sh   # curl smoke test against a deployed slot
+```
