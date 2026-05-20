@@ -60,7 +60,7 @@ require_status "$TARGET/api/philosophers" 200 "/api/philosophers"
 
 # --- Docs ---
 echo "$(grn docs:)"
-require_status "$TARGET/api/doc"                 200 "/api/doc (Swagger UI) reachable"
+require_status "$TARGET/api/doc/index.html"      200 "/api/doc/index.html (Swagger UI) reachable"
 require_status "$TARGET/swagger/v1/swagger.json" 200 "/swagger/v1/swagger.json reachable"
 
 # --- Known gap: API 404 fallback ---
