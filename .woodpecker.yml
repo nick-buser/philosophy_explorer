@@ -1,0 +1,110 @@
+# Woodpecker CI for philosophy-explorer (F#/.NET 9 API + Vite/React web).
+#
+# Secrets (same set as every homelab tenant — see homelab cicd-flow.md):
+#   registry_user, registry_token, dokploy_token
+#   philosophy_explorer_{dev,prod}_app_id
+#
+# The two *_app_id secrets land via the homelab Dokploy bootstrap
+# (Phase 5). Until they exist the deploy steps fail; the check / web-check
+# / publish steps are independent and run regardless.
+
+when:
+  - event: [pull_request, push, tag]
+
+steps:
+  # ── API test gates ──
+  # The F# test project seeds its own throwaway SQLite DB, so no DB
+  # secret is needed here — the dev DB URL is a runtime-only concern.
+  check:
+    image: mcr.microsoft.com/dotnet/sdk:9.0
+    commands:
+      - dotnet restore packages/api-fsharp/PhilosophyExplorer.sln
+      - dotnet build --no-restore -c Release packages/api-fsharp/PhilosophyExplorer.sln
+      - dotnet test --no-build -c Release packages/api-fsharp/PhilosophyExplorer.sln
+
+  # ── Frontend gates ──
+  # npm workspace — `npm ci` at the repo root installs packages/web.
+  # `npm run build` runs `tsc` (typecheck) then `vite build`.
+  web-check:
+    image: node:22-alpine
+    commands:
+      - npm ci
+      - npm run test --workspace=packages/web
+      - npm run build --workspace=packages/web
+
+  # ── Image publishing ──
+  publish-pr:
+    image: woodpeckerci/plugin-docker-buildx:latest
+    settings:
+      registry: git.lab
+      repo: git.lab/nick-b/philosophy_explorer
+      dockerfile: Dockerfile
+      target: runtime
+      username: { from_secret: registry_user }
+      password: { from_secret: registry_token }
+      tags:
+        - "pr-${CI_COMMIT_PULL_REQUEST}-${CI_COMMIT_SHA:0:8}"
+        - "pr-${CI_COMMIT_PULL_REQUEST}-latest"
+    when: [{ event: pull_request }]
+    depends_on: [check, web-check]
+
+  publish-main:
+    image: woodpeckerci/plugin-docker-buildx:latest
+    settings:
+      registry: git.lab
+      repo: git.lab/nick-b/philosophy_explorer
+      dockerfile: Dockerfile
+      target: runtime
+      username: { from_secret: registry_user }
+      password: { from_secret: registry_token }
+      tags: ["main-${CI_COMMIT_SHA:0:8}", "dev-latest"]
+    when:
+      - event: push
+        branch: main
+    depends_on: [check, web-check]
+
+  publish-tag:
+    image: woodpeckerci/plugin-docker-buildx:latest
+    settings:
+      registry: git.lab
+      repo: git.lab/nick-b/philosophy_explorer
+      dockerfile: Dockerfile
+      target: runtime
+      username: { from_secret: registry_user }
+      password: { from_secret: registry_token }
+      tags: ["${CI_COMMIT_TAG}", "${CI_COMMIT_SHA:0:8}", "prod-latest"]
+    when: [{ event: tag }]
+    depends_on: [check, web-check]
+
+  # ── Dokploy redeploys ──
+  deploy-dev:
+    image: curlimages/curl:8.10.1
+    environment:
+      DOKPLOY_TOKEN: { from_secret: dokploy_token }
+      DOKPLOY_APP_ID: { from_secret: philosophy_explorer_dev_app_id }
+    commands:
+      - >-
+        curl -fsSL --cacert /etc/ssl/certs/ca-certificates.crt
+        -X POST -H "x-api-key: $${DOKPLOY_TOKEN}"
+        -H "Content-Type: application/json"
+        -d "{\"applicationId\":\"$${DOKPLOY_APP_ID}\"}"
+        https://dokploy.lab/api/application.deploy
+    when:
+      - event: push
+        branch: main
+    depends_on: [publish-main]
+
+  deploy-prod:
+    image: curlimages/curl:8.10.1
+    environment:
+      DOKPLOY_TOKEN: { from_secret: dokploy_token }
+      DOKPLOY_APP_ID: { from_secret: philosophy_explorer_prod_app_id }
+    commands:
+      - >-
+        curl -fsSL --cacert /etc/ssl/certs/ca-certificates.crt
+        -X POST -H "x-api-key: $${DOKPLOY_TOKEN}"
+        -H "Content-Type: application/json"
+        -d "{\"applicationId\":\"$${DOKPLOY_APP_ID}\"}"
+        https://dokploy.lab/api/application.deploy
+    when: [{ event: tag }]
+    depends_on: [publish-tag]

@@ -1,0 +1,4 @@
+dev:
+  app: philosophy-explorer-dev
+prod:
+  app: philosophy-explorer-prod
