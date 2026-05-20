@@ -37,7 +37,7 @@ steps:
     image: woodpeckerci/plugin-docker-buildx:latest
     settings:
       registry: git.lab
-      repo: git.lab/nick-b/philosophy_explorer
+      repo: git.lab/nick-b/philosophy-explorer
       dockerfile: Dockerfile
       target: runtime
       username: { from_secret: registry_user }
@@ -52,7 +52,7 @@ steps:
     image: woodpeckerci/plugin-docker-buildx:latest
     settings:
       registry: git.lab
-      repo: git.lab/nick-b/philosophy_explorer
+      repo: git.lab/nick-b/philosophy-explorer
       dockerfile: Dockerfile
       target: runtime
       username: { from_secret: registry_user }
@@ -67,7 +67,7 @@ steps:
     image: woodpeckerci/plugin-docker-buildx:latest
     settings:
       registry: git.lab
-      repo: git.lab/nick-b/philosophy_explorer
+      repo: git.lab/nick-b/philosophy-explorer
       dockerfile: Dockerfile
       target: runtime
       username: { from_secret: registry_user }
