@@ -93,7 +93,26 @@ module Seed =
         let json = File.ReadAllText(path)
         JsonSerializer.Deserialize<'T>(json, jsonOpts)
 
+    /// SQLite's `INSERT OR IGNORE` has no Postgres equivalent. Rewrite it to
+    /// the `... ON CONFLICT DO NOTHING` form, which both SQLite (3.24+) and
+    /// Postgres accept, so the seeder stays idempotent on either store.
+    let private skipDuplicates (sql: string) =
+        sql.Replace("INSERT OR IGNORE INTO", "INSERT INTO") + " ON CONFLICT DO NOTHING"
+
+    /// A NOT NULL column with a schema default still rejects an explicit NULL.
+    /// The seed JSON omits some optional fields (certainty on a living
+    /// philosopher, etc.); coalesce to the default the DDL declares so the row
+    /// seeds rather than being silently dropped.
+    let private orDefault (fallback: string) (value: string) =
+        if String.IsNullOrEmpty value then fallback else value
+
     let private createTables (conn: IDbConnection) =
+        // SQLite uses datetime('now') for timestamp defaults; Postgres has no
+        // such function. Substitute per dialect so one DDL serves both.
+        let tsDefault =
+            match DbFactory.dialect with
+            | DbFactory.Postgres -> "now()::text"
+            | DbFactory.SQLite -> "datetime('now')"
         let cmd = conn.CreateCommand()
         cmd.CommandText <- """
             CREATE TABLE IF NOT EXISTS users (
@@ -249,7 +268,7 @@ module Seed =
                 ON argument_attributions(argument_id);
             CREATE INDEX IF NOT EXISTS argument_attributions_phil_idx
                 ON argument_attributions(philosopher_id);
-        """
+        """.Replace("datetime('now')", tsDefault)
         cmd.ExecuteNonQuery() |> ignore
 
     [<CLIMutable>]
@@ -261,12 +280,11 @@ module Seed =
         use conn = DbFactory.createConnection ()
         conn.Open()
 
-        if DbFactory.dialect = DbFactory.SQLite then
-            createTables conn
+        createTables conn
 
         let defaultUserId = "00000000-0000-0000-0000-000000000001"
         conn.Execute(
-            "INSERT OR IGNORE INTO users (id, name, email) VALUES (@Id, @Name, @Email)",
+            skipDuplicates "INSERT OR IGNORE INTO users (id, name, email) VALUES (@Id, @Name, @Email)",
             {| Id = defaultUserId; Name = "Default User"; Email = "user@example.com" |}) |> ignore
         printfn "  + default user"
 
@@ -274,22 +292,22 @@ module Seed =
         for s in schools do
             let id = Guid.NewGuid().ToString()
             conn.Execute(
-                "INSERT OR IGNORE INTO schools (id, slug, name, also_known_as, period_start_year, period_end_year, period_certainty, description)
+                skipDuplicates "INSERT OR IGNORE INTO schools (id, slug, name, also_known_as, period_start_year, period_end_year, period_certainty, description)
                  VALUES (@Id, @Slug, @Name, @Aka, @PsYear, @PeYear, @Cert, @Desc)",
                 {| Id = id; Slug = s.Slug; Name = s.Name; Aka = s.AlsoKnownAs
                    PsYear = s.PeriodStartYear; PeYear = s.PeriodEndYear
-                   Cert = s.PeriodCertainty; Desc = s.Description |}) |> ignore
+                   Cert = orDefault "unknown" s.PeriodCertainty; Desc = s.Description |}) |> ignore
         printfn $"  + schools ({schools.Length})"
 
         let philosophers = readJson<PhilosopherSeed array>(Path.Combine(seedDir, "philosophers.json"))
         for p in philosophers do
             let id = Guid.NewGuid().ToString()
             conn.Execute(
-                "INSERT OR IGNORE INTO philosophers (id, slug, name, also_known_as, born_year, born_year_end, born_certainty, died_year, died_year_end, died_certainty, nationality, bio_short)
+                skipDuplicates "INSERT OR IGNORE INTO philosophers (id, slug, name, also_known_as, born_year, born_year_end, born_certainty, died_year, died_year_end, died_certainty, nationality, bio_short)
                  VALUES (@Id, @Slug, @Name, @Aka, @By, @Bye, @Bc, @Dy, @Dye, @Dc, @Nat, @Bio)",
                 {| Id = id; Slug = p.Slug; Name = p.Name; Aka = p.AlsoKnownAs
-                   By = p.BornYear; Bye = p.BornYearEnd; Bc = p.BornCertainty
-                   Dy = p.DiedYear; Dye = p.DiedYearEnd; Dc = p.DiedCertainty
+                   By = p.BornYear; Bye = p.BornYearEnd; Bc = orDefault "unknown" p.BornCertainty
+                   Dy = p.DiedYear; Dye = p.DiedYearEnd; Dc = orDefault "unknown" p.DiedCertainty
                    Nat = p.Nationality; Bio = p.BioShort |}) |> ignore
         printfn $"  + philosophers ({philosophers.Length})"
 
@@ -306,8 +324,8 @@ module Seed =
             | (true, pid), (true, sid) ->
                 let id = Guid.NewGuid().ToString()
                 conn.Execute(
-                    "INSERT OR IGNORE INTO philosopher_schools (id, philosopher_id, school_id, role) VALUES (@Id, @Pid, @Sid, @Role)",
-                    {| Id = id; Pid = pid; Sid = sid; Role = ps.Role |}) |> ignore
+                    skipDuplicates "INSERT OR IGNORE INTO philosopher_schools (id, philosopher_id, school_id, role) VALUES (@Id, @Pid, @Sid, @Role)",
+                    {| Id = id; Pid = pid; Sid = sid; Role = orDefault "member" ps.Role |}) |> ignore
             | _ -> eprintfn $"  ! unknown slug in ps: {ps.PhilosopherSlug}/{ps.SchoolSlug}"
         printfn $"  + philosopher-school ({psData.Length})"
 
@@ -317,8 +335,8 @@ module Seed =
             | (true, ierId), (true, iedId) ->
                 let id = Guid.NewGuid().ToString()
                 conn.Execute(
-                    "INSERT OR IGNORE INTO philosopher_influences (id, influencer_id, influenced_id, influence_type, description) VALUES (@Id, @Ier, @Ied, @Typ, @Desc)",
-                    {| Id = id; Ier = ierId; Ied = iedId; Typ = inf.InfluenceType; Desc = inf.Description |}) |> ignore
+                    skipDuplicates "INSERT OR IGNORE INTO philosopher_influences (id, influencer_id, influenced_id, influence_type, description) VALUES (@Id, @Ier, @Ied, @Typ, @Desc)",
+                    {| Id = id; Ier = ierId; Ied = iedId; Typ = orDefault "direct" inf.InfluenceType; Desc = inf.Description |}) |> ignore
             | _ -> eprintfn $"  ! unknown slug in inf: {inf.InfluencerSlug}/{inf.InfluencedSlug}"
         printfn $"  + influences ({infData.Length})"
 
@@ -328,11 +346,11 @@ module Seed =
             | true, pid ->
                 let id = Guid.NewGuid().ToString()
                 conn.Execute(
-                    "INSERT OR IGNORE INTO works (id, slug, title, original_title, philosopher_id, work_type, composed_year, composed_year_end, composed_certainty, original_language, description_short)
+                    skipDuplicates "INSERT OR IGNORE INTO works (id, slug, title, original_title, philosopher_id, work_type, composed_year, composed_year_end, composed_certainty, original_language, description_short)
                      VALUES (@Id, @Slug, @Title, @OTitle, @Pid, @Wt, @Cy, @Cye, @Cc, @Lang, @Desc)",
                     {| Id = id; Slug = w.Slug; Title = w.Title; OTitle = w.OriginalTitle; Pid = pid
-                       Wt = w.WorkType; Cy = w.ComposedYear; Cye = w.ComposedYearEnd
-                       Cc = w.ComposedCertainty; Lang = w.OriginalLanguage; Desc = w.DescriptionShort |}) |> ignore
+                       Wt = orDefault "other" w.WorkType; Cy = w.ComposedYear; Cye = w.ComposedYearEnd
+                       Cc = orDefault "unknown" w.ComposedCertainty; Lang = w.OriginalLanguage; Desc = w.DescriptionShort |}) |> ignore
             | _ -> eprintfn $"  ! unknown philosopher for work: {w.PhilosopherSlug}"
         printfn $"  + works ({worksData.Length})"
 
@@ -349,7 +367,7 @@ module Seed =
             conn.Execute(
                 "INSERT INTO notes (id, content, note_type, source_type, source_name, source_url, philosopher_id, work_id, school_id)
                  VALUES (@Id, @Content, @NType, 'seed', @SName, @SUrl, @PhilId, @WorkId, @SchoolId)",
-                {| Id = id; Content = n.Content; NType = n.NoteType; SName = n.SourceName
+                {| Id = id; Content = n.Content; NType = orDefault "other" n.NoteType; SName = n.SourceName
                    SUrl = n.SourceUrl; PhilId = philId; WorkId = workId; SchoolId = schoolId |}) |> ignore
         printfn $"  + notes ({notesData.Length})"
 
@@ -366,7 +384,7 @@ module Seed =
                     else match workMap.TryGetValue(a.WorkSlug) with true, v -> v | _ -> null
                 let inserted =
                     conn.Execute(
-                        "INSERT OR IGNORE INTO arguments
+                        skipDuplicates "INSERT OR IGNORE INTO arguments
                             (id, extraction_id, work_id, source_file, source_start_line, source_end_line,
                              source_excerpt, intent, extractor_note)
                          VALUES (@Id, @Eid, @Wid, @Sf, @Ssl, @Sel, @Sex, @Int, @En)",
@@ -379,7 +397,7 @@ module Seed =
                     for c in a.Clauses do
                         let cid = $"{a.Id}:clause:{c.Position}"
                         conn.Execute(
-                            "INSERT OR IGNORE INTO argument_clauses
+                            skipDuplicates "INSERT OR IGNORE INTO argument_clauses
                                 (id, argument_id, role, position, verbal_text, source_excerpt)
                              VALUES (@Id, @Aid, @Role, @Pos, @Vt, @Sex)",
                             {| Id = cid; Aid = a.Id; Role = c.Role; Pos = c.Position
@@ -388,7 +406,7 @@ module Seed =
                         let label = if f.IsPrimary then "primary" else "alt"
                         let fid = $"{a.Id}:form:{f.Formalism}:{label}"
                         conn.Execute(
-                            "INSERT OR IGNORE INTO argument_formalizations
+                            skipDuplicates "INSERT OR IGNORE INTO argument_formalizations
                                 (id, argument_id, formalism, is_primary, fit_score, reason, distortion_risk, ast_json)
                              VALUES (@Id, @Aid, @Form, @IsP, @Fs, @R, @Dr, @Ast)",
                             {| Id = fid; Aid = a.Id; Form = f.Formalism
@@ -398,7 +416,7 @@ module Seed =
                     for asmt in a.Assessments do
                         let aid = $"{a.Id}:assess:{asmt.Formalism}"
                         conn.Execute(
-                            "INSERT OR IGNORE INTO argument_formalism_assessments
+                            skipDuplicates "INSERT OR IGNORE INTO argument_formalism_assessments
                                 (id, argument_id, formalism, fit_score, reason, distortion_risk)
                              VALUES (@Id, @Aid, @Form, @Fs, @R, @Dr)",
                             {| Id = aid; Aid = a.Id; Form = asmt.Formalism
@@ -406,7 +424,7 @@ module Seed =
                     a.ReviewerNotes |> Array.iteri (fun i note ->
                         let nid = $"{a.Id}:note:{i}"
                         conn.Execute(
-                            "INSERT OR IGNORE INTO argument_reviewer_notes
+                            skipDuplicates "INSERT OR IGNORE INTO argument_reviewer_notes
                                 (id, argument_id, position, note)
                              VALUES (@Id, @Aid, @Pos, @Note)",
                             {| Id = nid; Aid = a.Id; Pos = i; Note = note |}) |> ignore)
@@ -435,11 +453,11 @@ module Seed =
                                     else null
                                 let aid = $"{a.Id}:attr:{i}"
                                 conn.Execute(
-                                    "INSERT OR IGNORE INTO argument_attributions
+                                    skipDuplicates "INSERT OR IGNORE INTO argument_attributions
                                         (id, argument_id, philosopher_id, work_id, formalization_id, provenance, source_text, note)
                                      VALUES (@Id, @Aid, @Pid, @Wid, @Fid, @Prov, @Src, @Note)",
                                     {| Id = aid; Aid = a.Id; Pid = philId; Wid = workIdAt
-                                       Fid = formalizationId; Prov = at.Provenance
+                                       Fid = formalizationId; Prov = orDefault "auto" at.Provenance
                                        Src = at.SourceText; Note = at.Note |}) |> ignore)
             printfn $"  + arguments ({insertedArgs} new / {argsData.Length} total)"
         else
