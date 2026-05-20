@@ -10,6 +10,11 @@ COPY packages/specs/ ./packages/specs/
 COPY packages/web/ ./packages/web/
 # VITE_API_URL="" => SPA fetches /api/* from same origin (Caddy/Dokploy)
 ENV VITE_API_URL=""
+# Browser RUM is opt-in: build with
+#   --build-arg VITE_OTEL_EXPORTER_OTLP_ENDPOINT=http://signoz.lab:4318
+# to ship traces from the SPA. Empty (default) => RUM stays off.
+ARG VITE_OTEL_EXPORTER_OTLP_ENDPOINT=""
+ENV VITE_OTEL_EXPORTER_OTLP_ENDPOINT=$VITE_OTEL_EXPORTER_OTLP_ENDPOINT
 RUN npm run build --workspace=packages/web
 
 # ---- Stage 2: api build ----
@@ -35,6 +40,15 @@ ENV ASPNETCORE_URLS=http://+:3001 \
     SEED_DATA_PATH=/app/data/seed \
     GRAPH_DATA_PATH=/app/data/graph-data.json \
     RUN_SEED=false
+
+# OpenTelemetry — exports traces/metrics/logs to Signoz over OTLP.
+# OTEL_EXPORTER_OTLP_ENDPOINT is the homelab Signoz collector; override
+# per environment in Dokploy. Unsetting it disables OTLP export entirely.
+# ASPNETCORE_ENVIRONMENT feeds the deployment.environment resource attribute.
+ENV ASPNETCORE_ENVIRONMENT=Production \
+    OTEL_SERVICE_NAME=philosophy-explorer-api \
+    OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf \
+    OTEL_EXPORTER_OTLP_ENDPOINT=http://192.168.1.59:4318
 
 EXPOSE 3001
 

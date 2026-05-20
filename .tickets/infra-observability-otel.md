@@ -1,7 +1,7 @@
 # infra: OTel exporter to Signoz
 
 **Branch slug:** `infra/observability-otel`
-**Status:** queued
+**Status:** in-progress
 **Size:** M
 **Depends on:** `none` (parallelizable with the cutover tickets)
 

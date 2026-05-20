@@ -5,8 +5,10 @@ open System.Text.Json.Serialization
 open Microsoft.AspNetCore.Builder
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
+open Microsoft.Extensions.Logging
 open PhilosophyExplorer.Graph
 open PhilosophyExplorer.Routes
+open PhilosophyExplorer.Telemetry
 
 [<EntryPoint>]
 let main args =
@@ -24,6 +26,9 @@ let main args =
     PhilosophyExplorer.Db.Queries.configureDapper ()
 
     let builder = WebApplication.CreateBuilder(args)
+
+    // OpenTelemetry — traces, metrics, logs exported via OTLP to Signoz.
+    let otelExporting = Otel.configure builder
 
     let jsonOptions = JsonSerializerOptions(PropertyNamingPolicy = JsonNamingPolicy.CamelCase)
     jsonOptions.DefaultIgnoreCondition <- JsonIgnoreCondition.WhenWritingNull
@@ -74,7 +79,11 @@ let main args =
         else Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "data", "graph-data.json") |> Path.GetFullPath
 
     let graphService = MemoryGraphService(graphDataPath)
-    printfn $"  Graph loaded: {graphService.NodeCount} nodes, {graphService.EdgeCount} edges"
+    Diagnostics.graphNodeCount <- graphService.NodeCount
+    Diagnostics.graphEdgeCount <- graphService.EdgeCount
+    app.Logger.LogInformation(
+        "Graph loaded: {NodeCount} nodes, {EdgeCount} edges",
+        graphService.NodeCount, graphService.EdgeCount)
 
     // Register route modules
     HealthRoutes.register app
@@ -98,8 +107,15 @@ let main args =
     let port = Environment.GetEnvironmentVariable("PORT") |> Option.ofObj |> Option.defaultValue "3001"
     app.Urls.Add($"http://0.0.0.0:{port}")
 
-    printfn $"API running at http://localhost:{port}"
-    printfn $"OpenAPI docs at http://localhost:{port}/api/doc"
+    app.Logger.LogInformation("API running at http://localhost:{Port}", port)
+    app.Logger.LogInformation("OpenAPI docs at http://localhost:{Port}/api/doc", port)
+    if otelExporting then
+        app.Logger.LogInformation(
+            "OpenTelemetry exporting to {Endpoint}",
+            Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT"))
+    else
+        app.Logger.LogInformation(
+            "OpenTelemetry instrumentation active; OTLP export disabled (OTEL_EXPORTER_OTLP_ENDPOINT unset)")
 
     app.Run()
     0
