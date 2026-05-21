@@ -1,7 +1,7 @@
 # feat: Logic Lab Saptabhaṅgī — Jain sevenfold predication, standpoint engine, inclusion-lattice view
 
 **Branch slug:** `feat/logic-lab-saptabhangi`
-**Status:** queued
+**Status:** in-progress
 **Size:** S–M
 **Depends on:** `feat/logic-lab-many-valued` (soft — see Build sketch)
 

@@ -1,7 +1,8 @@
 # Saptabhaṅgī — System Design
 
-**Status:** Design doc, not yet shipped. Implementing ticket queued:
-`.tickets/feat-logic-lab-saptabhangi.md` (`feat/logic-lab-saptabhangi`).
+**Status:** Phase 1 implemented on `feat/logic-lab-saptabhangi` (ticket
+`.tickets/feat-logic-lab-saptabhangi.md`). Phase 2 scope below remains
+open.
 **Builds on:** the candidate survey
 [`world-logic-traditions.md`](./world-logic-traditions.md) §3 and the
 roadmap's many-valued logic item. Design context:
