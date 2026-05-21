@@ -456,5 +456,6 @@ be used as-is if the change is adopted.
   `../case-studies/peirce/`
 - Cross-cutting: `logic-explorer-tab.md`, `editor-and-ir.md`,
   `formal-verification.md`, `open-questions.md`
+- Non-Western candidate systems: `world-logic-traditions.md`
 - Per-ticket history: `work-history/FEAT-005.md` through
   `FEAT-012.md`; `work-history/INFRA-004.md`
