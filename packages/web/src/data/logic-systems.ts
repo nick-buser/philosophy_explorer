@@ -690,6 +690,132 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
     ],
   },
   {
+    slug: 'saptabhangi',
+    name: 'Jain Saptabhaṅgī (Syādvāda)',
+    shortDescription:
+      'The Jain doctrine of sevenfold conditional predication: every assertion is qualified by syāt (“in some respect”), and from three basic modes — is, is not, inexpressible — exactly seven bhaṅgas arise, one per non-empty combination.',
+    era: '~2nd–8th c. CE',
+    keyPrimitive: 'standpoint-relative predication (syādvāda)',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'Saptabhaṅgī is the logical core of Jain anekāntavāda — the doctrine of non-one-sidedness, which holds that any predication is true only relative to a standpoint (naya). Its roots are traced to Mahāvīra (6th–5th c. BCE); the sevenfold scheme itself was articulated by Samantabhadra (c. 2nd–3rd c. CE) and given its mature treatment by Akalaṅka and Vidyānandi (8th–9th c. CE). The teaching is that from three basic modes of predication — asti (is), nāsti (is not), and avaktavya (inexpressible) — exactly seven conditional assertions (bhaṅgas) can be made about any subject, each prefixed by the particle syāt, “in some respect.” The pot is permanent qua its clay substance, not permanent qua its present shape, and inexpressible when both are asserted at once in the same respect. Modern logicians read saptabhaṅgī as a genuine many-valued logic with a fixed seven-element value space: the seven non-empty subsets of a three-element set. This Lab implements phase 1: it classifies a single predication into its bhaṅga by unioning the modes asserted across its standpoints. It commits to the reading on which avaktavya is a third primitive mode (so the seven bhaṅgas are exactly the seven non-empty subsets) — the clean, enumerable reconstruction of J. Ganeri (2002). The rival reading, on which avaktavya is the simultaneous joint assertion of asti and nāsti, and the question of whether the system is truth-functional (G. Priest, 2008) are flagged but not adjudicated; compound evaluation over the seven values is deferred to phase 2.',
+    primitives: [
+      {
+        name: 'Syāt',
+        syntax: 'syāt …',
+        description: 'The conditional particle — “in some respect.” Every bhaṅga is prefixed by it, marking the assertion as standpoint-relative rather than absolute.',
+      },
+      {
+        name: 'Asti',
+        syntax: 'standpoint <name>: asti',
+        description: 'The affirmative mode — the predicate holds of the subject, in the respect named by the standpoint.',
+      },
+      {
+        name: 'Nāsti',
+        syntax: 'standpoint <name>: nasti',
+        description: 'The negative mode — the predicate fails of the subject, in the respect named by the standpoint.',
+      },
+      {
+        name: 'Avaktavya',
+        syntax: 'standpoint <name>: avaktavya',
+        description: 'The inexpressible mode — the predicate jointly holds-and-fails in the same respect, asserted at once, which no successive predication can express. Phase 1 treats it as a third primitive mode.',
+      },
+      {
+        name: 'Standpoint (naya)',
+        syntax: 'standpoint <name>: <mode>',
+        description: 'A respect from which the predication is made. Phase 1 treats a standpoint as an opaque label; the full sevenfold naya doctrine is out of scope.',
+      },
+      {
+        name: 'Bhaṅga',
+        syntax: '1 – 7',
+        description: 'One of the seven conditional predications — the non-empty subset of {asti, nāsti, avaktavya} formed by unioning the modes asserted across all standpoints.',
+      },
+    ],
+    examples: [
+      {
+        slug: 'pot-permanent',
+        natural: 'The pot is permanent qua substance, not qua its shape, and inexpressible qua its origin — the full sevenfold bhaṅga.',
+        dsl:
+          'subject:   the pot\n' +
+          'predicate: permanent\n' +
+          'standpoint substance : asti        -- qua its clay, permanent\n' +
+          'standpoint mode      : nasti       -- qua its present shape, not\n' +
+          'standpoint origin    : avaktavya   -- qua coming-to-be, inexpressible',
+        note: 'The textbook predication. All three modes are asserted across the standpoints, so the union is {asti, nāsti, avaktavya} — bhaṅga 7, syād asti nāsti avaktavya.',
+      },
+      {
+        slug: 'pot-substance',
+        natural: 'The pot is permanent qua its clay substance — the bare affirmative bhaṅga.',
+        dsl:
+          'subject:   the pot\n' +
+          'predicate: permanent\n' +
+          'standpoint substance : asti',
+        note: 'A single asti standpoint. The union is {asti} — bhaṅga 1, syād asti.',
+      },
+      {
+        slug: 'pot-shape',
+        natural: 'The pot is not permanent qua its present shape — the bare negative bhaṅga.',
+        dsl:
+          'subject:   the pot\n' +
+          'predicate: permanent\n' +
+          'standpoint present-shape : nasti',
+        note: 'A single nāsti standpoint. The union is {nāsti} — bhaṅga 2, syād nāsti.',
+      },
+      {
+        slug: 'soul-existence',
+        natural: 'The soul exists qua its own substance and not qua any given body — affirmation and denial in different respects.',
+        dsl:
+          'subject:   the soul\n' +
+          'predicate: existent\n' +
+          'standpoint own-substance : asti\n' +
+          'standpoint a-given-body  : nasti',
+        note: 'A classic Jain example. asti and nāsti are asserted from different standpoints, so the union is {asti, nāsti} — bhaṅga 3, syād asti nāsti. This is successive predication, distinct from the same-respect joint assertion of avaktavya.',
+      },
+      {
+        slug: 'pot-inexpressible',
+        natural: 'The pot is permanent-and-impermanent in the very same respect, asserted at once — inexpressible.',
+        dsl:
+          'subject:   the pot\n' +
+          'predicate: permanent\n' +
+          'standpoint co-presentation : avaktavya',
+        note: 'A single avaktavya standpoint. The union is {avaktavya} — bhaṅga 4, syād avaktavya. Phase 1 takes avaktavya as a third primitive mode, not as a derived joint of asti and nāsti.',
+      },
+      {
+        slug: 'lamp-asti-avaktavya',
+        natural: 'The lamp exists here and now, yet its coming-to-be jointly is-and-is-not — affirmation plus the inexpressible.',
+        dsl:
+          'subject:   the lamp\n' +
+          'predicate: existent\n' +
+          'standpoint here-and-now : asti\n' +
+          'standpoint coming-to-be : avaktavya',
+        note: 'The union is {asti, avaktavya} — bhaṅga 5, syād asti avaktavya.',
+      },
+      {
+        slug: 'lamp-nasti-avaktavya',
+        natural: 'The lamp is not eternal qua its flame, and its coming-to-be is jointly so-and-not-so — denial plus the inexpressible.',
+        dsl:
+          'subject:   the lamp\n' +
+          'predicate: eternal\n' +
+          'standpoint as-a-flame   : nasti\n' +
+          'standpoint coming-to-be : avaktavya',
+        note: 'The union is {nāsti, avaktavya} — bhaṅga 6, syād nāsti avaktavya.',
+      },
+    ],
+    readingPointers: [
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Logic in Classical Indian Philosophy',
+        href: 'https://plato.stanford.edu/entries/logic-india/',
+        kind: 'external',
+      },
+      {
+        title: 'Matilal, The Character of Logic in India (SUNY, 1998)',
+        href: 'https://sunypress.edu/Books/T/The-Character-of-Logic-in-India',
+        kind: 'external',
+      },
+    ],
+  },
+  {
     slug: 'medieval',
     name: 'Medieval Modal Syllogistic',
     shortDescription:
