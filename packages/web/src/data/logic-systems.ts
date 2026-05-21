@@ -946,6 +946,142 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
     ],
   },
   {
+    slug: 'mohist',
+    name: 'Mohist Disputation (Móu / Parallel Inference)',
+    shortDescription:
+      'The parallel-inference logic of the Later Mohist Canon: from an accepted “X is Y”, apply one operator to both terms and ask whether the parallel carries. The Xiao Qu enumerates four ways it can behave — and móu is licensed in only the first.',
+    era: '~3rd c. BCE',
+    keyPrimitive: 'parallel inference (móu 侔)',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'The Later Mohists — the authors of the Mojing (the Mohist Canon) and the Xiao Qu 小取 (“Lesser Pick”) chapter, c. 3rd century BCE — built the one indigenous East Asian formal-logic tradition: a theory of names (míng 名), of disputation (biàn 辯 — the two-party contest in which, the Canon holds, exactly one of a contradictory pair prevails), and of the parallel-inference forms. The form with explicit structure, and the one this Lab models, is móu 侔, “parallelizing”: from a sentence already granted — “a white horse is a horse” (是, shì, “this”) — apply the same operator to each term, and the resulting sentence is tentatively asserted too (然, rán, “so”): “riding a white horse is riding a horse.” The Mohists’ discovery is that this move is not reliable, and the Xiao Qu says so by enumerating four ways a structurally-parallel pair behaves — 是而然 (this, and so), 是而不然 (this, but not so), 一周而一不周 (one comprehensive, one not), 一是而一非 (one so, one not) — of which only the first licenses móu. Whether Mohist disputation is “formal” at all is genuinely contested: Graham (1978) reconstructs the Mojing as a rigorous proto-logic, Harbsmeier (1998) is more cautious about reading a calculus into it, and Fraser treats the parallelizing forms as defeasible argument schemata rather than a deductive system. This Lab takes no side. It models the one uncontroversially structural thing — the móu form and the Xiao Qu’s own four-category taxonomy — and so its engine form-checks the schema (is there a real operator and two distinct terms?) and cross-checks a declared outcome against a declared failure flag; it never infers which category a parallel “really” belongs to, because that is not mechanically decidable. Phase 1 covers móu proper; the categories one comprehensive / one not and one so / one not, which the Xiao Qu raises as further differently-shaped warnings, are represented as the schema allows and flagged where it strains.',
+    primitives: [
+      {
+        name: 'Base pair',
+        syntax: 'base: X | Y',
+        description: 'The accepted base sentence “X is Y” — the 是 (shì, “this”), granted before the inference runs. The two terms must be distinct.',
+      },
+      {
+        name: 'Operator',
+        syntax: 'operator: <text>',
+        description: 'The operation applied uniformly to both base terms to build the parallel pair — e.g. “ride”, “love”, “kill”, “the ghost of”.',
+      },
+      {
+        name: '是而然 (shì ér rán)',
+        syntax: 'outcome: shi-er-ran',
+        description: 'This, and so — the parallel carries; móu is licensed. The white-horse case: riding a white horse is riding a horse.',
+      },
+      {
+        name: '是而不然 (shì ér bù rán)',
+        syntax: 'outcome: shi-er-bu-ran',
+        description: 'This, but not so — identical wording, yet the parallel fails because the operator reads its object under a description. Pairs with flag: opacity.',
+      },
+      {
+        name: '一周而一不周 (yī zhōu ér yī bù zhōu)',
+        syntax: 'outcome: yi-zhou-yi-bu-zhou',
+        description: 'One comprehensive, one not — the predicate scopes over all (周) on one side and over some on the other. Pairs with flag: scope.',
+      },
+      {
+        name: '一是而一非 (yī shì ér yī fēi)',
+        syntax: 'outcome: yi-shi-yi-fei',
+        description: 'One so, one not — the operator preserves kind for one term but not the other. Pairs with flag: sortal.',
+      },
+      {
+        name: 'Failure flag',
+        syntax: 'flag: opacity | scope | sortal',
+        description: 'Names the failure mode. The engine cross-checks it against the declared outcome — no flag implies 是而然; a mismatch is reported as an inconsistency.',
+      },
+    ],
+    examples: [
+      {
+        slug: 'white-horse-ride',
+        natural: 'A white horse is a horse; riding a white horse is riding a horse — the parallel carries.',
+        dsl:
+          'base:     a white horse | a horse\n' +
+          'operator: ride\n' +
+          'outcome:  shi-er-ran',
+        note: 'The stock 是而然 case of the Xiao Qu. The operator “ride” applies cleanly to both terms; with no failure flag the engine confirms the declared outcome is consistent and the parallel transfers.',
+      },
+      {
+        slug: 'huo-love',
+        natural: 'Huo (a servant) is a person; loving Huo is loving people — the parallel carries.',
+        dsl:
+          'base:     Huo, a servant | a person\n' +
+          'operator: love\n' +
+          'outcome:  shi-er-ran',
+        note: 'A second 是而然 case (獲，人也；愛獲，愛人也). Loving Huo does transfer to loving people — the contrast class for the brother/handsome-man case below, where the same operator fails.',
+      },
+      {
+        slug: 'brother-handsome-love',
+        natural: 'Her brother is a handsome man; yet loving her brother is not loving a handsome man.',
+        dsl:
+          'base:     her younger brother | a handsome man\n' +
+          'operator: love\n' +
+          'outcome:  shi-er-bu-ran\n' +
+          'flag:     opacity\n' +
+          'gloss:    loving reads its object under a description — one loves the brother as brother, not as handsome man',
+        note: 'The canonical 是而不然 case (其弟，美人也；愛弟，非愛美人也). Identical form to huo-love, opposite fate: “love” here is referentially opaque. The flag opacity implies 是而不然, matching the declared outcome.',
+      },
+      {
+        slug: 'boat-wood-enter',
+        natural: 'A boat is wood; yet entering a boat is not entering wood.',
+        dsl:
+          'base:     a boat | wood\n' +
+          'operator: enter\n' +
+          'outcome:  shi-er-bu-ran\n' +
+          'flag:     opacity\n' +
+          'gloss:    one enters the boat qua artifact, not qua its material',
+        note: 'A 是而不然 case (船，木也；入船，非入木也). “Entering a boat” takes the boat as the artifact it is, not as the wood it is made of — the operator is sensitive to the description.',
+      },
+      {
+        slug: 'robber-person-kill',
+        natural: 'A robber is a person; yet — the Mohists argue — killing a robber is not killing a person.',
+        dsl:
+          'base:     a robber | a person\n' +
+          'operator: kill\n' +
+          'outcome:  shi-er-bu-ran\n' +
+          'flag:     opacity\n' +
+          'gloss:    the Mohists’ own ethically-loaded case — “kill” takes the robber under that description',
+        note: 'The most discussed 是而不然 case (盜人，人也；殺盜人，非殺人也). The Mohists use it to hold that punishing robbers is consistent with universal care. The Lab classifies the parallel form; it does not endorse the ethical conclusion.',
+      },
+      {
+        slug: 'riding-horses-negation',
+        natural: 'Riding one horse counts as riding horses; but not riding one horse is not not riding horses.',
+        dsl:
+          'base:     riding one horse | riding horses\n' +
+          'operator: not\n' +
+          'outcome:  yi-zhou-yi-bu-zhou\n' +
+          'flag:     scope\n' +
+          'gloss:    “riding horses” is existential, but “not riding horses” needs every horse refused — comprehensive',
+        note: 'A 一周而一不周 case, after the Xiao Qu’s 乘馬 passage. The affirmed predicate scopes existentially (one horse suffices); under the operator “not” it turns comprehensive. This category strains the strict one-operator schema — see docs/formal-logic/mohist.md §“Open questions” 2.',
+      },
+      {
+        slug: 'brother-ghost',
+        natural: 'One’s elder brother is a person; but a brother’s ghost is a brother, while a person’s ghost is not a person.',
+        dsl:
+          'base:     one’s elder brother | a person\n' +
+          'operator: the ghost of\n' +
+          'outcome:  yi-shi-yi-fei\n' +
+          'flag:     sortal\n' +
+          'gloss:    “the ghost of” preserves kind for the brother but not for the person',
+        note: 'A 一是而一非 case (兄之鬼，兄也；人之鬼，非人也). The operator preserves kind on one term and not the other. Like the scope case, this stretches the one-operator schema; the flag sortal implies 一是而一非, matching the declared outcome.',
+      },
+    ],
+    readingPointers: [
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Mohism',
+        href: 'https://plato.stanford.edu/entries/mohism/',
+        kind: 'external',
+      },
+      {
+        title: 'Stanford Encyclopedia of Philosophy: School of Names',
+        href: 'https://plato.stanford.edu/entries/school-names/',
+        kind: 'external',
+      },
+    ],
+  },
+  {
     slug: 'medieval',
     name: 'Medieval Modal Syllogistic',
     shortDescription:

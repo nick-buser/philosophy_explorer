@@ -5,7 +5,9 @@ non-Western logic traditions not yet in the Lab. Tickets opened
 2026-05-20 for Navya-Nyāya, Jain saptabhaṅgī, Avicennan logic, and the
 `indian-buddhist` hetu-cakra extension, each with a companion design
 doc (see the per-candidate pointers below). Catuṣkoṭi was ticketed
-2026-05-21. Mohist disputation remains un-ticketed.
+2026-05-21, and Mohist disputation — the last candidate — was
+ticketed 2026-05-21 (`.tickets/feat-logic-lab-mohist.md`, design doc
+`mohist.md`). All survey candidates are now ticketed.
 **Builds on:** `lab-roadmap.md` (§"Indian / Buddhist logic" ships the
 first such system) and `work-history/feat-logic-lab-indian-buddhist.md`
 (deferral notes).
@@ -159,7 +161,7 @@ and should not get their own tickets:
 
 ## Candidate systems — East Asia
 
-### 4. Mohist disputation (`feat/logic-lab-mohist`) — speculative
+### 4. Mohist disputation (`feat/logic-lab-mohist`) — ticketed 2026-05-21
 
 The Later Mohist Canon (*Mojing*) and the *Xiao Qu* ("Lesser Pick")
 chapter: a theory of names (*ming*), disputation (*biàn*), and the
