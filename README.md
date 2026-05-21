@@ -18,6 +18,21 @@ npm run dev:api   # http://localhost:3001, docs at /api/doc
 npm run dev:web   # http://localhost:3000
 ```
 
+## Lean verification (optional)
+
+The `/api/lean/health` route and the `LeanRunner` integration tests
+shell out to a Lean 4 toolchain. It is **not** required for general
+development — the integration tests skip cleanly when `lean` is absent
+from `PATH`. To run them, install [elan](https://github.com/leanprover/elan)
+(the Lean toolchain manager) and build the Mathlib-free lake package once:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+(cd packages/lean && lake build)   # installs the pinned toolchain on first run
+```
+
+`npm run dev:api` then serves `GET /api/lean/health` (Development only).
+
 ## API contract workflow
 
 After any route schema change:
