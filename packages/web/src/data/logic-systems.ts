@@ -565,6 +565,131 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
     ],
   },
   {
+    slug: 'avicennan',
+    name: 'Avicennan Modal Syllogistic (Ibn Sīnā)',
+    shortDescription:
+      'Avicenna rebuilt the categorical syllogism as a modal-temporal system: every proposition carries one of four modalities (necessary, perpetual, absolute, possible), and the valid moods differ from the assertoric ones.',
+    era: '~1020 CE →',
+    keyPrimitive: 'modalized categorical proposition',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'In the Qiyās of the Kitāb al-Shifāʾ (c. 1020s), Avicenna (Ibn Sīnā, 980–1037) reworked Aristotle’s categorical syllogistic into a modal-temporal system. An Avicennan categorical proposition is not merely “every A is B” — it carries an alethic modality and a temporal qualification: necessarily B, always B, B at some time, or possibly B, in each case “while A exists.” The valid moods of the resulting syllogistic diverge from the assertoric ones. Avicenna held the de re position — against Theophrastus’s rule that the conclusion follows the weaker premise — that in the first figure the conclusion inherits the modality of the major premise, so a necessary major with a merely-absolute minor still yields a necessary conclusion. He further developed a hypothetical (conditional and disjunctive) syllogistic with no Aristotelian counterpart. Avicennan logic dominated the Arabic tradition for centuries and is the subject of active modern formalization by Wilfrid Hodges, Tony Street, and Saloua Chatti. This Lab implements phase 1: a single enumerated modality token, mood-table validity for the categorical syllogism, and the modal square. The two-dimensional (subject-side / copula-side) modality, the hypothetical syllogistic, and a semantic model checker over individuals × times are deferred to phase 2.',
+    primitives: [
+      {
+        name: 'Quantity',
+        syntax: 'every | some',
+        description: 'Universal (every) or particular (some). With the quality keyword it fixes the A/E/I/O categorical form of the proposition.',
+      },
+      {
+        name: 'Quality',
+        syntax: 'affirmative | no | not',
+        description: 'Affirmative by default; “no” makes a universal negative, “some … is not” a particular negative.',
+      },
+      {
+        name: 'Necessary (ḍarūrī)',
+        syntax: 'necessary …',
+        description: 'Necessarily the predicate, while the subject exists — the strongest modality.',
+      },
+      {
+        name: 'Perpetual (dāʾima)',
+        syntax: 'perpetual …',
+        description: 'Always the predicate, while the subject exists — true at every time, but without alethic necessity.',
+      },
+      {
+        name: 'Absolute (muṭlaqa ʿāmma)',
+        syntax: 'absolute …',
+        description: 'The predicate at some time, while the subject exists — the general absolute, Avicenna’s reading of the bare Aristotelian assertoric.',
+      },
+      {
+        name: 'Possible (mumkina)',
+        syntax: 'possible …',
+        description: 'Two-sided possibility — possibly the predicate and possibly not. Not on the necessary/perpetual/absolute strength chain.',
+      },
+      {
+        name: 'Figure',
+        syntax: '1 – 4',
+        description: 'Determined by where the middle term sits across the two premises. The figure selects the modality rule: figure 1 lets the conclusion follow the major; figures 2–4 (phase 1) admit only uniform-modality moods.',
+      },
+    ],
+    examples: [
+      {
+        slug: 'necessary-barbara',
+        natural: 'Necessity-Barbara — a necessary major and an absolute minor yield a necessary conclusion (the contested LXL syllogism).',
+        dsl:
+          'syllogism\n' +
+          '  necessary every animal is mortal\n' +
+          '  absolute  every human  is animal\n' +
+          '  necessary every human  is mortal\n' +
+          'end',
+        note: 'Avicenna’s signature de re result: in figure 1 the conclusion inherits the major premise’s modality, so necessity carries through even though the minor is only absolute. Theophrastus would have demanded the weaker (absolute) conclusion.',
+      },
+      {
+        slug: 'modal-fallacy',
+        natural: 'Modal fallacy — assertorically a valid Barbara, but two absolute premises cannot license a necessary conclusion.',
+        dsl:
+          'syllogism\n' +
+          '  absolute  every animal is mortal\n' +
+          '  absolute  every human  is animal\n' +
+          '  necessary every human  is mortal\n' +
+          'end',
+        note: 'The pedagogical payoff: the assertoric skeleton AAA-1 is the textbook Barbara, valid in `aristotelian`. Under Avicennan modality the verdict flips — the conclusion claims necessity, but only the absolute follows.',
+      },
+      {
+        slug: 'weaker-conclusion',
+        natural: 'Over-claimed conclusion — an absolute major caps the conclusion at absolute, even with a necessary minor.',
+        dsl:
+          'syllogism\n' +
+          '  absolute  every animal is mortal\n' +
+          '  necessary every human  is animal\n' +
+          '  necessary every human  is mortal\n' +
+          'end',
+        note: 'In figure 1 the conclusion follows the major, not the minor. The stated necessary conclusion is too strong; only the absolute is warranted.',
+      },
+      {
+        slug: 'necessary-proposition',
+        natural: 'A necessary universal affirmative — every human is necessarily mortal.',
+        dsl: 'necessary every human is mortal',
+        note: 'Single proposition for the modal square. ḍarūrī: necessarily the predicate, while the subject exists. Focuses corner A.',
+      },
+      {
+        slug: 'perpetual-proposition',
+        natural: 'A perpetual universal negative — no heaven is ever at rest.',
+        dsl: 'perpetual no heaven is resting',
+        note: 'Single proposition for the modal square. dāʾima: always (so, never the predicate here), while the subject exists — true at every time without alethic necessity. Focuses corner E.',
+      },
+      {
+        slug: 'absolute-proposition',
+        natural: 'An absolute particular affirmative — some human is (at some time) awake.',
+        dsl: 'absolute some human is awake',
+        note: 'Single proposition for the modal square. muṭlaqa ʿāmma: the predicate at some time, while the subject exists. Focuses corner I.',
+      },
+      {
+        slug: 'possible-proposition',
+        natural: 'A possible particular negative — some human is possibly not writing.',
+        dsl: 'possible some human is not writing',
+        note: 'Single proposition for the modal square. mumkina: two-sided possibility — possibly not writing, and equally possibly writing. Focuses corner O.',
+      },
+    ],
+    readingPointers: [
+      {
+        title: 'Arabic and Islamic Philosophy of Language and Logic (SEP)',
+        href: 'https://plato.stanford.edu/entries/arabic-islamic-language/',
+        kind: 'external',
+      },
+      {
+        title: 'Avicenna (Ibn Sina) — SEP',
+        href: 'https://plato.stanford.edu/entries/ibn-sina/',
+        kind: 'external',
+      },
+      {
+        title: 'Avicennan logic — system design notes',
+        href: 'https://plato.stanford.edu/entries/arabic-islamic-language/#AviModaLogi',
+        kind: 'doc',
+      },
+    ],
+  },
+  {
     slug: 'medieval',
     name: 'Medieval Modal Syllogistic',
     shortDescription:
