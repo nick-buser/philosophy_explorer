@@ -4,8 +4,8 @@
 non-Western logic traditions not yet in the Lab. Tickets opened
 2026-05-20 for Navya-Nyāya, Jain saptabhaṅgī, Avicennan logic, and the
 `indian-buddhist` hetu-cakra extension, each with a companion design
-doc (see the per-candidate pointers below). Catuṣkoṭi and Mohist
-disputation remain un-ticketed.
+doc (see the per-candidate pointers below). Catuṣkoṭi was ticketed
+2026-05-21. Mohist disputation remains un-ticketed.
 **Builds on:** `lab-roadmap.md` (§"Indian / Buddhist logic" ships the
 first such system) and `work-history/feat-logic-lab-indian-buddhist.md`
 (deferral notes).
@@ -91,6 +91,9 @@ the current one").
   itself is a structural check, not proof search.
 
 ### 2. Catuṣkoṭi — the tetralemma (`feat/logic-lab-catuskoti`)
+
+**Ticketed:** `.tickets/feat-logic-lab-catuskoti.md` · design doc
+`catuskoti.md`.
 
 Nāgārjuna's four-cornered logic: for a proposition A, the four
 "corners" are A, ¬A, A∧¬A, and ¬(A∨¬A). Madhyamaka uses it both to
