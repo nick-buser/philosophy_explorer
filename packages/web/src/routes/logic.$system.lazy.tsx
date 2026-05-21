@@ -12,6 +12,7 @@ const AristotelianLab = lazy(() => import('../logic/labs/AristotelianLab'));
 const AvicennanLab = lazy(() => import('../logic/labs/AvicennanLab'));
 const SaptabhangiLab = lazy(() => import('../logic/labs/SaptabhangiLab'));
 const CatuskotiLab = lazy(() => import('../logic/labs/CatuskotiLab'));
+const MohistLab = lazy(() => import('../logic/labs/MohistLab'));
 const MedievalLab = lazy(() => import('../logic/labs/MedievalLab'));
 const ModernFolLab = lazy(() => import('../logic/labs/ModernFolLab'));
 const BooleanAlgebraLab = lazy(() => import('../logic/labs/BooleanAlgebraLab'));
@@ -69,6 +70,7 @@ function LogicSystemPage() {
     slug === 'avicennan'    ? AvicennanLab :
     slug === 'saptabhangi'  ? SaptabhangiLab :
     slug === 'catuskoti'    ? CatuskotiLab :
+    slug === 'mohist'       ? MohistLab :
     slug === 'medieval'     ? MedievalLab :
     slug === 'modern-fol'   ? ModernFolLab :
     slug === 'boolean'      ? BooleanAlgebraLab :
