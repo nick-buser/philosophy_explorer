@@ -276,9 +276,12 @@ upanaya / nigamana); Dignāga's hetu-cakra (wheel of reason,
 nine inferential signs); trairūpya (three characteristics of valid
 inference). **Status:** shipped 2026-05-04 — first step-by-step
 textual viz in the Lab. Compare-view scope and Lean integration
-were explicitly de-scoped at branch creation; Dharmakīrti's three
-structural hetu types and the Navya-Nyāya formalism remain open
-per the work-history notes.
+were explicitly de-scoped at branch creation. Dharmakīrti's three
+structural hetu types are now ticketed as an extension
+(`feat-logic-lab-indian-buddhist-hetucakra`, bundled with apoha and
+the Nyāyapraveśa fault taxonomy — see `indian-buddhist.md`); the
+Navya-Nyāya formalism is ticketed as its own separate system
+(`feat-logic-lab-navya-nyaya` — see `navya-nyaya.md`).
 
 - **Size.** M (mostly content).
 
@@ -452,9 +455,14 @@ be used as-is if the change is adopted.
 - Snapshot of what ships: `lab-status.md`
 - Per-system design: `aristotelian-syllogistic.md`,
   `medieval-syllogistic.md`, `frege-begriffsschrift.md`,
-  `kripke-modal-logic.md`, `modern-fol.md`, plus
-  `../case-studies/peirce/`
+  `kripke-modal-logic.md`, `modern-fol.md`, `indian-buddhist.md`,
+  plus `../case-studies/peirce/`. Queued (design doc precedes
+  implementation): `navya-nyaya.md`, `saptabhangi.md`, `avicennan.md`.
 - Cross-cutting: `logic-explorer-tab.md`, `editor-and-ir.md`,
   `formal-verification.md`, `open-questions.md`
+- Non-Western candidate systems: `world-logic-traditions.md` —
+  tickets now queued: `feat-logic-lab-navya-nyaya`,
+  `feat-logic-lab-saptabhangi`, `feat-logic-lab-avicennan`,
+  `feat-logic-lab-indian-buddhist-hetucakra`
 - Per-ticket history: `work-history/FEAT-005.md` through
   `FEAT-012.md`; `work-history/INFRA-004.md`
