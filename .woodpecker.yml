@@ -20,6 +20,13 @@ steps:
     commands:
       - dotnet restore packages/api-fsharp/PhilosophyExplorer.sln
       - dotnet build --no-restore -c Release packages/api-fsharp/PhilosophyExplorer.sln
+      # Lean toolchain for the LeanRunner integration tests (infra/lean-runner-spike).
+      # elan installs the version pinned by packages/lean/lean-toolchain on first use.
+      # No caching yet — the added CI time is a spike deliverable (see work-history).
+      - apt-get update && apt-get install -y --no-install-recommends curl
+      - curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+      - export PATH="$HOME/.elan/bin:$PATH"
+      - (cd packages/lean && lake build)
       - dotnet test --no-build -c Release packages/api-fsharp/PhilosophyExplorer.sln
 
   # ── Frontend gates ──

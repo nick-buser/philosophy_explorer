@@ -6,7 +6,7 @@
     "packages/web"
   ],
   "scripts": {
-    "dev:api":     "cd packages/api-fsharp/PhilosophyExplorer.Api && DATABASE_URL=file:./dev.db GRAPH_DATA_PATH=$(pwd)/../../../data/graph-data.json dotnet run",
+    "dev:api":     "cd packages/api-fsharp/PhilosophyExplorer.Api && DATABASE_URL=file:./dev.db GRAPH_DATA_PATH=$(pwd)/../../../data/graph-data.json LEAN_PACKAGE_PATH=$(pwd)/../../../packages/lean dotnet run",
     "dev:web":     "npm run dev      --workspace=packages/web",
     "build:api":   "cd packages/api-fsharp/PhilosophyExplorer.Api && dotnet build -c Release",
     "build:web":   "npm run build    --workspace=packages/web",
