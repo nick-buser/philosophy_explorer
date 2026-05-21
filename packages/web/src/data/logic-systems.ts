@@ -816,6 +816,136 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
     ],
   },
   {
+    slug: 'catuskoti',
+    name: 'Catuṣkoṭi (Nāgārjuna’s Tetralemma)',
+    shortDescription:
+      'The “four corners” of Indian, and especially Madhyamaka Buddhist, logic: for a proposition A the four koṭis are A, ¬A, A∧¬A, and ¬(A∨¬A). The schema is used both to affirm one corner and, in the prasaṅga mode, to reject all four.',
+    era: '~2nd c. CE',
+    keyPrimitive: 'four-cornered predication (catuṣkoṭi)',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'The catuṣkoṭi — “four corners” — is the tetralemma of Indian logic, attested in the early Buddhist discourses and given its sharpest use by Nāgārjuna (c. 2nd c. CE), the founder of the Madhyamaka school. For any proposition A the four koṭis are A, ¬A, both A and ¬A, and neither A nor ¬A. Nāgārjuna uses the schema in two opposite ways. In the affirming (positive) use — the Buddha’s teaching of Mūlamadhyamakakārikā 18.8, “all is real, or not real, both real and not real, neither real nor not real” — exactly one corner is asserted of the proposition. In the prasaṅga use — the Madhyamaka refutation — all four corners are denied at once: this is the treatment of the avyākṛta, the questions the Buddha set aside as not answerable, most famously whether the Tathāgata exists after death (MMK ch. 22, 25). Modern logicians reconstruct the catuṣkoṭi as a four-valued, paraconsistent scheme — the four values of First Degree Entailment (FDE): true only, false only, both (a glut), neither (a gap), which are exactly the four subsets of {true, false}. This Lab implements phase 1: it places a proposition at one of the four koṭis under one of the two readings, and evaluates each of the four corner-formulas under that valuation. It commits to the four-valued FDE reconstruction (the clean, enumerable reading that renders as a four-corner diagram). G. Priest’s argument (2010) that the prasaṅga use needs a fifth, “ineffable” value, and the dispute over whether rejecting all four corners is consistent (Priest & Garfield, 2002), are flagged but not adjudicated; compound evaluation over the four values is deferred to phase 2.',
+    primitives: [
+      {
+        name: 'Proposition',
+        syntax: 'proposition: <text>',
+        description: 'The proposition A under examination. The catuṣkoṭi places it at one of four corners.',
+      },
+      {
+        name: 'Affirmation (koṭi 1)',
+        syntax: 'koti: affirmation',
+        description: 'The first corner — A, “it is.” The FDE value {true}: the proposition holds and only holds.',
+      },
+      {
+        name: 'Negation (koṭi 2)',
+        syntax: 'koti: negation',
+        description: 'The second corner — ¬A, “it is not.” The FDE value {false}: the proposition fails and only fails.',
+      },
+      {
+        name: 'Both (koṭi 3)',
+        syntax: 'koti: both',
+        description: 'The third corner — A∧¬A, “it both is and is not.” The FDE glut {true, false}: the proposition is at once true and false.',
+      },
+      {
+        name: 'Neither (koṭi 4)',
+        syntax: 'koti: neither',
+        description: 'The fourth corner — ¬(A∨¬A), “it neither is nor is not.” The FDE gap {}: the proposition is neither true nor false.',
+      },
+      {
+        name: 'Reading',
+        syntax: 'reading: affirming | prasanga',
+        description: 'How the schema is used. Affirming asserts the chosen corner of the proposition; prasaṅga (the Madhyamaka refutation) denies the chosen corner and, with it, all four.',
+      },
+    ],
+    examples: [
+      {
+        slug: 'dharmas-affirmation',
+        natural: 'All things are real — the first lemma of MMK 18.8, asserted outright.',
+        dsl:
+          'proposition: all things are real\n' +
+          'koti:        affirmation\n' +
+          'reading:     affirming',
+        note: 'The affirming (positive) catuṣkoṭi of MMK 18.8, first lemma. v(A) = {true}; of the four corner-formulas, only A is designated.',
+      },
+      {
+        slug: 'dharmas-negation',
+        natural: 'All things are not real — the second lemma, the bare negation.',
+        dsl:
+          'proposition: all things are real\n' +
+          'koti:        negation\n' +
+          'reading:     affirming',
+        note: 'The second lemma. v(A) = {false}; only the ¬A corner is designated.',
+      },
+      {
+        slug: 'dharmas-both',
+        natural: 'All things are both real and not real — the third lemma, the glut.',
+        dsl:
+          'proposition: all things are real\n' +
+          'koti:        both\n' +
+          'reading:     affirming',
+        note: 'The third lemma. v(A) is the glut {true, false}; under FDE all four corner-formulas come out designated at once — the structural fact the diagram surfaces.',
+      },
+      {
+        slug: 'dharmas-neither',
+        natural: 'All things are neither real nor not real — the fourth lemma, the gap.',
+        dsl:
+          'proposition: all things are real\n' +
+          'koti:        neither\n' +
+          'reading:     affirming',
+        note: 'The fourth lemma. v(A) is the gap {}; no corner-formula is designated — not even ¬(A∨¬A), the formula that expresses “neither.” Phase 1 flags this consistency tension rather than resolving it.',
+      },
+      {
+        slug: 'tathagata-affirmation',
+        natural: 'The Tathāgata exists after death — the first corner, refused by the prasaṅga.',
+        dsl:
+          'proposition: the Tathāgata exists after death\n' +
+          'koti:        affirmation\n' +
+          'reading:     prasanga',
+        note: 'The first of the avyākṛta — the unanswered questions (MMK ch. 22, 25). An opponent affirms the corner; the Madhyamaka prasaṅga refuses it, and with it all four.',
+      },
+      {
+        slug: 'tathagata-negation',
+        natural: 'The Tathāgata does not exist after death — the second corner, equally refused.',
+        dsl:
+          'proposition: the Tathāgata exists after death\n' +
+          'koti:        negation\n' +
+          'reading:     prasanga',
+        note: 'The prasaṅga denies the second corner as well — non-existence after death is no more assertible than existence.',
+      },
+      {
+        slug: 'tathagata-both',
+        natural: 'The Tathāgata both exists and does not exist after death — the third corner, refused.',
+        dsl:
+          'proposition: the Tathāgata exists after death\n' +
+          'koti:        both\n' +
+          'reading:     prasanga',
+        note: 'The third corner — the conjunction — is refused too, though under FDE the glut would designate every corner-formula. The prasaṅga rejects the position regardless.',
+      },
+      {
+        slug: 'tathagata-neither',
+        natural: 'The Tathāgata neither exists nor does not exist after death — the fourth corner, also refused.',
+        dsl:
+          'proposition: the Tathāgata exists after death\n' +
+          'koti:        neither\n' +
+          'reading:     prasanga',
+        note: 'The fourth corner is refused, completing the prasaṅga: none of the four koṭis is assertible. Whether this “reject all four” is a consistent logical position or a refusal to assert is the live dispute (Priest & Garfield, 2002).',
+      },
+    ],
+    readingPointers: [
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Nāgārjuna',
+        href: 'https://plato.stanford.edu/entries/nagarjuna/',
+        kind: 'external',
+      },
+      {
+        title: 'Priest & Garfield, Nāgārjuna and the Limits of Thought',
+        href: 'https://doi.org/10.1093/acprof:oso/9780199244218.003.0011',
+        kind: 'external',
+      },
+    ],
+  },
+  {
     slug: 'medieval',
     name: 'Medieval Modal Syllogistic',
     shortDescription:
