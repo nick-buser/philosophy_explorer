@@ -1,7 +1,7 @@
 # feat: Logic Lab Avicennan logic — modal-temporal syllogistic, mood-validity engine, modal square
 
 **Branch slug:** `feat/logic-lab-avicennan`
-**Status:** queued
+**Status:** in-progress
 **Size:** M–L
 **Depends on:** `none` (reuses the shipped `aristotelian` system's
 validity-module and square-of-opposition patterns)

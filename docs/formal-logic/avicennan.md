@@ -1,7 +1,8 @@
 # Avicennan Logic — System Design
 
-**Status:** Design doc, not yet shipped. Implementing ticket queued:
-`.tickets/feat-logic-lab-avicennan.md` (`feat/logic-lab-avicennan`).
+**Status:** Phase 1 implemented on `feat/logic-lab-avicennan` (ticket
+`.tickets/feat-logic-lab-avicennan.md`). Phase 2 scope below remains
+open.
 **Builds on:** the candidate survey
 [`world-logic-traditions.md`](./world-logic-traditions.md)
 §"Arabic / Avicennan logic", and the categorical-logic precedent of
