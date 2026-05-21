@@ -1,7 +1,11 @@
 # World Logic Traditions — Candidate Systems
 
 **Status:** Survey, 2026-05-20 — first-pass notes on formalizable
-non-Western logic traditions not yet in the Lab. No tickets open.
+non-Western logic traditions not yet in the Lab. Tickets opened
+2026-05-20 for Navya-Nyāya, Jain saptabhaṅgī, Avicennan logic, and the
+`indian-buddhist` hetu-cakra extension, each with a companion design
+doc (see the per-candidate pointers below). Catuṣkoṭi and Mohist
+disputation remain un-ticketed.
 **Builds on:** `lab-roadmap.md` (§"Indian / Buddhist logic" ships the
 first such system) and `work-history/feat-logic-lab-indian-buddhist.md`
 (deferral notes).
@@ -62,6 +66,9 @@ already opened.
 
 ### 1. Navya-Nyāya (`feat/logic-lab-navya-nyaya`) — recommended first
 
+**Ticketed:** `.tickets/feat-logic-lab-navya-nyaya.md` · design doc
+`navya-nyaya.md`.
+
 Gaṅgeśa's 14th-century reformation of Nyāya into a formal apparatus.
 Already flagged in `work-history/feat-logic-lab-indian-buddhist.md`
 as meriting its own system slug ("different system, not extension of
@@ -106,6 +113,9 @@ assert and (in the *prasaṅga* mode) to reject all four.
 
 ### 3. Jain saptabhaṅgī / syādvāda (`feat/logic-lab-saptabhangi`)
 
+**Ticketed:** `.tickets/feat-logic-lab-saptabhangi.md` · design doc
+`saptabhangi.md`.
+
 The Jain doctrine of sevenfold conditional predication: from the
 three basic modes — *asti* (is), *nāsti* (is not), *avaktavya*
 (inexpressible) — exactly seven combinations are generated, each
@@ -125,6 +135,12 @@ prefixed by *syāt* ("in some respect").
 - **Size.** S–M.
 
 ### Extensions to the existing `indian-buddhist` system (not new slugs)
+
+**Ticketed together** as one extension:
+`.tickets/feat-logic-lab-indian-buddhist-hetucakra.md` · design doc
+`indian-buddhist.md` (which also serves as the retroactive system doc
+for the shipped phase 1). The two items below ship inside that ticket,
+bundled with the Nyāyapraveśa 33-fault taxonomy.
 
 Two items belong *inside* the current system, per its work-history,
 and should not get their own tickets:
@@ -176,6 +192,9 @@ fallacy taxonomy, not a new lab. Low priority.
 ## Beyond the two regions — for completeness
 
 ### Arabic / Avicennan logic (`feat/logic-lab-avicennan`)
+
+**Ticketed:** `.tickets/feat-logic-lab-avicennan.md` · design doc
+`avicennan.md`.
 
 Not East or South Asian, but the highest-rigor non-Western option
 after Navya-Nyāya, and currently the subject of active formalization
