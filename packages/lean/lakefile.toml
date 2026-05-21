@@ -1,11 +1,15 @@
-# philosophy-explorer Lean verification library.
+# philosophy-explorer Lean verification library. Mathlib-free — see
+# docs/formal-logic/formal-verification.md §7.
 #
-# Connectivity spike (Milestone 0): the only built module is `Sanity`,
-# a trivial theorem proving the F# -> lake -> lean plumbing works.
-# Deliberately Mathlib-free — see docs/formal-logic/formal-verification.md §7.
-# The real deep embeddings (NDFormula / Deriv) arrive in Milestone 1.
+#   Sanity            — connectivity-spike fixture (Milestone 0).
+#   NaturalDeduction  — the propositional ND deep embedding (Milestone 1):
+#                       NDFormula syntax + the Deriv judgment a verified
+#                       proof term inhabits.
 name = "philosophy_explorer_lean"
-defaultTargets = ["Sanity"]
+defaultTargets = ["Sanity", "NaturalDeduction"]
 
 [[lean_lib]]
 name = "Sanity"
+
+[[lean_lib]]
+name = "NaturalDeduction"
