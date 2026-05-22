@@ -38,6 +38,14 @@ type Rule =
     | [<JsonStringEnumMemberName("botE")>] BotE = 16
     | [<JsonStringEnumMemberName("raa")>] Raa = 17
 
+/// Which inference rules are in scope — the Lab's classical / intuitionistic
+/// toggle, mirroring the `RuleSet` union in nd-types.ts. `raa` (classical
+/// reductio) is well-typed in the Lean embedding only under `classical`.
+[<JsonConverter(typeof<JsonStringEnumConverter>)>]
+type RuleSet =
+    | [<JsonStringEnumMemberName("classical")>] Classical = 0
+    | [<JsonStringEnumMemberName("intuitionistic")>] Intuitionistic = 1
+
 /// A propositional formula. The first-order constructs of fol-types.ts
 /// (`pred` with term arguments, `eq`, `forall`, `exists`) are out of scope:
 /// the ND Lab is propositional, so this is exactly the eight-constructor
