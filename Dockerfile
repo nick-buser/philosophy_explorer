@@ -27,19 +27,49 @@ COPY packages/api-fsharp/PhilosophyExplorer.Api/ ./packages/api-fsharp/Philosoph
 RUN dotnet publish packages/api-fsharp/PhilosophyExplorer.Api/PhilosophyExplorer.Api.fsproj \
     -c Release -o /publish --no-restore
 
-# ---- Stage 3: runtime ----
+# ---- Stage 3: lean build ----
+# Builds the ND deep embedding and provisions the Lean toolchain. POST
+# /api/verify shells out to `lake env lean` (SubprocessLeanRunner), so the
+# runtime image needs a real toolchain. Same base image as the runtime
+# stage so the toolchain's shared libraries match.
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS lean-build
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+# elan — the Lean toolchain manager (same install the Woodpecker check
+# step uses). --default-toolchain none defers the toolchain to the explicit
+# install below, so it lands in its own cacheable layer.
+RUN curl --proto '=https' --tlsv1.2 -sSf \
+      https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+    | sh -s -- -y --default-toolchain none
+ENV PATH="/root/.elan/bin:${PATH}"
+WORKDIR /app/packages/lean
+# Pin-install the toolchain before the sources so an embedding-only change
+# doesn't re-download it.
+COPY packages/lean/lean-toolchain ./
+RUN elan toolchain install "$(cat lean-toolchain)"
+COPY packages/lean/ ./
+RUN lake build
+
+# ---- Stage 4: runtime ----
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 COPY --from=api-build /publish ./
 COPY --from=web-build /src/packages/web/dist ./wwwroot
 COPY data/seed/ ./data/seed/
 COPY data/graph-data.json ./data/graph-data.json
+# Lean toolchain + the built ND embedding — POST /api/verify spawns
+# `lake env lean` against these. LEAN_PACKAGE_PATH points the runner here.
+COPY --from=lean-build /root/.elan /root/.elan
+COPY --from=lean-build /app/packages/lean /app/packages/lean
 
 ENV ASPNETCORE_URLS=http://+:3001 \
     PORT=3001 \
     SEED_DATA_PATH=/app/data/seed \
     GRAPH_DATA_PATH=/app/data/graph-data.json \
-    RUN_SEED=false
+    RUN_SEED=false \
+    LEAN_PACKAGE_PATH=/app/packages/lean \
+    PATH="/root/.elan/bin:${PATH}"
 
 # OpenTelemetry — exports traces/metrics/logs to Signoz over OTLP.
 # OTEL_EXPORTER_OTLP_ENDPOINT is the homelab Signoz collector; override

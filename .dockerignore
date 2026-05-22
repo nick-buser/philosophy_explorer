@@ -21,6 +21,10 @@ npm-debug.log*
 *.user
 *.suo
 
+# Lean — host-built artifacts; the lean-build stage rebuilds these in-image
+packages/lean/.lake/
+packages/lean/.scratch/
+
 # Local DB / env
 *.db
 dev.db
