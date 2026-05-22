@@ -15,12 +15,14 @@
     <Compile Include="Graph/GraphTypes.fs" />
     <Compile Include="Graph/MemoryGraphService.fs" />
     <Compile Include="Logic/Lean/LeanRunner.fs" />
+    <Compile Include="Logic/Nd/NdTypes.fs" />
+    <Compile Include="Logic/Nd/LeanEmitter.fs" />
     <Compile Include="Routes/HealthRoutes.fs" />
     <Compile Include="Routes/PhilosopherRoutes.fs" />
     <Compile Include="Routes/CatalogRoutes.fs" />
     <Compile Include="Routes/ArgumentRoutes.fs" />
     <Compile Include="Routes/GraphRoutes.fs" />
-    <Compile Include="Routes/LeanRoutes.fs" />
+    <Compile Include="Routes/VerifyRoutes.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

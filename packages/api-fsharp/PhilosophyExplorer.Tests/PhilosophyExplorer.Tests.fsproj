@@ -11,6 +11,8 @@
     <Compile Include="ArgumentTests.fs" />
     <Compile Include="DbFactoryTests.fs" />
     <Compile Include="LeanRunnerTests.fs" />
+    <Compile Include="NdTypesTests.fs" />
+    <Compile Include="LeanEmitterTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
