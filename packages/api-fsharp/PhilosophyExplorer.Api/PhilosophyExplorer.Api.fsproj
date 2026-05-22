@@ -15,6 +15,7 @@
     <Compile Include="Graph/GraphTypes.fs" />
     <Compile Include="Graph/MemoryGraphService.fs" />
     <Compile Include="Logic/Lean/LeanRunner.fs" />
+    <Compile Include="Logic/Nd/NdTypes.fs" />
     <Compile Include="Routes/HealthRoutes.fs" />
     <Compile Include="Routes/PhilosopherRoutes.fs" />
     <Compile Include="Routes/CatalogRoutes.fs" />
