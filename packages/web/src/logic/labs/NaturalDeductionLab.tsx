@@ -1,20 +1,48 @@
 import { useMemo, useState } from 'react';
 import { Link } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
 import type { LogicSystem, LogicExample } from '../../data/logic-systems';
 import { parseArgument } from '../nd-parser';
 import { renderKatex as renderFolKatex } from '../fol-render';
 import { NdEditor } from '../NdEditor';
 import { ND_COMMANDS } from '../nd-commands';
 import { proveArgument } from '../nd-prover';
-import type { ProveResult } from '../nd-types';
+import type { ProveResult, FitchProof } from '../nd-types';
 import { buildGentzenTree } from '../nd-gentzen';
 import { isPropositionalArgument } from '../nd-types';
 import { KatexFormula } from '../KatexFormula';
 import { FitchProofView } from '../FitchProof';
 import { GentzenTreeView } from '../GentzenTree';
 import { SectionHeading } from './shared';
+import type { components } from '../../lib/api-types';
 
 type Mode = 'classical' | 'intuitionistic';
+
+type VerifyResponse = components['schemas']['VerifyResponseDto'];
+
+const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
+
+// Ship the prover's FitchProof to POST /api/verify so Lean's kernel
+// type-checks it against the ND embedding. Keyed on the proof's content —
+// a verdict is immutable for a given proof, so it never goes stale.
+function useLeanVerification(proof: FitchProof | null, mode: Mode) {
+  const proofKey = useMemo(() => (proof ? JSON.stringify(proof) : null), [proof]);
+  return useQuery<VerifyResponse>({
+    queryKey: ['nd-verify', proofKey, mode],
+    enabled: proof !== null,
+    staleTime: Infinity,
+    retry: false,
+    queryFn: async () => {
+      const res = await fetch(`${API_BASE}/api/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ proof, ruleSet: mode }),
+      });
+      if (!res.ok) throw new Error(`verify request failed: ${res.status}`);
+      return res.json() as Promise<VerifyResponse>;
+    },
+  });
+}
 
 export default function NaturalDeductionLab({ system }: { system: LogicSystem }) {
   const initial = system.examples[0]!;
@@ -127,6 +155,9 @@ function NdLabBody({
     [proveResult],
   );
 
+  const proof = proveResult && proveResult.ok ? proveResult.proof : null;
+  const verification = useLeanVerification(proof, mode);
+
   return (
     <div className="space-y-4">
       <NdToolbar onCommand={onCommand} examples={examples} />
@@ -145,6 +176,13 @@ function NdLabBody({
             <span>Argument</span>
             <div className="flex items-center gap-2">
               {proveResult && <ProofBadge result={proveResult} mode={mode} />}
+              {proof && (
+                <LeanVerifyBadge
+                  isLoading={verification.isLoading}
+                  isError={verification.isError}
+                  data={verification.data}
+                />
+              )}
               {parsed.ok ? (
                 <span className="text-emerald-400">parsed</span>
               ) : (
@@ -194,6 +232,15 @@ function NdLabBody({
               subtitle="The same derivation as a tree. Discharged assumptions appear in brackets at the leaves; the rule that discharged them is shown as a superscript."
             >
               <GentzenTreeView root={gentzen} />
+            </Panel>
+          )}
+
+          {verification.data && verification.data.verdict !== 'verified' && (
+            <Panel
+              title="Lean verification"
+              subtitle="The prover's proof was emitted to the Lean embedding and the kernel did not accept it. The badge above reports the prover; this reports Lean."
+            >
+              <LeanVerificationDetail result={verification.data} />
             </Panel>
           )}
         </>
@@ -348,6 +395,95 @@ function ProofBadge({ result, mode }: { result: ProveResult; mode: Mode }) {
     >
       no proof · {mode}
     </span>
+  );
+}
+
+// Lean's verdict on the emitted proof term — distinct from ProofBadge,
+// which reports the TypeScript prover's own result.
+export function LeanVerifyBadge({
+  isLoading,
+  isError,
+  data,
+}: {
+  isLoading: boolean;
+  isError: boolean;
+  data: VerifyResponse | undefined;
+}) {
+  const base = 'text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded font-mono border';
+  if (isLoading) {
+    return (
+      <span
+        data-testid="lean-badge"
+        className={`${base} bg-gray-500/15 text-gray-400 border-gray-500/30 animate-pulse`}
+        title="Sending the proof to Lean…"
+      >
+        lean · checking…
+      </span>
+    );
+  }
+  if (isError || !data) {
+    return (
+      <span
+        data-testid="lean-badge"
+        className={`${base} bg-gray-500/15 text-gray-400 border-gray-500/30`}
+        title="The verification request failed."
+      >
+        lean · unavailable
+      </span>
+    );
+  }
+  let cls: string;
+  let label: string;
+  let title: string;
+  switch (data.verdict) {
+    case 'verified':
+      cls = 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
+      label = 'lean · verified';
+      title = 'Lean’s kernel type-checked the emitted proof term against the ND embedding.';
+      break;
+    case 'failed':
+      cls = 'bg-rose-500/15 text-rose-300 border-rose-500/30';
+      label = 'lean · rejected';
+      title = 'Lean rejected the emitted proof term — see the Lean verification panel.';
+      break;
+    case 'timeout':
+      cls = 'bg-amber-500/15 text-amber-300 border-amber-500/30';
+      label = 'lean · timeout';
+      title = 'Lean did not finish within the verification time limit.';
+      break;
+    default:
+      cls = 'bg-gray-500/15 text-gray-400 border-gray-500/30';
+      label = 'lean · error';
+      title = data.message || 'The verifier could not run.';
+  }
+  return (
+    <span data-testid="lean-badge" className={`${base} ${cls}`} title={title}>
+      {label}
+    </span>
+  );
+}
+
+function LeanVerificationDetail({ result }: { result: VerifyResponse }) {
+  const diagnostics = result.diagnostics ?? [];
+  if (result.verdict === 'failed' && diagnostics.length > 0) {
+    return (
+      <ul className="space-y-3">
+        {diagnostics.map((d, i) => (
+          <li key={i} className="space-y-1">
+            <span className="text-xs font-mono text-rose-300">
+              {d.line && d.line > 0 ? `line ${d.line}` : 'proof'}
+              {d.severity && d.severity !== 'error' ? ` · ${d.severity}` : ''}
+            </span>
+            <pre className="text-xs text-gray-400 whitespace-pre-wrap font-mono leading-relaxed">
+              {d.message}
+            </pre>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  return (
+    <p className="text-sm text-gray-300">{result.message || 'Lean could not verify the proof.'}</p>
   );
 }
 
