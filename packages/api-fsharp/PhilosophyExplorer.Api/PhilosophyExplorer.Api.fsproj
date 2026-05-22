@@ -22,7 +22,7 @@
     <Compile Include="Routes/CatalogRoutes.fs" />
     <Compile Include="Routes/ArgumentRoutes.fs" />
     <Compile Include="Routes/GraphRoutes.fs" />
-    <Compile Include="Routes/LeanRoutes.fs" />
+    <Compile Include="Routes/VerifyRoutes.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

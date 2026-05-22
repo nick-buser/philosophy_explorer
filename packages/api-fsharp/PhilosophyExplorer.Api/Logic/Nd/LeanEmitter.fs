@@ -147,3 +147,10 @@ module LeanEmitter =
             |> ignore
         sb.AppendLine(sprintf "  l%d" proof.ConclusionLine) |> ignore
         sb.ToString()
+
+    /// Map a 1-based line of emitted source back to the FitchProof line it
+    /// came from, or 0 when the diagnostic sits on the import/example header
+    /// or the trailing conclusion reference (see the layout note above).
+    let fitchLineOf (proof: FitchProof) (emittedLine: int) : int =
+        let n = emittedLine - 3
+        if n >= 1 && n <= List.length proof.Lines then n else 0

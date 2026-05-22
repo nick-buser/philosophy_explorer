@@ -8,7 +8,58 @@
         "/api/graph/stats": {
             "get": {
                 "tags": [
-                    "Pipe #1 input at line 42@42"
+                    "Pipe #1 input at line 46@46"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/verify": {
+            "post": {
+                "tags": [
+                    "Pipe #1 input at line 66@69"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/VerifyRequestDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VerifyResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseDto"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/graph/path": {
+            "get": {
+                "tags": [
+                    "Pipe #13 input at line 74@74"
                 ],
                 "responses": {
                     "200": {
@@ -20,7 +71,7 @@
         "/ping": {
             "get": {
                 "tags": [
-                    "Pipe #10 input at line 62@62"
+                    "Pipe #14 input at line 107@107"
                 ],
                 "responses": {
                     "200": {
@@ -36,22 +87,10 @@
                 }
             }
         },
-        "/api/graph/path": {
-            "get": {
-                "tags": [
-                    "Pipe #13 input at line 69@69"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
         "/api/graph/influence/{slug}": {
             "get": {
                 "tags": [
-                    "Pipe #15 input at line 89@89"
+                    "Pipe #15 input at line 95@95"
                 ],
                 "parameters": [
                     {
@@ -73,7 +112,7 @@
         "/api/graph/school/{slug}": {
             "get": {
                 "tags": [
-                    "Pipe #16 input at line 97@97"
+                    "Pipe #16 input at line 104@104"
                 ],
                 "parameters": [
                     {
@@ -95,7 +134,7 @@
         "/api/graph/curriculum/{slug}": {
             "get": {
                 "tags": [
-                    "Pipe #17 input at line 103@103"
+                    "Pipe #17 input at line 111@111"
                 ],
                 "parameters": [
                     {
@@ -117,7 +156,7 @@
         "/api/graph/influence-network": {
             "get": {
                 "tags": [
-                    "Pipe #18 input at line 109@109"
+                    "Pipe #18 input at line 118@118"
                 ],
                 "responses": {
                     "200": {
@@ -129,7 +168,7 @@
         "/api/health": {
             "get": {
                 "tags": [
-                    "Pipe #2 input at line 16@16"
+                    "Pipe #2 input at line 17@17"
                 ],
                 "responses": {
                     "200": {
@@ -165,7 +204,7 @@
         "/api/graph/node/{key}": {
             "get": {
                 "tags": [
-                    "Pipe #2 input at line 48@48"
+                    "Pipe #2 input at line 52@52"
                 ],
                 "parameters": [
                     {
@@ -187,7 +226,7 @@
         "/api/arguments": {
             "get": {
                 "tags": [
-                    "Pipe #2 input at line 64@64"
+                    "Pipe #2 input at line 68@68"
                 ],
                 "responses": {
                     "200": {
@@ -243,7 +282,7 @@
         "/api/arguments/{id}": {
             "get": {
                 "tags": [
-                    "Pipe #4 input at line 80@80"
+                    "Pipe #4 input at line 85@85"
                 ],
                 "parameters": [
                     {
@@ -265,7 +304,7 @@
         "/api/works/{slug}/arguments": {
             "get": {
                 "tags": [
-                    "Pipe #6 input at line 115@115"
+                    "Pipe #6 input at line 121@121"
                 ],
                 "parameters": [
                     {
@@ -287,7 +326,7 @@
         "/api/graph/neighbors/{key}": {
             "get": {
                 "tags": [
-                    "Pipe #6 input at line 55@55"
+                    "Pipe #6 input at line 59@59"
                 ],
                 "parameters": [
                     {
@@ -348,6 +387,144 @@
                 "properties": {
                     "ok": {
                         "type": "boolean"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ErrorResponseDto": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "FitchLine": {
+                "type": "object",
+                "properties": {
+                    "lineNo": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "depth": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "formula": {
+                        "type": "object",
+                        "additionalProperties": {},
+                        "nullable": true
+                    },
+                    "rule": {
+                        "$ref": "#/components/schemas/Rule"
+                    },
+                    "cites": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": {}
+                        },
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "FitchProof": {
+                "type": "object",
+                "properties": {
+                    "lines": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FitchLine"
+                        },
+                        "nullable": true
+                    },
+                    "conclusionLine": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Rule": {
+                "enum": [
+                    "premise",
+                    "assumption",
+                    "reit",
+                    "andI",
+                    "andEL",
+                    "andER",
+                    "orIL",
+                    "orIR",
+                    "orE",
+                    "impI",
+                    "impE",
+                    "iffI",
+                    "iffEL",
+                    "iffER",
+                    "notI",
+                    "notE",
+                    "botE",
+                    "raa"
+                ],
+                "type": "string"
+            },
+            "RuleSet": {
+                "enum": [
+                    "classical",
+                    "intuitionistic"
+                ],
+                "type": "string"
+            },
+            "VerifyDiagnosticDto": {
+                "type": "object",
+                "properties": {
+                    "line": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "severity": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "VerifyRequestDto": {
+                "type": "object",
+                "properties": {
+                    "proof": {
+                        "$ref": "#/components/schemas/FitchProof"
+                    },
+                    "ruleSet": {
+                        "$ref": "#/components/schemas/RuleSet"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "VerifyResponseDto": {
+                "type": "object",
+                "properties": {
+                    "verdict": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "diagnostics": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/VerifyDiagnosticDto"
+                        },
+                        "nullable": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "nullable": true
                     }
                 },
                 "additionalProperties": false
