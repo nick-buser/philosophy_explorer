@@ -1,0 +1,15 @@
+# philosophy-explorer Lean verification library. Mathlib-free — see
+# docs/formal-logic/formal-verification.md §7.
+#
+#   Sanity            — connectivity-spike fixture (Milestone 0).
+#   NaturalDeduction  — the propositional ND deep embedding (Milestone 1):
+#                       NDFormula syntax + the Deriv judgment a verified
+#                       proof term inhabits.
+name = "philosophy_explorer_lean"
+defaultTargets = ["Sanity", "NaturalDeduction"]
+
+[[lean_lib]]
+name = "Sanity"
+
+[[lean_lib]]
+name = "NaturalDeduction"

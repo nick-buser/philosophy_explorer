@@ -17,6 +17,45 @@
                 }
             }
         },
+        "/api/verify": {
+            "post": {
+                "tags": [
+                    "Pipe #1 input at line 66@69"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/VerifyRequestDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VerifyResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseDto"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/arguments/{id}": {
             "delete": {
                 "tags": [
@@ -110,10 +149,22 @@
                 }
             }
         },
+        "/api/graph/path": {
+            "get": {
+                "tags": [
+                    "Pipe #13 input at line 74@74"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/ping": {
             "get": {
                 "tags": [
-                    "Pipe #12 input at line 73@73"
+                    "Pipe #14 input at line 107@107"
                 ],
                 "responses": {
                     "200": {
@@ -125,18 +176,6 @@
                                 }
                             }
                         }
-                    }
-                }
-            }
-        },
-        "/api/graph/path": {
-            "get": {
-                "tags": [
-                    "Pipe #13 input at line 74@74"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
                     }
                 }
             }
@@ -420,6 +459,63 @@
                 },
                 "additionalProperties": false
             },
+            "ErrorResponseDto": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "FitchLine": {
+                "type": "object",
+                "properties": {
+                    "lineNo": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "depth": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "formula": {
+                        "type": "object",
+                        "additionalProperties": {},
+                        "nullable": true
+                    },
+                    "rule": {
+                        "$ref": "#/components/schemas/Rule"
+                    },
+                    "cites": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": {}
+                        },
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "FitchProof": {
+                "type": "object",
+                "properties": {
+                    "lines": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FitchLine"
+                        },
+                        "nullable": true
+                    },
+                    "conclusionLine": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                },
+                "additionalProperties": false
+            },
             "JsonNode": {
                 "type": "object",
                 "properties": {
@@ -440,6 +536,87 @@
                 "properties": {
                     "propertyNameCaseInsensitive": {
                         "type": "boolean"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Rule": {
+                "enum": [
+                    "premise",
+                    "assumption",
+                    "reit",
+                    "andI",
+                    "andEL",
+                    "andER",
+                    "orIL",
+                    "orIR",
+                    "orE",
+                    "impI",
+                    "impE",
+                    "iffI",
+                    "iffEL",
+                    "iffER",
+                    "notI",
+                    "notE",
+                    "botE",
+                    "raa"
+                ],
+                "type": "string"
+            },
+            "RuleSet": {
+                "enum": [
+                    "classical",
+                    "intuitionistic"
+                ],
+                "type": "string"
+            },
+            "VerifyDiagnosticDto": {
+                "type": "object",
+                "properties": {
+                    "line": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "severity": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "VerifyRequestDto": {
+                "type": "object",
+                "properties": {
+                    "proof": {
+                        "$ref": "#/components/schemas/FitchProof"
+                    },
+                    "ruleSet": {
+                        "$ref": "#/components/schemas/RuleSet"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "VerifyResponseDto": {
+                "type": "object",
+                "properties": {
+                    "verdict": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "diagnostics": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/VerifyDiagnosticDto"
+                        },
+                        "nullable": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "nullable": true
                     }
                 },
                 "additionalProperties": false

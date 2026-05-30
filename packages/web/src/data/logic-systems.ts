@@ -565,6 +565,523 @@ export const LOGIC_SYSTEMS: LogicSystem[] = [
     ],
   },
   {
+    slug: 'avicennan',
+    name: 'Avicennan Modal Syllogistic (Ibn Sīnā)',
+    shortDescription:
+      'Avicenna rebuilt the categorical syllogism as a modal-temporal system: every proposition carries one of four modalities (necessary, perpetual, absolute, possible), and the valid moods differ from the assertoric ones.',
+    era: '~1020 CE →',
+    keyPrimitive: 'modalized categorical proposition',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'In the Qiyās of the Kitāb al-Shifāʾ (c. 1020s), Avicenna (Ibn Sīnā, 980–1037) reworked Aristotle’s categorical syllogistic into a modal-temporal system. An Avicennan categorical proposition is not merely “every A is B” — it carries an alethic modality and a temporal qualification: necessarily B, always B, B at some time, or possibly B, in each case “while A exists.” The valid moods of the resulting syllogistic diverge from the assertoric ones. Avicenna held the de re position — against Theophrastus’s rule that the conclusion follows the weaker premise — that in the first figure the conclusion inherits the modality of the major premise, so a necessary major with a merely-absolute minor still yields a necessary conclusion. He further developed a hypothetical (conditional and disjunctive) syllogistic with no Aristotelian counterpart. Avicennan logic dominated the Arabic tradition for centuries and is the subject of active modern formalization by Wilfrid Hodges, Tony Street, and Saloua Chatti. This Lab implements phase 1: a single enumerated modality token, mood-table validity for the categorical syllogism, and the modal square. The two-dimensional (subject-side / copula-side) modality, the hypothetical syllogistic, and a semantic model checker over individuals × times are deferred to phase 2.',
+    primitives: [
+      {
+        name: 'Quantity',
+        syntax: 'every | some',
+        description: 'Universal (every) or particular (some). With the quality keyword it fixes the A/E/I/O categorical form of the proposition.',
+      },
+      {
+        name: 'Quality',
+        syntax: 'affirmative | no | not',
+        description: 'Affirmative by default; “no” makes a universal negative, “some … is not” a particular negative.',
+      },
+      {
+        name: 'Necessary (ḍarūrī)',
+        syntax: 'necessary …',
+        description: 'Necessarily the predicate, while the subject exists — the strongest modality.',
+      },
+      {
+        name: 'Perpetual (dāʾima)',
+        syntax: 'perpetual …',
+        description: 'Always the predicate, while the subject exists — true at every time, but without alethic necessity.',
+      },
+      {
+        name: 'Absolute (muṭlaqa ʿāmma)',
+        syntax: 'absolute …',
+        description: 'The predicate at some time, while the subject exists — the general absolute, Avicenna’s reading of the bare Aristotelian assertoric.',
+      },
+      {
+        name: 'Possible (mumkina)',
+        syntax: 'possible …',
+        description: 'Two-sided possibility — possibly the predicate and possibly not. Not on the necessary/perpetual/absolute strength chain.',
+      },
+      {
+        name: 'Figure',
+        syntax: '1 – 4',
+        description: 'Determined by where the middle term sits across the two premises. The figure selects the modality rule: figure 1 lets the conclusion follow the major; figures 2–4 (phase 1) admit only uniform-modality moods.',
+      },
+    ],
+    examples: [
+      {
+        slug: 'necessary-barbara',
+        natural: 'Necessity-Barbara — a necessary major and an absolute minor yield a necessary conclusion (the contested LXL syllogism).',
+        dsl:
+          'syllogism\n' +
+          '  necessary every animal is mortal\n' +
+          '  absolute  every human  is animal\n' +
+          '  necessary every human  is mortal\n' +
+          'end',
+        note: 'Avicenna’s signature de re result: in figure 1 the conclusion inherits the major premise’s modality, so necessity carries through even though the minor is only absolute. Theophrastus would have demanded the weaker (absolute) conclusion.',
+      },
+      {
+        slug: 'modal-fallacy',
+        natural: 'Modal fallacy — assertorically a valid Barbara, but two absolute premises cannot license a necessary conclusion.',
+        dsl:
+          'syllogism\n' +
+          '  absolute  every animal is mortal\n' +
+          '  absolute  every human  is animal\n' +
+          '  necessary every human  is mortal\n' +
+          'end',
+        note: 'The pedagogical payoff: the assertoric skeleton AAA-1 is the textbook Barbara, valid in `aristotelian`. Under Avicennan modality the verdict flips — the conclusion claims necessity, but only the absolute follows.',
+      },
+      {
+        slug: 'weaker-conclusion',
+        natural: 'Over-claimed conclusion — an absolute major caps the conclusion at absolute, even with a necessary minor.',
+        dsl:
+          'syllogism\n' +
+          '  absolute  every animal is mortal\n' +
+          '  necessary every human  is animal\n' +
+          '  necessary every human  is mortal\n' +
+          'end',
+        note: 'In figure 1 the conclusion follows the major, not the minor. The stated necessary conclusion is too strong; only the absolute is warranted.',
+      },
+      {
+        slug: 'necessary-proposition',
+        natural: 'A necessary universal affirmative — every human is necessarily mortal.',
+        dsl: 'necessary every human is mortal',
+        note: 'Single proposition for the modal square. ḍarūrī: necessarily the predicate, while the subject exists. Focuses corner A.',
+      },
+      {
+        slug: 'perpetual-proposition',
+        natural: 'A perpetual universal negative — no heaven is ever at rest.',
+        dsl: 'perpetual no heaven is resting',
+        note: 'Single proposition for the modal square. dāʾima: always (so, never the predicate here), while the subject exists — true at every time without alethic necessity. Focuses corner E.',
+      },
+      {
+        slug: 'absolute-proposition',
+        natural: 'An absolute particular affirmative — some human is (at some time) awake.',
+        dsl: 'absolute some human is awake',
+        note: 'Single proposition for the modal square. muṭlaqa ʿāmma: the predicate at some time, while the subject exists. Focuses corner I.',
+      },
+      {
+        slug: 'possible-proposition',
+        natural: 'A possible particular negative — some human is possibly not writing.',
+        dsl: 'possible some human is not writing',
+        note: 'Single proposition for the modal square. mumkina: two-sided possibility — possibly not writing, and equally possibly writing. Focuses corner O.',
+      },
+    ],
+    readingPointers: [
+      {
+        title: 'Arabic and Islamic Philosophy of Language and Logic (SEP)',
+        href: 'https://plato.stanford.edu/entries/arabic-islamic-language/',
+        kind: 'external',
+      },
+      {
+        title: 'Avicenna (Ibn Sina) — SEP',
+        href: 'https://plato.stanford.edu/entries/ibn-sina/',
+        kind: 'external',
+      },
+      {
+        title: 'Avicennan logic — system design notes',
+        href: 'https://plato.stanford.edu/entries/arabic-islamic-language/#AviModaLogi',
+        kind: 'doc',
+      },
+    ],
+  },
+  {
+    slug: 'saptabhangi',
+    name: 'Jain Saptabhaṅgī (Syādvāda)',
+    shortDescription:
+      'The Jain doctrine of sevenfold conditional predication: every assertion is qualified by syāt (“in some respect”), and from three basic modes — is, is not, inexpressible — exactly seven bhaṅgas arise, one per non-empty combination.',
+    era: '~2nd–8th c. CE',
+    keyPrimitive: 'standpoint-relative predication (syādvāda)',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'Saptabhaṅgī is the logical core of Jain anekāntavāda — the doctrine of non-one-sidedness, which holds that any predication is true only relative to a standpoint (naya). Its roots are traced to Mahāvīra (6th–5th c. BCE); the sevenfold scheme itself was articulated by Samantabhadra (c. 2nd–3rd c. CE) and given its mature treatment by Akalaṅka and Vidyānandi (8th–9th c. CE). The teaching is that from three basic modes of predication — asti (is), nāsti (is not), and avaktavya (inexpressible) — exactly seven conditional assertions (bhaṅgas) can be made about any subject, each prefixed by the particle syāt, “in some respect.” The pot is permanent qua its clay substance, not permanent qua its present shape, and inexpressible when both are asserted at once in the same respect. Modern logicians read saptabhaṅgī as a genuine many-valued logic with a fixed seven-element value space: the seven non-empty subsets of a three-element set. This Lab implements phase 1: it classifies a single predication into its bhaṅga by unioning the modes asserted across its standpoints. It commits to the reading on which avaktavya is a third primitive mode (so the seven bhaṅgas are exactly the seven non-empty subsets) — the clean, enumerable reconstruction of J. Ganeri (2002). The rival reading, on which avaktavya is the simultaneous joint assertion of asti and nāsti, and the question of whether the system is truth-functional (G. Priest, 2008) are flagged but not adjudicated; compound evaluation over the seven values is deferred to phase 2.',
+    primitives: [
+      {
+        name: 'Syāt',
+        syntax: 'syāt …',
+        description: 'The conditional particle — “in some respect.” Every bhaṅga is prefixed by it, marking the assertion as standpoint-relative rather than absolute.',
+      },
+      {
+        name: 'Asti',
+        syntax: 'standpoint <name>: asti',
+        description: 'The affirmative mode — the predicate holds of the subject, in the respect named by the standpoint.',
+      },
+      {
+        name: 'Nāsti',
+        syntax: 'standpoint <name>: nasti',
+        description: 'The negative mode — the predicate fails of the subject, in the respect named by the standpoint.',
+      },
+      {
+        name: 'Avaktavya',
+        syntax: 'standpoint <name>: avaktavya',
+        description: 'The inexpressible mode — the predicate jointly holds-and-fails in the same respect, asserted at once, which no successive predication can express. Phase 1 treats it as a third primitive mode.',
+      },
+      {
+        name: 'Standpoint (naya)',
+        syntax: 'standpoint <name>: <mode>',
+        description: 'A respect from which the predication is made. Phase 1 treats a standpoint as an opaque label; the full sevenfold naya doctrine is out of scope.',
+      },
+      {
+        name: 'Bhaṅga',
+        syntax: '1 – 7',
+        description: 'One of the seven conditional predications — the non-empty subset of {asti, nāsti, avaktavya} formed by unioning the modes asserted across all standpoints.',
+      },
+    ],
+    examples: [
+      {
+        slug: 'pot-permanent',
+        natural: 'The pot is permanent qua substance, not qua its shape, and inexpressible qua its origin — the full sevenfold bhaṅga.',
+        dsl:
+          'subject:   the pot\n' +
+          'predicate: permanent\n' +
+          'standpoint substance : asti        -- qua its clay, permanent\n' +
+          'standpoint mode      : nasti       -- qua its present shape, not\n' +
+          'standpoint origin    : avaktavya   -- qua coming-to-be, inexpressible',
+        note: 'The textbook predication. All three modes are asserted across the standpoints, so the union is {asti, nāsti, avaktavya} — bhaṅga 7, syād asti nāsti avaktavya.',
+      },
+      {
+        slug: 'pot-substance',
+        natural: 'The pot is permanent qua its clay substance — the bare affirmative bhaṅga.',
+        dsl:
+          'subject:   the pot\n' +
+          'predicate: permanent\n' +
+          'standpoint substance : asti',
+        note: 'A single asti standpoint. The union is {asti} — bhaṅga 1, syād asti.',
+      },
+      {
+        slug: 'pot-shape',
+        natural: 'The pot is not permanent qua its present shape — the bare negative bhaṅga.',
+        dsl:
+          'subject:   the pot\n' +
+          'predicate: permanent\n' +
+          'standpoint present-shape : nasti',
+        note: 'A single nāsti standpoint. The union is {nāsti} — bhaṅga 2, syād nāsti.',
+      },
+      {
+        slug: 'soul-existence',
+        natural: 'The soul exists qua its own substance and not qua any given body — affirmation and denial in different respects.',
+        dsl:
+          'subject:   the soul\n' +
+          'predicate: existent\n' +
+          'standpoint own-substance : asti\n' +
+          'standpoint a-given-body  : nasti',
+        note: 'A classic Jain example. asti and nāsti are asserted from different standpoints, so the union is {asti, nāsti} — bhaṅga 3, syād asti nāsti. This is successive predication, distinct from the same-respect joint assertion of avaktavya.',
+      },
+      {
+        slug: 'pot-inexpressible',
+        natural: 'The pot is permanent-and-impermanent in the very same respect, asserted at once — inexpressible.',
+        dsl:
+          'subject:   the pot\n' +
+          'predicate: permanent\n' +
+          'standpoint co-presentation : avaktavya',
+        note: 'A single avaktavya standpoint. The union is {avaktavya} — bhaṅga 4, syād avaktavya. Phase 1 takes avaktavya as a third primitive mode, not as a derived joint of asti and nāsti.',
+      },
+      {
+        slug: 'lamp-asti-avaktavya',
+        natural: 'The lamp exists here and now, yet its coming-to-be jointly is-and-is-not — affirmation plus the inexpressible.',
+        dsl:
+          'subject:   the lamp\n' +
+          'predicate: existent\n' +
+          'standpoint here-and-now : asti\n' +
+          'standpoint coming-to-be : avaktavya',
+        note: 'The union is {asti, avaktavya} — bhaṅga 5, syād asti avaktavya.',
+      },
+      {
+        slug: 'lamp-nasti-avaktavya',
+        natural: 'The lamp is not eternal qua its flame, and its coming-to-be is jointly so-and-not-so — denial plus the inexpressible.',
+        dsl:
+          'subject:   the lamp\n' +
+          'predicate: eternal\n' +
+          'standpoint as-a-flame   : nasti\n' +
+          'standpoint coming-to-be : avaktavya',
+        note: 'The union is {nāsti, avaktavya} — bhaṅga 6, syād nāsti avaktavya.',
+      },
+    ],
+    readingPointers: [
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Logic in Classical Indian Philosophy',
+        href: 'https://plato.stanford.edu/entries/logic-india/',
+        kind: 'external',
+      },
+      {
+        title: 'Matilal, The Character of Logic in India (SUNY, 1998)',
+        href: 'https://sunypress.edu/Books/T/The-Character-of-Logic-in-India',
+        kind: 'external',
+      },
+    ],
+  },
+  {
+    slug: 'catuskoti',
+    name: 'Catuṣkoṭi (Nāgārjuna’s Tetralemma)',
+    shortDescription:
+      'The “four corners” of Indian, and especially Madhyamaka Buddhist, logic: for a proposition A the four koṭis are A, ¬A, A∧¬A, and ¬(A∨¬A). The schema is used both to affirm one corner and, in the prasaṅga mode, to reject all four.',
+    era: '~2nd c. CE',
+    keyPrimitive: 'four-cornered predication (catuṣkoṭi)',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'The catuṣkoṭi — “four corners” — is the tetralemma of Indian logic, attested in the early Buddhist discourses and given its sharpest use by Nāgārjuna (c. 2nd c. CE), the founder of the Madhyamaka school. For any proposition A the four koṭis are A, ¬A, both A and ¬A, and neither A nor ¬A. Nāgārjuna uses the schema in two opposite ways. In the affirming (positive) use — the Buddha’s teaching of Mūlamadhyamakakārikā 18.8, “all is real, or not real, both real and not real, neither real nor not real” — exactly one corner is asserted of the proposition. In the prasaṅga use — the Madhyamaka refutation — all four corners are denied at once: this is the treatment of the avyākṛta, the questions the Buddha set aside as not answerable, most famously whether the Tathāgata exists after death (MMK ch. 22, 25). Modern logicians reconstruct the catuṣkoṭi as a four-valued, paraconsistent scheme — the four values of First Degree Entailment (FDE): true only, false only, both (a glut), neither (a gap), which are exactly the four subsets of {true, false}. This Lab implements phase 1: it places a proposition at one of the four koṭis under one of the two readings, and evaluates each of the four corner-formulas under that valuation. It commits to the four-valued FDE reconstruction (the clean, enumerable reading that renders as a four-corner diagram). G. Priest’s argument (2010) that the prasaṅga use needs a fifth, “ineffable” value, and the dispute over whether rejecting all four corners is consistent (Priest & Garfield, 2002), are flagged but not adjudicated; compound evaluation over the four values is deferred to phase 2.',
+    primitives: [
+      {
+        name: 'Proposition',
+        syntax: 'proposition: <text>',
+        description: 'The proposition A under examination. The catuṣkoṭi places it at one of four corners.',
+      },
+      {
+        name: 'Affirmation (koṭi 1)',
+        syntax: 'koti: affirmation',
+        description: 'The first corner — A, “it is.” The FDE value {true}: the proposition holds and only holds.',
+      },
+      {
+        name: 'Negation (koṭi 2)',
+        syntax: 'koti: negation',
+        description: 'The second corner — ¬A, “it is not.” The FDE value {false}: the proposition fails and only fails.',
+      },
+      {
+        name: 'Both (koṭi 3)',
+        syntax: 'koti: both',
+        description: 'The third corner — A∧¬A, “it both is and is not.” The FDE glut {true, false}: the proposition is at once true and false.',
+      },
+      {
+        name: 'Neither (koṭi 4)',
+        syntax: 'koti: neither',
+        description: 'The fourth corner — ¬(A∨¬A), “it neither is nor is not.” The FDE gap {}: the proposition is neither true nor false.',
+      },
+      {
+        name: 'Reading',
+        syntax: 'reading: affirming | prasanga',
+        description: 'How the schema is used. Affirming asserts the chosen corner of the proposition; prasaṅga (the Madhyamaka refutation) denies the chosen corner and, with it, all four.',
+      },
+    ],
+    examples: [
+      {
+        slug: 'dharmas-affirmation',
+        natural: 'All things are real — the first lemma of MMK 18.8, asserted outright.',
+        dsl:
+          'proposition: all things are real\n' +
+          'koti:        affirmation\n' +
+          'reading:     affirming',
+        note: 'The affirming (positive) catuṣkoṭi of MMK 18.8, first lemma. v(A) = {true}; of the four corner-formulas, only A is designated.',
+      },
+      {
+        slug: 'dharmas-negation',
+        natural: 'All things are not real — the second lemma, the bare negation.',
+        dsl:
+          'proposition: all things are real\n' +
+          'koti:        negation\n' +
+          'reading:     affirming',
+        note: 'The second lemma. v(A) = {false}; only the ¬A corner is designated.',
+      },
+      {
+        slug: 'dharmas-both',
+        natural: 'All things are both real and not real — the third lemma, the glut.',
+        dsl:
+          'proposition: all things are real\n' +
+          'koti:        both\n' +
+          'reading:     affirming',
+        note: 'The third lemma. v(A) is the glut {true, false}; under FDE all four corner-formulas come out designated at once — the structural fact the diagram surfaces.',
+      },
+      {
+        slug: 'dharmas-neither',
+        natural: 'All things are neither real nor not real — the fourth lemma, the gap.',
+        dsl:
+          'proposition: all things are real\n' +
+          'koti:        neither\n' +
+          'reading:     affirming',
+        note: 'The fourth lemma. v(A) is the gap {}; no corner-formula is designated — not even ¬(A∨¬A), the formula that expresses “neither.” Phase 1 flags this consistency tension rather than resolving it.',
+      },
+      {
+        slug: 'tathagata-affirmation',
+        natural: 'The Tathāgata exists after death — the first corner, refused by the prasaṅga.',
+        dsl:
+          'proposition: the Tathāgata exists after death\n' +
+          'koti:        affirmation\n' +
+          'reading:     prasanga',
+        note: 'The first of the avyākṛta — the unanswered questions (MMK ch. 22, 25). An opponent affirms the corner; the Madhyamaka prasaṅga refuses it, and with it all four.',
+      },
+      {
+        slug: 'tathagata-negation',
+        natural: 'The Tathāgata does not exist after death — the second corner, equally refused.',
+        dsl:
+          'proposition: the Tathāgata exists after death\n' +
+          'koti:        negation\n' +
+          'reading:     prasanga',
+        note: 'The prasaṅga denies the second corner as well — non-existence after death is no more assertible than existence.',
+      },
+      {
+        slug: 'tathagata-both',
+        natural: 'The Tathāgata both exists and does not exist after death — the third corner, refused.',
+        dsl:
+          'proposition: the Tathāgata exists after death\n' +
+          'koti:        both\n' +
+          'reading:     prasanga',
+        note: 'The third corner — the conjunction — is refused too, though under FDE the glut would designate every corner-formula. The prasaṅga rejects the position regardless.',
+      },
+      {
+        slug: 'tathagata-neither',
+        natural: 'The Tathāgata neither exists nor does not exist after death — the fourth corner, also refused.',
+        dsl:
+          'proposition: the Tathāgata exists after death\n' +
+          'koti:        neither\n' +
+          'reading:     prasanga',
+        note: 'The fourth corner is refused, completing the prasaṅga: none of the four koṭis is assertible. Whether this “reject all four” is a consistent logical position or a refusal to assert is the live dispute (Priest & Garfield, 2002).',
+      },
+    ],
+    readingPointers: [
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Nāgārjuna',
+        href: 'https://plato.stanford.edu/entries/nagarjuna/',
+        kind: 'external',
+      },
+      {
+        title: 'Priest & Garfield, Nāgārjuna and the Limits of Thought',
+        href: 'https://doi.org/10.1093/acprof:oso/9780199244218.003.0011',
+        kind: 'external',
+      },
+    ],
+  },
+  {
+    slug: 'mohist',
+    name: 'Mohist Disputation (Móu / Parallel Inference)',
+    shortDescription:
+      'The parallel-inference logic of the Later Mohist Canon: from an accepted “X is Y”, apply one operator to both terms and ask whether the parallel carries. The Xiao Qu enumerates four ways it can behave — and móu is licensed in only the first.',
+    era: '~3rd c. BCE',
+    keyPrimitive: 'parallel inference (móu 侔)',
+    status: 'available',
+    thinkerSlug: null,
+    history:
+      'The Later Mohists — the authors of the Mojing (the Mohist Canon) and the Xiao Qu 小取 (“Lesser Pick”) chapter, c. 3rd century BCE — built the one indigenous East Asian formal-logic tradition: a theory of names (míng 名), of disputation (biàn 辯 — the two-party contest in which, the Canon holds, exactly one of a contradictory pair prevails), and of the parallel-inference forms. The form with explicit structure, and the one this Lab models, is móu 侔, “parallelizing”: from a sentence already granted — “a white horse is a horse” (是, shì, “this”) — apply the same operator to each term, and the resulting sentence is tentatively asserted too (然, rán, “so”): “riding a white horse is riding a horse.” The Mohists’ discovery is that this move is not reliable, and the Xiao Qu says so by enumerating four ways a structurally-parallel pair behaves — 是而然 (this, and so), 是而不然 (this, but not so), 一周而一不周 (one comprehensive, one not), 一是而一非 (one so, one not) — of which only the first licenses móu. Whether Mohist disputation is “formal” at all is genuinely contested: Graham (1978) reconstructs the Mojing as a rigorous proto-logic, Harbsmeier (1998) is more cautious about reading a calculus into it, and Fraser treats the parallelizing forms as defeasible argument schemata rather than a deductive system. This Lab takes no side. It models the one uncontroversially structural thing — the móu form and the Xiao Qu’s own four-category taxonomy — and so its engine form-checks the schema (is there a real operator and two distinct terms?) and cross-checks a declared outcome against a declared failure flag; it never infers which category a parallel “really” belongs to, because that is not mechanically decidable. Phase 1 covers móu proper; the categories one comprehensive / one not and one so / one not, which the Xiao Qu raises as further differently-shaped warnings, are represented as the schema allows and flagged where it strains.',
+    primitives: [
+      {
+        name: 'Base pair',
+        syntax: 'base: X | Y',
+        description: 'The accepted base sentence “X is Y” — the 是 (shì, “this”), granted before the inference runs. The two terms must be distinct.',
+      },
+      {
+        name: 'Operator',
+        syntax: 'operator: <text>',
+        description: 'The operation applied uniformly to both base terms to build the parallel pair — e.g. “ride”, “love”, “kill”, “the ghost of”.',
+      },
+      {
+        name: '是而然 (shì ér rán)',
+        syntax: 'outcome: shi-er-ran',
+        description: 'This, and so — the parallel carries; móu is licensed. The white-horse case: riding a white horse is riding a horse.',
+      },
+      {
+        name: '是而不然 (shì ér bù rán)',
+        syntax: 'outcome: shi-er-bu-ran',
+        description: 'This, but not so — identical wording, yet the parallel fails because the operator reads its object under a description. Pairs with flag: opacity.',
+      },
+      {
+        name: '一周而一不周 (yī zhōu ér yī bù zhōu)',
+        syntax: 'outcome: yi-zhou-yi-bu-zhou',
+        description: 'One comprehensive, one not — the predicate scopes over all (周) on one side and over some on the other. Pairs with flag: scope.',
+      },
+      {
+        name: '一是而一非 (yī shì ér yī fēi)',
+        syntax: 'outcome: yi-shi-yi-fei',
+        description: 'One so, one not — the operator preserves kind for one term but not the other. Pairs with flag: sortal.',
+      },
+      {
+        name: 'Failure flag',
+        syntax: 'flag: opacity | scope | sortal',
+        description: 'Names the failure mode. The engine cross-checks it against the declared outcome — no flag implies 是而然; a mismatch is reported as an inconsistency.',
+      },
+    ],
+    examples: [
+      {
+        slug: 'white-horse-ride',
+        natural: 'A white horse is a horse; riding a white horse is riding a horse — the parallel carries.',
+        dsl:
+          'base:     a white horse | a horse\n' +
+          'operator: ride\n' +
+          'outcome:  shi-er-ran',
+        note: 'The stock 是而然 case of the Xiao Qu. The operator “ride” applies cleanly to both terms; with no failure flag the engine confirms the declared outcome is consistent and the parallel transfers.',
+      },
+      {
+        slug: 'huo-love',
+        natural: 'Huo (a servant) is a person; loving Huo is loving people — the parallel carries.',
+        dsl:
+          'base:     Huo, a servant | a person\n' +
+          'operator: love\n' +
+          'outcome:  shi-er-ran',
+        note: 'A second 是而然 case (獲，人也；愛獲，愛人也). Loving Huo does transfer to loving people — the contrast class for the brother/handsome-man case below, where the same operator fails.',
+      },
+      {
+        slug: 'brother-handsome-love',
+        natural: 'Her brother is a handsome man; yet loving her brother is not loving a handsome man.',
+        dsl:
+          'base:     her younger brother | a handsome man\n' +
+          'operator: love\n' +
+          'outcome:  shi-er-bu-ran\n' +
+          'flag:     opacity\n' +
+          'gloss:    loving reads its object under a description — one loves the brother as brother, not as handsome man',
+        note: 'The canonical 是而不然 case (其弟，美人也；愛弟，非愛美人也). Identical form to huo-love, opposite fate: “love” here is referentially opaque. The flag opacity implies 是而不然, matching the declared outcome.',
+      },
+      {
+        slug: 'boat-wood-enter',
+        natural: 'A boat is wood; yet entering a boat is not entering wood.',
+        dsl:
+          'base:     a boat | wood\n' +
+          'operator: enter\n' +
+          'outcome:  shi-er-bu-ran\n' +
+          'flag:     opacity\n' +
+          'gloss:    one enters the boat qua artifact, not qua its material',
+        note: 'A 是而不然 case (船，木也；入船，非入木也). “Entering a boat” takes the boat as the artifact it is, not as the wood it is made of — the operator is sensitive to the description.',
+      },
+      {
+        slug: 'robber-person-kill',
+        natural: 'A robber is a person; yet — the Mohists argue — killing a robber is not killing a person.',
+        dsl:
+          'base:     a robber | a person\n' +
+          'operator: kill\n' +
+          'outcome:  shi-er-bu-ran\n' +
+          'flag:     opacity\n' +
+          'gloss:    the Mohists’ own ethically-loaded case — “kill” takes the robber under that description',
+        note: 'The most discussed 是而不然 case (盜人，人也；殺盜人，非殺人也). The Mohists use it to hold that punishing robbers is consistent with universal care. The Lab classifies the parallel form; it does not endorse the ethical conclusion.',
+      },
+      {
+        slug: 'riding-horses-negation',
+        natural: 'Riding one horse counts as riding horses; but not riding one horse is not not riding horses.',
+        dsl:
+          'base:     riding one horse | riding horses\n' +
+          'operator: not\n' +
+          'outcome:  yi-zhou-yi-bu-zhou\n' +
+          'flag:     scope\n' +
+          'gloss:    “riding horses” is existential, but “not riding horses” needs every horse refused — comprehensive',
+        note: 'A 一周而一不周 case, after the Xiao Qu’s 乘馬 passage. The affirmed predicate scopes existentially (one horse suffices); under the operator “not” it turns comprehensive. This category strains the strict one-operator schema — see docs/formal-logic/mohist.md §“Open questions” 2.',
+      },
+      {
+        slug: 'brother-ghost',
+        natural: 'One’s elder brother is a person; but a brother’s ghost is a brother, while a person’s ghost is not a person.',
+        dsl:
+          'base:     one’s elder brother | a person\n' +
+          'operator: the ghost of\n' +
+          'outcome:  yi-shi-yi-fei\n' +
+          'flag:     sortal\n' +
+          'gloss:    “the ghost of” preserves kind for the brother but not for the person',
+        note: 'A 一是而一非 case (兄之鬼，兄也；人之鬼，非人也). The operator preserves kind on one term and not the other. Like the scope case, this stretches the one-operator schema; the flag sortal implies 一是而一非, matching the declared outcome.',
+      },
+    ],
+    readingPointers: [
+      {
+        title: 'Stanford Encyclopedia of Philosophy: Mohism',
+        href: 'https://plato.stanford.edu/entries/mohism/',
+        kind: 'external',
+      },
+      {
+        title: 'Stanford Encyclopedia of Philosophy: School of Names',
+        href: 'https://plato.stanford.edu/entries/school-names/',
+        kind: 'external',
+      },
+    ],
+  },
+  {
     slug: 'medieval',
     name: 'Medieval Modal Syllogistic',
     shortDescription:

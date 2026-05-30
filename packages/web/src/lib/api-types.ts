@@ -37,6 +37,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["VerifyRequestDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VerifyResponseDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/arguments/{id}": {
         parameters: {
             query?: never;
@@ -149,6 +197,39 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/graph/path": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ping": {
         parameters: {
             query?: never;
@@ -173,39 +254,6 @@ export interface paths {
                     content: {
                         "application/json": components["schemas"]["Boolean<>f__AnonymousType1113642371"];
                     };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/graph/path": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
                 };
             };
         };
@@ -723,6 +771,27 @@ export interface components {
         "Boolean<>f__AnonymousType1113642371": {
             ok?: boolean;
         };
+        ErrorResponseDto: {
+            error?: string | null;
+        };
+        FitchLine: {
+            /** Format: int32 */
+            lineNo?: number;
+            /** Format: int32 */
+            depth?: number;
+            formula?: {
+                [key: string]: unknown;
+            } | null;
+            rule?: components["schemas"]["Rule"];
+            cites?: {
+                [key: string]: unknown;
+            }[] | null;
+        };
+        FitchProof: {
+            lines?: components["schemas"]["FitchLine"][] | null;
+            /** Format: int32 */
+            conclusionLine?: number;
+        };
         JsonNode: {
             options?: components["schemas"]["JsonNodeOptions"];
             parent?: components["schemas"]["JsonNode"];
@@ -730,6 +799,25 @@ export interface components {
         };
         JsonNodeOptions: {
             propertyNameCaseInsensitive?: boolean;
+        };
+        /** @enum {string} */
+        Rule: "premise" | "assumption" | "reit" | "andI" | "andEL" | "andER" | "orIL" | "orIR" | "orE" | "impI" | "impE" | "iffI" | "iffEL" | "iffER" | "notI" | "notE" | "botE" | "raa";
+        /** @enum {string} */
+        RuleSet: "classical" | "intuitionistic";
+        VerifyDiagnosticDto: {
+            /** Format: int32 */
+            line?: number;
+            severity?: string | null;
+            message?: string | null;
+        };
+        VerifyRequestDto: {
+            proof?: components["schemas"]["FitchProof"];
+            ruleSet?: components["schemas"]["RuleSet"];
+        };
+        VerifyResponseDto: {
+            verdict?: string | null;
+            diagnostics?: components["schemas"]["VerifyDiagnosticDto"][] | null;
+            message?: string | null;
         };
         WriteArgumentDto: {
             workSlug?: string | null;

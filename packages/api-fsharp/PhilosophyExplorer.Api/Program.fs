@@ -7,6 +7,8 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
 open PhilosophyExplorer.Graph
+open PhilosophyExplorer.Logic.Lean
+open PhilosophyExplorer.Logic.Nd
 open PhilosophyExplorer.Routes
 open PhilosophyExplorer.Telemetry
 
@@ -39,6 +41,19 @@ let main args =
         c.SwaggerDoc("v1", Microsoft.OpenApi.Models.OpenApiInfo(
             Title = "Philosophy Explorer API",
             Version = "0.0.1"))
+        // FolFormula and Cite are F# discriminated unions — Swashbuckle's
+        // reflection would render their CLR shape (`tag`, `isXxx`). The wire
+        // form is the internally-tagged JSON mirrored from nd-types.ts; it is
+        // left opaque here, since the TS stack stays authoritative for the
+        // AST (see .tickets/feat-logic-lab-lean-nd.md, decision 3).
+        c.MapType<FolFormula>(fun () ->
+            Microsoft.OpenApi.Models.OpenApiSchema(
+                Type = "object",
+                AdditionalProperties = Microsoft.OpenApi.Models.OpenApiSchema()))
+        c.MapType<Cite>(fun () ->
+            Microsoft.OpenApi.Models.OpenApiSchema(
+                Type = "object",
+                AdditionalProperties = Microsoft.OpenApi.Models.OpenApiSchema()))
     ) |> ignore
 
     builder.Services.ConfigureHttpJsonOptions(fun opts ->
@@ -47,6 +62,25 @@ let main args =
     ) |> ignore
 
     builder.Services.AddCors() |> ignore
+
+    // Lean verification runner — spawns `lake env lean` behind ILeanRunner.
+    // See docs/formal-logic/formal-verification.md.
+    let leanPackageDir =
+        let fromEnv = Environment.GetEnvironmentVariable("LEAN_PACKAGE_PATH")
+        if not (String.IsNullOrEmpty fromEnv) then fromEnv
+        else
+            Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "packages", "lean")
+            |> Path.GetFullPath
+    // 60s default — a warm verification is ~1-2s, but the first run against a
+    // cold toolchain pays a one-time OS/cache cost; see the spike work-history.
+    let leanTimeout =
+        match Int32.TryParse(Environment.GetEnvironmentVariable("LEAN_TIMEOUT_SECONDS")) with
+        | true, s when s > 0 -> TimeSpan.FromSeconds(float s)
+        | _ -> TimeSpan.FromSeconds 60.0
+    builder.Services.AddSingleton<ILeanRunner>(
+        SubprocessLeanRunner({ PackageDir = leanPackageDir; Timeout = leanTimeout })
+        :> ILeanRunner)
+    |> ignore
 
     let app = builder.Build()
 
@@ -91,6 +125,7 @@ let main args =
     CatalogRoutes.register app
     ArgumentRoutes.register app
     GraphRoutes.register graphService app
+    VerifyRoutes.register app
 
     // Swagger / OpenAPI
     app.UseSwagger() |> ignore
