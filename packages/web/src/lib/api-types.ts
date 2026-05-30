@@ -85,6 +85,118 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/arguments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["WriteArgumentDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/works/{slug}/arguments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/graph/path": {
         parameters: {
             query?: never;
@@ -291,6 +403,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/arguments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["WriteArgumentDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -425,39 +591,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/arguments": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/philosophers/{slug}": {
         parameters: {
             query?: never;
@@ -494,76 +627,6 @@ export interface paths {
         trace?: never;
     };
     "/api/works/{slug}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    slug: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/arguments/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/works/{slug}/arguments": {
         parameters: {
             query?: never;
             header?: never;
@@ -729,6 +792,14 @@ export interface components {
             /** Format: int32 */
             conclusionLine?: number;
         };
+        JsonNode: {
+            options?: components["schemas"]["JsonNodeOptions"];
+            parent?: components["schemas"]["JsonNode"];
+            root?: components["schemas"]["JsonNode"];
+        };
+        JsonNodeOptions: {
+            propertyNameCaseInsensitive?: boolean;
+        };
         /** @enum {string} */
         Rule: "premise" | "assumption" | "reit" | "andI" | "andEL" | "andER" | "orIL" | "orIR" | "orE" | "impI" | "impE" | "iffI" | "iffEL" | "iffER" | "notI" | "notE" | "botE" | "raa";
         /** @enum {string} */
@@ -747,6 +818,53 @@ export interface components {
             verdict?: string | null;
             diagnostics?: components["schemas"]["VerifyDiagnosticDto"][] | null;
             message?: string | null;
+        };
+        WriteArgumentDto: {
+            workSlug?: string | null;
+            sourceFile?: string | null;
+            /** Format: int32 */
+            sourceStartLine?: number | null;
+            /** Format: int32 */
+            sourceEndLine?: number | null;
+            sourceExcerpt?: string | null;
+            intent?: string | null;
+            extractorNote?: string | null;
+            clauses?: components["schemas"]["WriteClauseDto"][] | null;
+            formalizations?: components["schemas"]["WriteFormalizationDto"][] | null;
+            assessments?: components["schemas"]["WriteAssessmentDto"][] | null;
+            reviewerNotes?: string[] | null;
+            attributions?: components["schemas"]["WriteAttributionDto"][] | null;
+        };
+        WriteAssessmentDto: {
+            formalism?: string | null;
+            /** Format: double */
+            fitScore?: number;
+            reason?: string | null;
+            distortionRisk?: string | null;
+        };
+        WriteAttributionDto: {
+            philosopherSlug?: string | null;
+            workSlug?: string | null;
+            formalismRef?: string | null;
+            provenance?: string | null;
+            sourceText?: string | null;
+            note?: string | null;
+        };
+        WriteClauseDto: {
+            role?: string | null;
+            /** Format: int32 */
+            position?: number;
+            verbalText?: string | null;
+            sourceExcerpt?: string | null;
+        };
+        WriteFormalizationDto: {
+            formalism?: string | null;
+            isPrimary?: boolean;
+            /** Format: double */
+            fitScore?: number | null;
+            reason?: string | null;
+            distortionRisk?: string | null;
+            ast?: components["schemas"]["JsonNode"];
         };
     };
     responses: never;

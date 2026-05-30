@@ -156,6 +156,7 @@ type User =
 type ArgumentRow =
     { Id: string
       ExtractionId: string
+      Origin: string
       WorkId: string
       SourceFile: string
       SourceStartLine: Nullable<int>

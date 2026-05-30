@@ -1,5 +1,6 @@
 namespace PhilosophyExplorer.Domain
 
+open System
 open System.Text.Json.Nodes
 open System.Text.Json.Serialization
 
@@ -259,3 +260,61 @@ type ArgumentDetailDto =
       [<JsonPropertyName("assessments")>] Assessments: ArgumentAssessmentDto list
       [<JsonPropertyName("reviewerNotes")>] ReviewerNotes: string list
       [<JsonPropertyName("attributions")>] Attributions: ArgumentAttributionDto list }
+
+// ── Argument write DTOs (request bodies for POST/PUT) ──────────────────────
+//
+// Deliberately free of F# `option` — inputs use plain reference types,
+// Nullable<_>, JsonNode and arrays so request deserialization is robust
+// regardless of converter wiring. Missing arrays bind to null and are treated
+// as empty by the write layer. `ast` is a JsonNode parsed straight from the
+// request and stored verbatim as ast_json; an invalid JSON body fails binding
+// with a 400 before reaching the handler.
+
+[<CLIMutable>]
+type WriteClauseDto =
+    { [<JsonPropertyName("role")>] Role: string
+      [<JsonPropertyName("position")>] Position: int
+      [<JsonPropertyName("verbalText")>] VerbalText: string
+      [<JsonPropertyName("sourceExcerpt")>] SourceExcerpt: string }
+
+[<CLIMutable>]
+type WriteFormalizationDto =
+    { [<JsonPropertyName("formalism")>] Formalism: string
+      [<JsonPropertyName("isPrimary")>] IsPrimary: bool
+      [<JsonPropertyName("fitScore")>] FitScore: Nullable<double>
+      [<JsonPropertyName("reason")>] Reason: string
+      [<JsonPropertyName("distortionRisk")>] DistortionRisk: string
+      [<JsonPropertyName("ast")>] Ast: JsonNode }
+
+[<CLIMutable>]
+type WriteAssessmentDto =
+    { [<JsonPropertyName("formalism")>] Formalism: string
+      [<JsonPropertyName("fitScore")>] FitScore: double
+      [<JsonPropertyName("reason")>] Reason: string
+      [<JsonPropertyName("distortionRisk")>] DistortionRisk: string }
+
+[<CLIMutable>]
+type WriteAttributionDto =
+    { [<JsonPropertyName("philosopherSlug")>] PhilosopherSlug: string
+      [<JsonPropertyName("workSlug")>] WorkSlug: string
+      // Which formalization this attribution attaches to, named by its
+      // formalism (e.g. "fol"); empty/null → not tied to a formalization.
+      [<JsonPropertyName("formalismRef")>] FormalismRef: string
+      [<JsonPropertyName("provenance")>] Provenance: string
+      [<JsonPropertyName("sourceText")>] SourceText: string
+      [<JsonPropertyName("note")>] Note: string }
+
+[<CLIMutable>]
+type WriteArgumentDto =
+    { [<JsonPropertyName("workSlug")>] WorkSlug: string
+      [<JsonPropertyName("sourceFile")>] SourceFile: string
+      [<JsonPropertyName("sourceStartLine")>] SourceStartLine: Nullable<int>
+      [<JsonPropertyName("sourceEndLine")>] SourceEndLine: Nullable<int>
+      [<JsonPropertyName("sourceExcerpt")>] SourceExcerpt: string
+      [<JsonPropertyName("intent")>] Intent: string
+      [<JsonPropertyName("extractorNote")>] ExtractorNote: string
+      [<JsonPropertyName("clauses")>] Clauses: WriteClauseDto[]
+      [<JsonPropertyName("formalizations")>] Formalizations: WriteFormalizationDto[]
+      [<JsonPropertyName("assessments")>] Assessments: WriteAssessmentDto[]
+      [<JsonPropertyName("reviewerNotes")>] ReviewerNotes: string[]
+      [<JsonPropertyName("attributions")>] Attributions: WriteAttributionDto[] }

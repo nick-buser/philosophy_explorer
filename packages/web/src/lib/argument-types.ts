@@ -69,6 +69,64 @@ export type DialogicalAst = {
   };
 };
 
+// The full formalism set mirrors claim_extractor's FormalismKind (schemas/
+// extraction.py) and the importer (scripts/build-arguments-seed.mjs). Only the
+// first four are "wired" — richly typed + rendered as a clause table / move
+// list. The rest carry their AST verbatim and render via a generic fallback
+// (formatted JSON + an "open in Logic Lab" link) until each gets bespoke UI.
+export const ALL_FORMALISMS = [
+  'fol', 'nd', 'aristotelian', 'dialogical',
+  'boolean', 'frege', 'medieval', 'eg', 'kripke',
+  'epistemic', 'intuitionistic', 'temporal', 'ctl', 'indian', 'resolution',
+] as const;
+export type Formalism = typeof ALL_FORMALISMS[number];
+
+export const WIRED_FORMALISMS = ['fol', 'nd', 'aristotelian', 'dialogical'] as const;
+export type WiredFormalism = typeof WIRED_FORMALISMS[number];
+
+// Human labels for every formalism (switcher, assessments, index filter).
+export const FORMALISM_LABELS: Record<Formalism, string> = {
+  fol: 'First-order logic',
+  nd: 'Natural deduction',
+  aristotelian: 'Aristotelian',
+  dialogical: 'Dialogical',
+  boolean: 'Boolean algebra',
+  frege: 'Frege Begriffsschrift',
+  medieval: 'Medieval modal',
+  eg: 'Existential graphs',
+  kripke: 'Kripke modal',
+  epistemic: 'Epistemic',
+  intuitionistic: 'Intuitionistic',
+  temporal: 'Temporal (LTL)',
+  ctl: 'Branching (CTL)',
+  indian: 'Indian / Nyāya',
+  resolution: 'Resolution / Datalog',
+};
+
+// Map a formalism to its Logic Lab system slug (/logic/$system). dialogical is
+// first-party in claim_extractor and has no Logic Lab counterpart → null.
+export const FORMALISM_LAB_SLUG: Record<Formalism, string | null> = {
+  fol: 'modern-fol',
+  nd: 'natural-deduction',
+  aristotelian: 'aristotelian',
+  dialogical: null,
+  boolean: 'boolean',
+  frege: 'frege-bs',
+  medieval: 'medieval',
+  eg: 'peirce-eg',
+  kripke: 'kripke',
+  epistemic: 'epistemic',
+  intuitionistic: 'intuitionistic',
+  temporal: 'temporal-ltl',
+  ctl: 'temporal-ctl',
+  indian: 'indian-buddhist',
+  resolution: 'resolution',
+};
+
+export function formalismLabel(f: string): string {
+  return FORMALISM_LABELS[f as Formalism] ?? f;
+}
+
 type FormalizationBase = {
   id: string;
   isPrimary: boolean;
@@ -77,13 +135,16 @@ type FormalizationBase = {
   distortionRisk: string | null;
 };
 
+// AST payload for the not-yet-wired formalisms — kept opaque; the generic view
+// pretty-prints it and links to the matching Logic Lab system.
+export type GenericAst = Record<string, unknown>;
+
 export type Formalization =
   | (FormalizationBase & { formalism: 'fol'; ast: FolAst })
   | (FormalizationBase & { formalism: 'nd'; ast: NdAst })
   | (FormalizationBase & { formalism: 'aristotelian'; ast: AristotelianAst })
-  | (FormalizationBase & { formalism: 'dialogical'; ast: DialogicalAst });
-
-export type Formalism = Formalization['formalism'];
+  | (FormalizationBase & { formalism: 'dialogical'; ast: DialogicalAst })
+  | (FormalizationBase & { formalism: Exclude<Formalism, WiredFormalism>; ast: GenericAst });
 
 export type ArgumentAssessment = {
   formalism: string;
@@ -142,6 +203,57 @@ export type ArgumentDetail = {
   attributions: ArgumentAttribution[];
 };
 
+// ── Write inputs (POST/PUT request bodies) ─────────────────────────────────
+// Mirror the F# WriteArgumentDto in Domain/Dtos.fs. `ast` is sent verbatim as
+// JSON; the server stores it as ast_json.
+
+export type WriteClauseInput = {
+  role: string;
+  position: number;
+  verbalText: string | null;
+  sourceExcerpt: string | null;
+};
+
+export type WriteFormalizationInput = {
+  formalism: Formalism;
+  isPrimary: boolean;
+  fitScore: number | null;
+  reason: string | null;
+  distortionRisk: string | null;
+  ast: unknown;
+};
+
+export type WriteAssessmentInput = {
+  formalism: string;
+  fitScore: number;
+  reason: string;
+  distortionRisk: string | null;
+};
+
+export type WriteAttributionInput = {
+  philosopherSlug: string;
+  workSlug: string | null;
+  formalismRef: string | null;
+  provenance: Provenance;
+  sourceText: string | null;
+  note: string | null;
+};
+
+export type WriteArgumentInput = {
+  workSlug: string | null;
+  sourceFile: string | null;
+  sourceStartLine: number | null;
+  sourceEndLine: number | null;
+  sourceExcerpt: string | null;
+  intent: string;
+  extractorNote: string | null;
+  clauses: WriteClauseInput[];
+  formalizations: WriteFormalizationInput[];
+  assessments: WriteAssessmentInput[];
+  reviewerNotes: string[];
+  attributions: WriteAttributionInput[];
+};
+
 // Pick the formula a given clause maps to within a whole-AST formalization.
 // V1 alignment is positional (clause.position indexes into the AST). Returns
 // null for formalisms where clauses don't map 1:1 to formulas (dialogical).
@@ -160,6 +272,9 @@ export function clauseFormula(
       // syllogism positions 0/1/2 → major/minor/conclusion; proposition → single.
       return formalization.ast.formula;
     case 'dialogical':
+      return null;
+    default:
+      // Not-yet-wired formalisms: the generic view renders the AST directly.
       return null;
   }
 }

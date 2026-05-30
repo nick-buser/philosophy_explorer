@@ -74,7 +74,7 @@ module Seed =
 
     [<CLIMutable>]
     type ArgumentSeed =
-        { Id: string; ExtractionId: string; WorkSlug: string
+        { Id: string; ExtractionId: string; Origin: string; WorkSlug: string
           SourceFile: string
           SourceStartLine: Nullable<int>; SourceEndLine: Nullable<int>
           SourceExcerpt: string; Intent: string; ExtractorNote: string
@@ -199,6 +199,10 @@ module Seed =
             CREATE TABLE IF NOT EXISTS arguments (
                 id TEXT PRIMARY KEY,
                 extraction_id TEXT NOT NULL UNIQUE,
+                -- origin: 'import' (seeded from claim_extractor) | 'user' (created in-app).
+                -- The importer is additive (INSERT OR IGNORE) so in-app edits to
+                -- imported rows are never clobbered; 'user' rows are never touched by it.
+                origin TEXT NOT NULL DEFAULT 'import',
                 work_id TEXT REFERENCES works(id) ON DELETE SET NULL,
                 source_file TEXT,
                 source_start_line INTEGER,
@@ -385,10 +389,12 @@ module Seed =
                 let inserted =
                     conn.Execute(
                         skipDuplicates "INSERT OR IGNORE INTO arguments
-                            (id, extraction_id, work_id, source_file, source_start_line, source_end_line,
+                            (id, extraction_id, origin, work_id, source_file, source_start_line, source_end_line,
                              source_excerpt, intent, extractor_note)
-                         VALUES (@Id, @Eid, @Wid, @Sf, @Ssl, @Sel, @Sex, @Int, @En)",
-                        {| Id = a.Id; Eid = a.ExtractionId; Wid = workId
+                         VALUES (@Id, @Eid, @Origin, @Wid, @Sf, @Ssl, @Sel, @Sex, @Int, @En)",
+                        {| Id = a.Id; Eid = a.ExtractionId
+                           Origin = (if String.IsNullOrEmpty a.Origin then "import" else a.Origin)
+                           Wid = workId
                            Sf = a.SourceFile; Ssl = a.SourceStartLine; Sel = a.SourceEndLine
                            Sex = a.SourceExcerpt; Int = a.Intent; En = a.ExtractorNote |})
                 if inserted = 0 then () // already present — skip children too, keep idempotent

@@ -53,7 +53,17 @@ function loadWorkSlugs() {
 
 function loadPhilosopherSlugs() {
   const phils = JSON.parse(readFileSync(PHILOSOPHERS_SEED, 'utf8'));
-  return new Set(phils.map(p => p.slug));
+  return phils.map(p => p.slug);
+}
+
+// claim_extractor uses short author slugs ('russell', 'spinoza'); the
+// philosophers seed uses full-name slugs ('bertrand-russell', 'baruch-spinoza').
+// Resolve by exact match, then by a *unique* '-<authorSlug>' suffix. Ambiguous
+// (>1 match) or absent → null, and the caller emits no attribution.
+function resolvePhilosopherSlug(authorSlug, slugs) {
+  if (slugs.includes(authorSlug)) return authorSlug;
+  const matches = slugs.filter(s => s.endsWith('-' + authorSlug));
+  return matches.length === 1 ? matches[0] : null;
 }
 
 // Resolve a claim_extractor work_id like "plato/meno" against the works.json
@@ -65,15 +75,17 @@ function resolveWorkSlug(workId, knownSlugs) {
   return knownSlugs.has(slug) ? slug : null;
 }
 
+// Clause layout per formalism. Clauses are the positional "standard form" rows
+// the UI aligns to the AST. nd and (syllogistic) aristotelian decompose into
+// premises + conclusion; everything else carries a single load-bearing clause
+// (role 'claim', or 'composite' for dialogical where the UI renders moves from
+// the AST). The single-clause formalisms mirror how 'fol' is handled.
 function clausesFor(primary) {
   const out = [];
   const push = (role, position) =>
     out.push({ role, position, verbalText: null, sourceExcerpt: null });
 
   switch (primary.formalism) {
-    case 'fol':
-      push('claim', 0);
-      return out;
     case 'nd': {
       const n = primary.argument.premises.length;
       for (let i = 0; i < n; i++) push('premise', i);
@@ -90,23 +102,56 @@ function clausesFor(primary) {
       }
       return out;
     case 'dialogical':
-      // V1: one synthetic clause; the UI renders the move list from the AST.
+      // One synthetic clause; the UI renders the move list from the AST.
       push('composite', 0);
+      return out;
+    // Single-clause formalisms — the AST carries the whole structure and the
+    // UI renders it via the matching Logic Lab renderer (or a JSON fallback).
+    case 'fol':
+    case 'boolean':
+    case 'frege':
+    case 'medieval':
+    case 'kripke':
+    case 'epistemic':
+    case 'intuitionistic':
+    case 'temporal':
+    case 'ctl':
+    case 'eg':
+    case 'indian':
+    case 'resolution':
+      push('claim', 0);
       return out;
     default:
       throw new Error(`Unknown formalism: ${primary.formalism}`);
   }
 }
 
-// Pull the inner AST payload that the F# side will store as ast_json. We keep
-// each formalism's payload exactly as-shipped from claim_extractor so the
-// existing TS parsers/renderers can consume it without translation.
+// Pull the inner AST payload that the F# side stores verbatim as ast_json. Each
+// formalism's payload is kept exactly as-shipped from claim_extractor (keys
+// mirror schemas/extraction.py's PrimaryExtraction members) so the existing
+// Logic Lab parsers/renderers consume it without translation. Optional members
+// (model / trace / proof) are normalized to null when absent.
 function astFor(primary) {
   switch (primary.formalism) {
+    // formula-only
     case 'fol':           return { formula:   primary.formula };
-    case 'nd':            return { argument:  primary.argument, proof: primary.proof ?? null };
+    case 'boolean':       return { formula:   primary.formula };
+    case 'frege':         return { formula:   primary.formula };
+    case 'medieval':      return { formula:   primary.formula };
     case 'aristotelian':  return { formula:   primary.formula };
+    // formula + optional model
+    case 'kripke':        return { formula:   primary.formula, model: primary.model ?? null };
+    case 'epistemic':     return { formula:   primary.formula, model: primary.model ?? null };
+    case 'intuitionistic':return { formula:   primary.formula, model: primary.model ?? null };
+    case 'ctl':           return { formula:   primary.formula, model: primary.model ?? null };
+    // formula + optional trace
+    case 'temporal':      return { formula:   primary.formula, trace: primary.trace ?? null };
+    // bespoke payload keys
+    case 'nd':            return { argument:  primary.argument, proof: primary.proof ?? null };
     case 'dialogical':    return { dialogue:  primary.dialogue };
+    case 'eg':            return { graph:     primary.graph };
+    case 'indian':        return { inference: primary.inference };
+    case 'resolution':    return { program:   primary.program };
     default:
       throw new Error(`Unknown formalism: ${primary.formalism}`);
   }
@@ -114,7 +159,7 @@ function astFor(primary) {
 
 function build() {
   const knownSlugs = loadWorkSlugs();
-  const knownPhilSlugs = loadPhilosopherSlugs();
+  const philSlugs = loadPhilosopherSlugs();
   const paths = findExtractions(EXTRACTIONS_DIR);
   console.log(`Found ${paths.length} extractions under ${EXTRACTIONS_DIR}`);
 
@@ -160,10 +205,11 @@ function build() {
     // against the philosophers table; unknown slugs cause the attribution row
     // to be skipped with a warning (the argument still seeds without it).
     const authorSlug = extraction.work_id.split('/')[0];
+    const philSlug = resolvePhilosopherSlug(authorSlug, philSlugs);
     const attributions = [];
-    if (knownPhilSlugs.has(authorSlug)) {
+    if (philSlug) {
       attributions.push({
-        philosopherSlug: authorSlug,
+        philosopherSlug: philSlug,
         workSlug: workSlug ?? '',
         formalizationLabel: 'primary',
         provenance: 'auto',
@@ -177,6 +223,7 @@ function build() {
     out.push({
       id,
       extractionId: extraction.extraction_id,
+      origin: 'import',
       workSlug,
       sourceFile: extraction.source_span.file,
       sourceStartLine: extraction.source_span.start_line,
