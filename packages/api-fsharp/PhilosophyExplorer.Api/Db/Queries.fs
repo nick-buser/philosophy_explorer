@@ -1,6 +1,8 @@
 namespace PhilosophyExplorer.Db
 
+open System
 open System.Data
+open System.Text.Json.Nodes
 open Dapper
 open PhilosophyExplorer.Domain
 
@@ -394,4 +396,163 @@ module Queries =
                      ORDER BY a.created_at ASC",
                     {| Aid = argumentId |})
             return rows |> Seq.toList
+        }
+
+    // ── Argument writes (CRUD) ─────────────────────────────────────────────
+    // The DB is authoritative for arguments (see work-history/feat-argument-crud.md).
+    // The seed importer stays additive (INSERT OR IGNORE), so these writes are
+    // never clobbered by a re-seed. Child rows reuse the deterministic id scheme
+    // from Db/Seed.fs and are replaced wholesale on update (delete + re-insert in
+    // one transaction) rather than diffed.
+
+    /// Canonical formalism set — mirrors claim_extractor FormalismKind and the
+    /// web ALL_FORMALISMS. Used to reject unknown formalisms on write.
+    let knownFormalisms =
+        set [ "fol"; "nd"; "aristotelian"; "dialogical"; "boolean"; "frege"
+              "medieval"; "eg"; "kripke"; "epistemic"; "intuitionistic"
+              "temporal"; "ctl"; "indian"; "resolution" ]
+
+    let argumentExists (id: string) =
+        task {
+            use conn = openConn ()
+            let! n = conn.ExecuteScalarAsync<int>(
+                        "SELECT COUNT(*) FROM arguments WHERE id = @Id", {| Id = id |})
+            return n > 0
+        }
+
+    // Insert all child rows for an argument inside an open transaction. Returns
+    // Error when an attribution names a philosopher/work slug that doesn't exist.
+    let private insertArgumentChildren
+        (conn: IDbConnection) (tx: IDbTransaction) (argId: string) (dto: WriteArgumentDto) : Result<unit, string> =
+        let arr x = if isNull (box x) then [||] else x
+        let exec (sql: string) (ps: obj) = conn.Execute(sql, ps, transaction = tx) |> ignore
+
+        // clauses
+        for c in arr dto.Clauses do
+            exec "INSERT INTO argument_clauses (id, argument_id, role, position, verbal_text, source_excerpt)
+                  VALUES (@Id, @Aid, @Role, @Pos, @Vt, @Sex)"
+                 {| Id = $"{argId}:clause:{c.Position}"; Aid = argId; Role = c.Role
+                    Pos = c.Position; Vt = c.VerbalText; Sex = c.SourceExcerpt |}
+
+        // formalizations — build formalism→id map for attribution refs
+        let formIds = System.Collections.Generic.Dictionary<string, string>()
+        for f in arr dto.Formalizations do
+            let label = if f.IsPrimary then "primary" else "alt"
+            let fid = $"{argId}:form:{f.Formalism}:{label}"
+            formIds[f.Formalism] <- fid
+            let astJson = if isNull (box f.Ast) then "null" else f.Ast.ToJsonString()
+            exec "INSERT INTO argument_formalizations
+                    (id, argument_id, formalism, is_primary, fit_score, reason, distortion_risk, ast_json)
+                  VALUES (@Id, @Aid, @Form, @IsP, @Fs, @R, @Dr, @Ast)"
+                 {| Id = fid; Aid = argId; Form = f.Formalism
+                    IsP = (if f.IsPrimary then 1 else 0)
+                    Fs = f.FitScore; R = f.Reason; Dr = f.DistortionRisk; Ast = astJson |}
+
+        // assessments
+        for a in arr dto.Assessments do
+            exec "INSERT INTO argument_formalism_assessments
+                    (id, argument_id, formalism, fit_score, reason, distortion_risk)
+                  VALUES (@Id, @Aid, @Form, @Fs, @R, @Dr)"
+                 {| Id = $"{argId}:assess:{a.Formalism}"; Aid = argId; Form = a.Formalism
+                    Fs = a.FitScore; R = a.Reason; Dr = a.DistortionRisk |}
+
+        // reviewer notes
+        arr dto.ReviewerNotes |> Array.iteri (fun i note ->
+            exec "INSERT INTO argument_reviewer_notes (id, argument_id, position, note)
+                  VALUES (@Id, @Aid, @Pos, @Note)"
+                 {| Id = $"{argId}:note:{i}"; Aid = argId; Pos = i; Note = note |})
+
+        // attributions — resolve philosopher (required) + work (optional) slugs
+        let mutable err = None
+        arr dto.Attributions |> Array.iteri (fun i at ->
+            if err.IsNone then
+                let philId =
+                    conn.ExecuteScalar<string>(
+                        "SELECT id FROM philosophers WHERE slug = @S", {| S = at.PhilosopherSlug |}, transaction = tx)
+                if isNull philId then
+                    err <- Some $"unknown philosopher slug '{at.PhilosopherSlug}'"
+                else
+                    let workId =
+                        if String.IsNullOrWhiteSpace at.WorkSlug then null
+                        else conn.ExecuteScalar<string>(
+                                "SELECT id FROM works WHERE slug = @S", {| S = at.WorkSlug |}, transaction = tx)
+                    if not (String.IsNullOrWhiteSpace at.WorkSlug) && isNull workId then
+                        err <- Some $"unknown work slug '{at.WorkSlug}'"
+                    else
+                        let formalizationId =
+                            if String.IsNullOrWhiteSpace at.FormalismRef then null
+                            else match formIds.TryGetValue at.FormalismRef with
+                                 | true, v -> v
+                                 | _ -> null
+                        exec "INSERT INTO argument_attributions
+                                (id, argument_id, philosopher_id, work_id, formalization_id, provenance, source_text, note)
+                              VALUES (@Id, @Aid, @Pid, @Wid, @Fid, @Prov, @Src, @Note)"
+                             {| Id = $"{argId}:attr:{i}"; Aid = argId; Pid = philId; Wid = workId
+                                Fid = formalizationId
+                                Prov = (if String.IsNullOrWhiteSpace at.Provenance then "hand_written" else at.Provenance)
+                                Src = at.SourceText; Note = at.Note |})
+        match err with Some e -> Error e | None -> Ok ()
+
+    let private resolveWorkId (conn: IDbConnection) (tx: IDbTransaction) (slug: string) : Result<string, string> =
+        if String.IsNullOrWhiteSpace slug then Ok null
+        else
+            let id = conn.ExecuteScalar<string>("SELECT id FROM works WHERE slug = @S", {| S = slug |}, transaction = tx)
+            if isNull id then Error $"unknown work slug '{slug}'" else Ok id
+
+    /// Create a new user-authored argument. `id` is caller-generated; origin='user'.
+    let createArgument (id: string) (dto: WriteArgumentDto) : System.Threading.Tasks.Task<Result<unit, string>> =
+        task {
+            use conn = openConn ()
+            use tx = conn.BeginTransaction()
+            match resolveWorkId conn tx dto.WorkSlug with
+            | Error e -> tx.Rollback(); return Error e
+            | Ok workId ->
+                conn.Execute(
+                    "INSERT INTO arguments
+                        (id, extraction_id, origin, work_id, source_file, source_start_line, source_end_line,
+                         source_excerpt, intent, extractor_note)
+                     VALUES (@Id, @Eid, 'user', @Wid, @Sf, @Ssl, @Sel, @Sex, @Int, @En)",
+                    {| Id = id; Eid = id; Wid = workId
+                       Sf = dto.SourceFile; Ssl = dto.SourceStartLine; Sel = dto.SourceEndLine
+                       Sex = dto.SourceExcerpt; Int = dto.Intent; En = dto.ExtractorNote |},
+                    transaction = tx) |> ignore
+                match insertArgumentChildren conn tx id dto with
+                | Error e -> tx.Rollback(); return Error e
+                | Ok () -> tx.Commit(); return Ok ()
+        }
+
+    /// Replace an existing argument's header + children in one transaction.
+    /// origin is left unchanged (provenance of creation); updated_at is bumped.
+    let replaceArgument (id: string) (dto: WriteArgumentDto) : System.Threading.Tasks.Task<Result<unit, string>> =
+        task {
+            use conn = openConn ()
+            use tx = conn.BeginTransaction()
+            match resolveWorkId conn tx dto.WorkSlug with
+            | Error e -> tx.Rollback(); return Error e
+            | Ok workId ->
+                conn.Execute(
+                    "UPDATE arguments
+                     SET work_id = @Wid, source_file = @Sf, source_start_line = @Ssl, source_end_line = @Sel,
+                         source_excerpt = @Sex, intent = @Int, extractor_note = @En, updated_at = datetime('now')
+                     WHERE id = @Id",
+                    {| Id = id; Wid = workId
+                       Sf = dto.SourceFile; Ssl = dto.SourceStartLine; Sel = dto.SourceEndLine
+                       Sex = dto.SourceExcerpt; Int = dto.Intent; En = dto.ExtractorNote |},
+                    transaction = tx) |> ignore
+                // Replace children wholesale (delete + re-insert).
+                for t in [ "argument_clauses"; "argument_formalizations"
+                           "argument_formalism_assessments"; "argument_reviewer_notes"
+                           "argument_attributions" ] do
+                    conn.Execute($"DELETE FROM {t} WHERE argument_id = @Id", {| Id = id |}, transaction = tx) |> ignore
+                match insertArgumentChildren conn tx id dto with
+                | Error e -> tx.Rollback(); return Error e
+                | Ok () -> tx.Commit(); return Ok ()
+        }
+
+    /// Delete an argument. Child rows cascade via FK ON DELETE CASCADE.
+    /// Returns rows affected (0 ⇒ not found).
+    let deleteArgument (id: string) =
+        task {
+            use conn = openConn ()
+            return conn.Execute("DELETE FROM arguments WHERE id = @Id", {| Id = id |})
         }

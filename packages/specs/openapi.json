@@ -8,7 +8,100 @@
         "/api/graph/stats": {
             "get": {
                 "tags": [
-                    "Pipe #1 input at line 42@42"
+                    "Pipe #1 input at line 46@46"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/arguments/{id}": {
+            "delete": {
+                "tags": [
+                    "Pipe #10 input at line 182@182"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Pipe #4 input at line 133@133"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Pipe #8 input at line 162@162"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WriteArgumentDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/works/{slug}/arguments": {
+            "get": {
+                "tags": [
+                    "Pipe #12 input at line 192@192"
+                ],
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -20,7 +113,7 @@
         "/ping": {
             "get": {
                 "tags": [
-                    "Pipe #10 input at line 62@62"
+                    "Pipe #12 input at line 73@73"
                 ],
                 "responses": {
                     "200": {
@@ -39,7 +132,7 @@
         "/api/graph/path": {
             "get": {
                 "tags": [
-                    "Pipe #13 input at line 69@69"
+                    "Pipe #13 input at line 74@74"
                 ],
                 "responses": {
                     "200": {
@@ -51,7 +144,7 @@
         "/api/graph/influence/{slug}": {
             "get": {
                 "tags": [
-                    "Pipe #15 input at line 89@89"
+                    "Pipe #15 input at line 95@95"
                 ],
                 "parameters": [
                     {
@@ -73,7 +166,7 @@
         "/api/graph/school/{slug}": {
             "get": {
                 "tags": [
-                    "Pipe #16 input at line 97@97"
+                    "Pipe #16 input at line 104@104"
                 ],
                 "parameters": [
                     {
@@ -95,7 +188,7 @@
         "/api/graph/curriculum/{slug}": {
             "get": {
                 "tags": [
-                    "Pipe #17 input at line 103@103"
+                    "Pipe #17 input at line 111@111"
                 ],
                 "parameters": [
                     {
@@ -117,8 +210,39 @@
         "/api/graph/influence-network": {
             "get": {
                 "tags": [
-                    "Pipe #18 input at line 109@109"
+                    "Pipe #18 input at line 118@118"
                 ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/arguments": {
+            "get": {
+                "tags": [
+                    "Pipe #2 input at line 116@116"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Pipe #6 input at line 144@144"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WriteArgumentDto"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -129,7 +253,7 @@
         "/api/health": {
             "get": {
                 "tags": [
-                    "Pipe #2 input at line 16@16"
+                    "Pipe #2 input at line 17@17"
                 ],
                 "responses": {
                     "200": {
@@ -165,7 +289,7 @@
         "/api/graph/node/{key}": {
             "get": {
                 "tags": [
-                    "Pipe #2 input at line 48@48"
+                    "Pipe #2 input at line 52@52"
                 ],
                 "parameters": [
                     {
@@ -176,18 +300,6 @@
                             "type": "string"
                         }
                     }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/api/arguments": {
-            "get": {
-                "tags": [
-                    "Pipe #2 input at line 64@64"
                 ],
                 "responses": {
                     "200": {
@@ -240,54 +352,10 @@
                 }
             }
         },
-        "/api/arguments/{id}": {
-            "get": {
-                "tags": [
-                    "Pipe #4 input at line 80@80"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/api/works/{slug}/arguments": {
-            "get": {
-                "tags": [
-                    "Pipe #6 input at line 115@115"
-                ],
-                "parameters": [
-                    {
-                        "name": "slug",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
         "/api/graph/neighbors/{key}": {
             "get": {
                 "tags": [
-                    "Pipe #6 input at line 55@55"
+                    "Pipe #6 input at line 59@59"
                 ],
                 "parameters": [
                     {
@@ -348,6 +416,204 @@
                 "properties": {
                     "ok": {
                         "type": "boolean"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "JsonNode": {
+                "type": "object",
+                "properties": {
+                    "options": {
+                        "$ref": "#/components/schemas/JsonNodeOptions"
+                    },
+                    "parent": {
+                        "$ref": "#/components/schemas/JsonNode"
+                    },
+                    "root": {
+                        "$ref": "#/components/schemas/JsonNode"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "JsonNodeOptions": {
+                "type": "object",
+                "properties": {
+                    "propertyNameCaseInsensitive": {
+                        "type": "boolean"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WriteArgumentDto": {
+                "type": "object",
+                "properties": {
+                    "workSlug": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "sourceFile": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "sourceStartLine": {
+                        "type": "integer",
+                        "format": "int32",
+                        "nullable": true
+                    },
+                    "sourceEndLine": {
+                        "type": "integer",
+                        "format": "int32",
+                        "nullable": true
+                    },
+                    "sourceExcerpt": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "intent": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "extractorNote": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "clauses": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/WriteClauseDto"
+                        },
+                        "nullable": true
+                    },
+                    "formalizations": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/WriteFormalizationDto"
+                        },
+                        "nullable": true
+                    },
+                    "assessments": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/WriteAssessmentDto"
+                        },
+                        "nullable": true
+                    },
+                    "reviewerNotes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "nullable": true
+                    },
+                    "attributions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/WriteAttributionDto"
+                        },
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WriteAssessmentDto": {
+                "type": "object",
+                "properties": {
+                    "formalism": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "fitScore": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "reason": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "distortionRisk": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WriteAttributionDto": {
+                "type": "object",
+                "properties": {
+                    "philosopherSlug": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "workSlug": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "formalismRef": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "provenance": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "sourceText": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "note": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WriteClauseDto": {
+                "type": "object",
+                "properties": {
+                    "role": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "position": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "verbalText": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "sourceExcerpt": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WriteFormalizationDto": {
+                "type": "object",
+                "properties": {
+                    "formalism": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "isPrimary": {
+                        "type": "boolean"
+                    },
+                    "fitScore": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    },
+                    "reason": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "distortionRisk": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "ast": {
+                        "$ref": "#/components/schemas/JsonNode"
                     }
                 },
                 "additionalProperties": false

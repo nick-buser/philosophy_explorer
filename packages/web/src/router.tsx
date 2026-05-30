@@ -8,6 +8,9 @@ import { curriculaRoute } from './routes/curricula';
 import { curriculumDetailRoute } from './routes/curricula.$slug';
 import { logicIndexRoute } from './routes/logic';
 import { logicSystemRoute } from './routes/logic.$system';
+import { argumentsRoute } from './routes/arguments';
+import { argumentNewRoute } from './routes/arguments.new';
+import { argumentDetailRoute } from './routes/arguments.$';
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -18,6 +21,9 @@ const routeTree = rootRoute.addChildren([
   curriculumDetailRoute,
   logicIndexRoute,
   logicSystemRoute,
+  argumentsRoute,
+  argumentNewRoute,
+  argumentDetailRoute,
 ]);
 
 export const router = createRouter({ routeTree });

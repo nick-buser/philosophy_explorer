@@ -7,6 +7,9 @@ import type { AristotelianFormula, CategoricalProposition } from '../logic/arist
 import {
   clauseFormula,
   isDialogueAct,
+  formalismLabel,
+  FORMALISM_LAB_SLUG,
+  WIRED_FORMALISMS,
   type ArgumentDetail,
   type ArgumentAttribution,
   type Formalization,
@@ -16,12 +19,7 @@ import {
 
 const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
-const FORMALISM_LABEL: Record<string, string> = {
-  fol: 'First-order logic',
-  nd: 'Natural deduction',
-  aristotelian: 'Aristotelian',
-  dialogical: 'Dialogical',
-};
+const WIRED = new Set<string>(WIRED_FORMALISMS);
 
 const ROLE_LABEL: Record<string, string> = {
   premise: 'Premise',
@@ -170,6 +168,40 @@ function DialogicalView({ formalization }: { formalization: Extract<Formalizatio
   );
 }
 
+// ── Generic fallback (not-yet-wired formalisms) ───────────────────────────
+
+// For the 11 formalisms without a bespoke clause/move view yet, show the AST
+// verbatim (it's exactly what the matching Logic Lab parses) plus a deep link
+// into that system. Bespoke per-formalism rendering is a fast-follow.
+function GenericFormalizationView({
+  formalization,
+}: {
+  formalization: Extract<Formalization, { ast: Record<string, unknown> }>;
+}) {
+  const labSlug = FORMALISM_LAB_SLUG[formalization.formalism];
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-[10px] uppercase tracking-wider text-gray-600">
+          {formalismLabel(formalization.formalism)} · AST
+        </span>
+        {labSlug && (
+          <Link
+            to="/logic/$system"
+            params={{ system: labSlug }}
+            className="text-xs text-gray-400 hover:text-white transition-colors"
+          >
+            Open in Logic Lab →
+          </Link>
+        )}
+      </div>
+      <pre className="text-xs text-gray-300 font-mono bg-gray-950/60 border border-gray-800 rounded p-3 overflow-x-auto whitespace-pre-wrap">
+        {JSON.stringify(formalization.ast, null, 2)}
+      </pre>
+    </div>
+  );
+}
+
 // ── Card ──────────────────────────────────────────────────────────────────
 
 export function ArgumentCard({ argumentId }: { argumentId: string }) {
@@ -224,7 +256,7 @@ export function ArgumentCard({ argumentId }: { argumentId: string }) {
                 : 'border-gray-800 text-gray-500 hover:text-gray-300'
             }`}
           >
-            {FORMALISM_LABEL[f.formalism] ?? f.formalism}
+            {formalismLabel(f.formalism)}
             {f.isPrimary && data.formalizations.length > 1 && (
               <span className="ml-1.5 text-[10px] text-gray-600">primary</span>
             )}
@@ -235,7 +267,7 @@ export function ArgumentCard({ argumentId }: { argumentId: string }) {
       {/* Standard form */}
       {active.formalism === 'dialogical' ? (
         <DialogicalView formalization={active} />
-      ) : (
+      ) : WIRED.has(active.formalism) ? (
         <div>
           <div className="grid grid-cols-[7rem_1fr_1fr] gap-3 pb-1 text-[10px] uppercase tracking-wider text-gray-600">
             <div />
@@ -246,6 +278,10 @@ export function ArgumentCard({ argumentId }: { argumentId: string }) {
             <ClauseRow key={c.id} clause={c} formalization={active} />
           ))}
         </div>
+      ) : (
+        <GenericFormalizationView
+          formalization={active as Extract<Formalization, { ast: Record<string, unknown> }>}
+        />
       )}
 
       {/* Context (collapsible) */}
@@ -282,7 +318,7 @@ export function ArgumentCard({ argumentId }: { argumentId: string }) {
               <ul className="space-y-1.5">
                 {data.assessments.map(a => (
                   <li key={a.formalism} className="text-gray-400">
-                    <span className="text-gray-300">{FORMALISM_LABEL[a.formalism] ?? a.formalism}</span>
+                    <span className="text-gray-300">{formalismLabel(a.formalism)}</span>
                     <span className="text-gray-600"> · fit {a.fitScore.toFixed(2)}</span>
                     <span className="block text-gray-500">{a.reason}</span>
                   </li>

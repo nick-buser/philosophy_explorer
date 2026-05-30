@@ -63,6 +63,54 @@ module ArgumentRoutes =
           SourceText = Option.ofObj r.SourceText
           Note = Option.ofObj r.Note }
 
+    // Assemble the full detail DTO for one argument id (shared by GET, POST, PUT).
+    let private buildDetail (id: string) : System.Threading.Tasks.Task<ArgumentDetailDto option> =
+        task {
+            let! header = Queries.getArgumentHeader id
+            match header with
+            | None -> return None
+            | Some h ->
+                let! clauses = Queries.getArgumentClauses h.Id
+                let! formalizations = Queries.getArgumentFormalizations h.Id
+                let! assessments = Queries.getArgumentAssessments h.Id
+                let! notes = Queries.getArgumentReviewerNotes h.Id
+                let! attributions = Queries.getArgumentAttributions h.Id
+                return Some
+                    { Id = h.Id
+                      ExtractionId = h.ExtractionId
+                      WorkId = Option.ofObj h.WorkId
+                      WorkSlug = Option.ofObj h.WorkSlug
+                      WorkTitle = Option.ofObj h.WorkTitle
+                      Source =
+                          { File = Option.ofObj h.SourceFile
+                            StartLine = nToOpt h.SourceStartLine
+                            EndLine = nToOpt h.SourceEndLine
+                            Excerpt = Option.ofObj h.SourceExcerpt }
+                      Intent = h.Intent
+                      ExtractorNote = Option.ofObj h.ExtractorNote
+                      Clauses = clauses |> List.map toClauseDto
+                      Formalizations = formalizations |> List.map toFormalizationDto
+                      Assessments = assessments |> List.map toAssessmentDto
+                      ReviewerNotes = notes
+                      Attributions = attributions |> List.map toAttributionDto }
+        }
+
+    // Pure validation of a write payload. Returns the first problem, or None.
+    let private validateWrite (dto: WriteArgumentDto) : string option =
+        let forms = if isNull (box dto.Formalizations) then [||] else dto.Formalizations
+        if String.IsNullOrWhiteSpace dto.Intent then Some "intent is required"
+        elif forms.Length = 0 then Some "at least one formalization is required"
+        elif forms |> Array.exists (fun f -> not (Queries.knownFormalisms.Contains f.Formalism)) then
+            Some "unknown formalism (must be one of the 15 known systems)"
+        elif forms |> Array.exists (fun f -> isNull (box f.Ast)) then
+            Some "each formalization requires an ast"
+        elif (forms |> Array.filter (fun f -> f.IsPrimary) |> Array.length) <> 1 then
+            Some "exactly one formalization must be marked primary"
+        else None
+
+    let private badRequest (msg: string) = Results.Json({ ErrorResponseDto.Error = msg }, statusCode = 400)
+    let private notFound () = Results.Json({ ErrorResponseDto.Error = "Argument not found" }, statusCode = 404)
+
     let register (app: WebApplication) =
         // GET /api/arguments  (optional ?workSlug= filter)
         app.MapGet("/api/arguments", Func<HttpContext, IResult>(fun ctx ->
@@ -85,35 +133,58 @@ module ArgumentRoutes =
         app.MapGet("/api/arguments/{*id}", Func<string, IResult>(fun id ->
             task {
                 countLookup "detail"
-                let! header = Queries.getArgumentHeader id
-                match header with
+                let! detail = buildDetail id
+                match detail with
+                | Some d -> return Results.Json(d, statusCode = 200)
+                | None -> return notFound ()
+            } |> _.Result
+        )) |> ignore
+
+        // POST /api/arguments — create a user-authored argument (origin='user').
+        app.MapPost("/api/arguments", Func<WriteArgumentDto, IResult>(fun dto ->
+            task {
+                countLookup "create"
+                match validateWrite dto with
+                | Some e -> return badRequest e
                 | None ->
-                    return Results.Json({ ErrorResponseDto.Error = "Argument not found" }, statusCode = 404)
-                | Some h ->
-                    let! clauses = Queries.getArgumentClauses h.Id
-                    let! formalizations = Queries.getArgumentFormalizations h.Id
-                    let! assessments = Queries.getArgumentAssessments h.Id
-                    let! notes = Queries.getArgumentReviewerNotes h.Id
-                    let! attributions = Queries.getArgumentAttributions h.Id
-                    let dto: ArgumentDetailDto =
-                        { Id = h.Id
-                          ExtractionId = h.ExtractionId
-                          WorkId = Option.ofObj h.WorkId
-                          WorkSlug = Option.ofObj h.WorkSlug
-                          WorkTitle = Option.ofObj h.WorkTitle
-                          Source =
-                              { File = Option.ofObj h.SourceFile
-                                StartLine = nToOpt h.SourceStartLine
-                                EndLine = nToOpt h.SourceEndLine
-                                Excerpt = Option.ofObj h.SourceExcerpt }
-                          Intent = h.Intent
-                          ExtractorNote = Option.ofObj h.ExtractorNote
-                          Clauses = clauses |> List.map toClauseDto
-                          Formalizations = formalizations |> List.map toFormalizationDto
-                          Assessments = assessments |> List.map toAssessmentDto
-                          ReviewerNotes = notes
-                          Attributions = attributions |> List.map toAttributionDto }
-                    return Results.Json(dto, statusCode = 200)
+                    let id = Guid.NewGuid().ToString()
+                    match! Queries.createArgument id dto with
+                    | Error e -> return badRequest e
+                    | Ok () ->
+                        let! detail = buildDetail id
+                        match detail with
+                        | Some d -> return Results.Json(d, statusCode = 201)
+                        | None -> return Results.Json({ ErrorResponseDto.Error = "created but failed to load" }, statusCode = 500)
+            } |> _.Result
+        )) |> ignore
+
+        // PUT /api/arguments/{id} — replace an existing argument wholesale.
+        app.MapPut("/api/arguments/{*id}", Func<string, WriteArgumentDto, IResult>(fun id dto ->
+            task {
+                countLookup "update"
+                let! exists = Queries.argumentExists id
+                if not exists then return notFound ()
+                else
+                    match validateWrite dto with
+                    | Some e -> return badRequest e
+                    | None ->
+                        match! Queries.replaceArgument id dto with
+                        | Error e -> return badRequest e
+                        | Ok () ->
+                            let! detail = buildDetail id
+                            match detail with
+                            | Some d -> return Results.Json(d, statusCode = 200)
+                            | None -> return Results.Json({ ErrorResponseDto.Error = "updated but failed to load" }, statusCode = 500)
+            } |> _.Result
+        )) |> ignore
+
+        // DELETE /api/arguments/{id} — child rows cascade via FK.
+        app.MapDelete("/api/arguments/{*id}", Func<string, IResult>(fun id ->
+            task {
+                countLookup "delete"
+                let! n = Queries.deleteArgument id
+                if n = 0 then return notFound ()
+                else return Results.StatusCode(204)
             } |> _.Result
         )) |> ignore
 

@@ -5,6 +5,7 @@ open System.IO
 open System.Text.Json.Nodes
 open Xunit
 open PhilosophyExplorer.Db
+open PhilosophyExplorer.Domain
 
 // Seed a throwaway SQLite database and point DATABASE_URL at it *before*
 // DbFactory (which reads the env var once at its own module init) is touched.
@@ -93,3 +94,94 @@ let ``secondary assessments and reviewer notes are seeded`` () =
         Queries.getArgumentReviewerNotes "plato/meno/001-virtue-same-in-all" |> wait
     Assert.NotEmpty(assessments)
     Assert.NotEmpty(notes)
+
+// ── CRUD writes ────────────────────────────────────────────────────────────
+
+let private fol (pred: string) =
+    JsonNode.Parse($"""{{"formula":{{"kind":"pred","name":"{pred}","args":[]}}}}""")
+
+let private sampleDto (intent: string) : WriteArgumentDto =
+    { WorkSlug = "nicomachean-ethics"
+      SourceFile = "t.txt"
+      SourceStartLine = Nullable 1
+      SourceEndLine = Nullable 2
+      SourceExcerpt = "excerpt"
+      Intent = intent
+      ExtractorNote = null
+      Clauses = [| { Role = "claim"; Position = 0; VerbalText = "the claim"; SourceExcerpt = null } |]
+      Formalizations =
+        [| { Formalism = "fol"; IsPrimary = true; FitScore = Nullable()
+             Reason = null; DistortionRisk = null; Ast = fol "P" } |]
+      Assessments = [| { Formalism = "nd"; FitScore = 0.3; Reason = "could derive"; DistortionRisk = null } |]
+      ReviewerNotes = [| "note one"; "note two" |]
+      Attributions =
+        [| { PhilosopherSlug = "aristotle"; WorkSlug = "nicomachean-ethics"
+             FormalismRef = "fol"; Provenance = "hand_written"; SourceText = "src"; Note = null } |] }
+
+[<Fact>]
+let ``createArgument persists the full graph and reads back`` () =
+    ensureSeeded ()
+    let id = Guid.NewGuid().ToString()
+    let res = Queries.createArgument id (sampleDto "created arg") |> wait
+    Assert.True((match res with Ok () -> true | Error _ -> false), $"create failed: {res}")
+
+    let h = Queries.getArgumentHeader id |> wait
+    Assert.True(h.IsSome)
+    Assert.Equal("created arg", h.Value.Intent)
+    Assert.Equal("nicomachean-ethics", h.Value.WorkSlug)
+
+    let clauses = Queries.getArgumentClauses id |> wait
+    Assert.Single(clauses) |> ignore
+    let forms = Queries.getArgumentFormalizations id |> wait
+    Assert.Single(forms) |> ignore
+    Assert.Equal("fol", (List.head forms).Formalism)
+    let attrs = Queries.getArgumentAttributions id |> wait
+    Assert.Single(attrs) |> ignore
+    // attribution resolved the philosopher and linked the primary formalization
+    Assert.Equal("aristotle", (List.head attrs).PhilosopherSlug)
+    Assert.False(isNull (List.head attrs).FormalizationId)
+
+[<Fact>]
+let ``createArgument rejects an unknown philosopher slug and rolls back`` () =
+    ensureSeeded ()
+    let id = Guid.NewGuid().ToString()
+    let dto =
+        { sampleDto "bad attribution" with
+            Attributions =
+                [| { PhilosopherSlug = "nobody-here"; WorkSlug = null; FormalismRef = null
+                     Provenance = "auto"; SourceText = null; Note = null } |] }
+    let res = Queries.createArgument id dto |> wait
+    Assert.True((match res with Error _ -> true | Ok () -> false), "should reject unknown philosopher")
+    // rolled back — the argument row must not exist
+    Assert.False(Queries.argumentExists id |> wait)
+
+[<Fact>]
+let ``replaceArgument swaps the children wholesale`` () =
+    ensureSeeded ()
+    let id = Guid.NewGuid().ToString()
+    Queries.createArgument id (sampleDto "before edit") |> wait |> ignore
+
+    let edited =
+        { sampleDto "after edit" with
+            Assessments = [||]          // dropped on replace
+            ReviewerNotes = [| "single note" |] }
+    let res = Queries.replaceArgument id edited |> wait
+    Assert.True((match res with Ok () -> true | Error _ -> false))
+
+    let h = Queries.getArgumentHeader id |> wait
+    Assert.Equal("after edit", h.Value.Intent)
+    Assert.Empty(Queries.getArgumentAssessments id |> wait)
+    Assert.Single(Queries.getArgumentReviewerNotes id |> wait) |> ignore
+
+[<Fact>]
+let ``deleteArgument removes the row and cascades to children`` () =
+    ensureSeeded ()
+    let id = Guid.NewGuid().ToString()
+    Queries.createArgument id (sampleDto "to delete") |> wait |> ignore
+
+    let n = Queries.deleteArgument id |> wait
+    Assert.True(n > 0)
+    Assert.False(Queries.argumentExists id |> wait)
+    Assert.Empty(Queries.getArgumentClauses id |> wait)
+    Assert.Empty(Queries.getArgumentFormalizations id |> wait)
+    Assert.Empty(Queries.getArgumentAttributions id |> wait)
