@@ -275,6 +275,22 @@ module Seed =
         """.Replace("datetime('now')", tsDefault)
         cmd.ExecuteNonQuery() |> ignore
 
+    /// Idempotent additive migrations for columns introduced after a table may
+    /// already exist in a long-lived store. `CREATE TABLE IF NOT EXISTS` no-ops
+    /// an existing table, so a column added later (e.g. arguments.origin) needs
+    /// an explicit `ADD COLUMN IF NOT EXISTS`. Postgres-only: SQLite dev is
+    /// recreated on schema change and SQLite has no `ADD COLUMN IF NOT EXISTS`.
+    /// Runs on every seed (the entrypoint reruns --seed per container start), so
+    /// each clause must stay idempotent.
+    let private migrateSchema (conn: IDbConnection) =
+        match DbFactory.dialect with
+        | DbFactory.Postgres ->
+            let cmd = conn.CreateCommand()
+            cmd.CommandText <-
+                "ALTER TABLE arguments ADD COLUMN IF NOT EXISTS origin TEXT NOT NULL DEFAULT 'import';"
+            cmd.ExecuteNonQuery() |> ignore
+        | DbFactory.SQLite -> ()
+
     [<CLIMutable>]
     type SlugId = { Slug: string; Id: string }
 
@@ -285,6 +301,7 @@ module Seed =
         conn.Open()
 
         createTables conn
+        migrateSchema conn
 
         let defaultUserId = "00000000-0000-0000-0000-000000000001"
         conn.Execute(

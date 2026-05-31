@@ -90,10 +90,20 @@ fast-follow); reconciliation via additive import + `origin` flag.
   `dasgupta`/`gotama` to `philosophers.json`) is a `DB` ticket; re-run
   `arguments:build` + `db:seed` after. Source span (file/lines/excerpt) is always
   present, so "source" is never lost — only the normalized work link.
-- **Schema change needed a fresh dev.db.** SQLite uses `CREATE TABLE IF NOT
-  EXISTS`, so the `origin` column required deleting `dev.db` and re-seeding. Safe
-  pre-launch (no user rows yet). Post-launch schema changes need the real
-  migration story (the standing Postgres-migrations ticket).
+- **Schema change + the Postgres migration gap (now handled).** `CREATE TABLE IF
+  NOT EXISTS` no-ops an existing table, so adding `origin` to an already-deployed
+  store needed an explicit migration. `Db/Seed.fs` now has an idempotent
+  `migrateSchema` step (Postgres `ALTER TABLE arguments ADD COLUMN IF NOT EXISTS
+  origin …`) that runs on every `--seed` — the entrypoint reruns seed per
+  container start, so it self-heals. SQLite stays on the recreate-dev.db workflow
+  (no `ADD COLUMN IF NOT EXISTS`). The **dev** NAS Postgres
+  (`philosophy_explorer_dev` @ 192.168.1.12) was migrated + seeded this way
+  (arguments 5 → 99; existing rows back-filled `origin='import'`). **Prod is
+  untouched** — same `--seed` will migrate it on next deploy. Future additive
+  columns: add another `ADD COLUMN IF NOT EXISTS` clause to `migrateSchema`.
+- **Write path is now dialect-portable.** `replaceArgument` (PUT) previously used
+  SQLite-only `datetime('now')`; `updated_at` is now set from F# so PUT works on
+  Postgres. POST/PUT/DELETE all verified green against dev PG.
 - **15-formalism rendering is staged.** The 4 wired formalisms (fol/nd/
   aristotelian/dialogical) render fully; the other 11 fall back to AST JSON + a
   Logic Lab link. Bespoke per-formalism rendering (reusing `FregeRenderer`,

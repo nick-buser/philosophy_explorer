@@ -531,13 +531,16 @@ module Queries =
             | Error e -> tx.Rollback(); return Error e
             | Ok workId ->
                 conn.Execute(
+                    // updated_at is set from F# (dialect-neutral) rather than via
+                    // datetime('now'), which is SQLite-only and breaks on Postgres.
                     "UPDATE arguments
                      SET work_id = @Wid, source_file = @Sf, source_start_line = @Ssl, source_end_line = @Sel,
-                         source_excerpt = @Sex, intent = @Int, extractor_note = @En, updated_at = datetime('now')
+                         source_excerpt = @Sex, intent = @Int, extractor_note = @En, updated_at = @Ua
                      WHERE id = @Id",
                     {| Id = id; Wid = workId
                        Sf = dto.SourceFile; Ssl = dto.SourceStartLine; Sel = dto.SourceEndLine
-                       Sex = dto.SourceExcerpt; Int = dto.Intent; En = dto.ExtractorNote |},
+                       Sex = dto.SourceExcerpt; Int = dto.Intent; En = dto.ExtractorNote
+                       Ua = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") |},
                     transaction = tx) |> ignore
                 // Replace children wholesale (delete + re-insert).
                 for t in [ "argument_clauses"; "argument_formalizations"
