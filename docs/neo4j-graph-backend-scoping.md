@@ -232,15 +232,29 @@ interchangeable.
 
 ## 7. Recommended sequencing
 
-1. **Scope A spike** — connect to the homelab instance and load the data. Half a
-   day, de-risks everything, and is independently useful.
-2. **Task 1 (interface extraction)** — a pure no-behavior-change refactor that
-   can land on its own and makes the rest reviewable in isolation.
-3. **Tasks 2–6** — the async refactor + `Neo4jGraphService`, behind
-   `GRAPH_DATABASE_URL` so the default dev path stays on the in-memory backend.
-4. **Task 7** — decide the test strategy once there's something to test against.
+The work is queued as five tickets in `.tickets/` (sized, ready to pick up):
 
-A natural first milestone is **Scope A + one Cypher-backed endpoint** as a spike
+| # | Ticket slug | Size | Covers |
+|---|---|---|---|
+| 1 | [`infra/neo4j-connectivity-spike`](../.tickets/infra-neo4j-connectivity-spike.md) | M | Scope A — reach the homelab box, hand-load, retire unknowns |
+| 2 | [`infra/neo4j-graph-load`](../.tickets/infra-neo4j-graph-load.md) | S–M | Committed `graph:export-cypher` + constraints; repeatable load |
+| 3 | [`refac/graph-service-interface`](../.tickets/refac-graph-service-interface.md) | S | Extract async `IGraphService`; async routes — no behavior change |
+| 4 | [`infra/neo4j-graph-service`](../.tickets/infra-neo4j-graph-service.md) | L | `Neo4jGraphService` + factory behind `GRAPH_DATABASE_URL` |
+| 5 | [`infra/neo4j-graph-tests`](../.tickets/infra-neo4j-graph-tests.md) | M | Backend-parity contract tests + CI |
+
+Dependency order:
+
+```
+neo4j-connectivity-spike ──► neo4j-graph-load ──┐
+                                                ├──► neo4j-graph-service ──► neo4j-graph-tests
+graph-service-interface ────────────────────────┘
+```
+
+Tickets 1 and 3 have no dependencies and can start immediately, in either order
+or in parallel — 3 is a pure refactor that lands on its own and makes ticket 4
+reviewable in isolation.
+
+A natural first milestone is **ticket 1 + one Cypher-backed endpoint** as a spike
 to see the homelab Neo4j answer a real query through the F# API — an afternoon,
 not four days.
 
