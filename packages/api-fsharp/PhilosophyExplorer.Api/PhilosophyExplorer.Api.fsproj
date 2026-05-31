@@ -11,6 +11,7 @@
     <Compile Include="Telemetry/Otel.fs" />
     <Compile Include="Db/DbFactory.fs" />
     <Compile Include="Db/Queries.fs" />
+    <Compile Include="Db/Migrations.fs" />
     <Compile Include="Db/Seed.fs" />
     <Compile Include="Graph/GraphTypes.fs" />
     <Compile Include="Graph/MemoryGraphService.fs" />

@@ -85,8 +85,11 @@ EXPOSE 3001
 COPY <<'EOF' /docker-entrypoint.sh
 #!/bin/sh
 set -e
+# Seed THEN serve: `--seed` runs migrations + idempotent content and returns
+# (no exec), then the server takes over as PID 1. set -e means a failed
+# migration crashes the container rather than serving a half-migrated DB.
 if [ "$RUN_SEED" = "true" ]; then
-  exec dotnet PhilosophyExplorer.Api.dll --seed
+  dotnet PhilosophyExplorer.Api.dll --seed
 fi
 exec dotnet PhilosophyExplorer.Api.dll
 EOF
