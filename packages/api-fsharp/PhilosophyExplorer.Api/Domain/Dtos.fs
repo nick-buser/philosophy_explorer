@@ -175,6 +175,7 @@ type GraphStatsDto =
 type HealthResponseDto =
     { [<JsonPropertyName("status")>] Status: string
       [<JsonPropertyName("db")>] Db: string
+      [<JsonPropertyName("schemaVersion")>] SchemaVersion: string option
       [<JsonPropertyName("env")>] Env: HealthEnvDto }
 
 and HealthEnvDto =

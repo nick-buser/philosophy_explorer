@@ -185,3 +185,32 @@ let ``deleteArgument removes the row and cascades to children`` () =
     Assert.Empty(Queries.getArgumentClauses id |> wait)
     Assert.Empty(Queries.getArgumentFormalizations id |> wait)
     Assert.Empty(Queries.getArgumentAttributions id |> wait)
+
+// ── Migrations ───────────────────────────────────────────────────────────
+// Seed.run invokes Migrations.run, so the seeded test DB is already migrated.
+
+let private openConn () =
+    let c = DbFactory.createConnection ()
+    c.Open()
+    c
+
+[<Fact>]
+let ``the baseline migration is recorded in the journal`` () =
+    ensureSeeded ()
+    use conn = openConn ()
+    Assert.Contains("0001_baseline", Migrations.appliedIds conn)
+
+[<Fact>]
+let ``latestApplied reports the baseline`` () =
+    ensureSeeded ()
+    use conn = openConn ()
+    Assert.Equal(Some "0001_baseline", Migrations.latestApplied conn)
+
+[<Fact>]
+let ``running migrations again is a no-op`` () =
+    ensureSeeded ()
+    use conn = openConn ()
+    let before = Migrations.appliedIds conn |> Set.count
+    Migrations.run conn
+    let after = Migrations.appliedIds conn |> Set.count
+    Assert.Equal(before, after)
