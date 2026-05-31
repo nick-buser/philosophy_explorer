@@ -26,6 +26,12 @@ function RootLayout() {
               Curricula
             </Link>
             <Link
+              to="/arguments"
+              className="text-sm text-gray-500 hover:text-gray-300 transition-colors [&.active]:text-gray-100"
+            >
+              Arguments
+            </Link>
+            <Link
               to="/logic"
               className="text-sm text-gray-500 hover:text-gray-300 transition-colors [&.active]:text-gray-100"
             >
