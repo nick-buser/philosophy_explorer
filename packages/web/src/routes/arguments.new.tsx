@@ -1,11 +1,11 @@
 import { createRoute, useNavigate } from '@tanstack/react-router';
-import { rootRoute } from './__root';
+import { argumentsRoute } from './arguments';
 import { ArgumentEditor } from '../components/ArgumentEditor';
 
-// Static path — outranks the `/arguments/$` splat in TanStack's route matching.
+// Static child — outranks the `$` splat sibling in TanStack's route matching.
 export const argumentNewRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/arguments/new',
+  getParentRoute: () => argumentsRoute,
+  path: 'new',
   component: NewArgumentPage,
 });
 

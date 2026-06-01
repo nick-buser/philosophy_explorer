@@ -1,14 +1,25 @@
 import { useMemo, useState } from 'react';
-import { createRoute, Link } from '@tanstack/react-router';
+import { createRoute, Link, Outlet } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { rootRoute } from './__root';
 import { formalismLabel, type ArgumentSummary } from '../lib/argument-types';
 
 const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
+// Layout parent for /arguments/*. It renders nothing but an <Outlet/> so the
+// index (list), the `$` splat (detail), and `new` (editor) are siblings under
+// one path. Without this, the `/arguments/$` splat matches the bare
+// `/arguments` with an empty splat and the detail page renders with no id —
+// crashing on `data.formalizations[0]`. See arguments-routing.test.tsx.
 export const argumentsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/arguments',
+  component: () => <Outlet />,
+});
+
+export const argumentsIndexRoute = createRoute({
+  getParentRoute: () => argumentsRoute,
+  path: '/',
   component: ArgumentsPage,
 });
 

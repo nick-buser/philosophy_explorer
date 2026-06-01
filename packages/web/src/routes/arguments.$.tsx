@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { createRoute, Link, useNavigate, useParams } from '@tanstack/react-router';
+import { createRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { rootRoute } from './__root';
+import { argumentsRoute } from './arguments';
 import { ArgumentCard } from '../components/ArgumentCard';
 import { ArgumentEditor } from '../components/ArgumentEditor';
 
@@ -9,14 +9,15 @@ const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
 // Splat route: argument ids carry the claim_extractor extraction_id verbatim
 // (author/work/slug), which contains slashes — so `_splat` holds the full id.
+// Nested under argumentsRoute so the bare /arguments hits the index, not this.
 export const argumentDetailRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/arguments/$',
+  getParentRoute: () => argumentsRoute,
+  path: '$',
   component: ArgumentDetailPage,
 });
 
 function ArgumentDetailPage() {
-  const { _splat } = useParams({ from: '/arguments/$' });
+  const { _splat } = argumentDetailRoute.useParams();
   const id = _splat ?? '';
   const [editing, setEditing] = useState(false);
   const navigate = useNavigate();
