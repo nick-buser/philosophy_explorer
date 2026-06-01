@@ -268,9 +268,21 @@ export function clauseFormula(
       const { premises, conclusion } = formalization.ast.argument;
       return clause.role === 'conclusion' ? conclusion : premises[clause.position] ?? null;
     }
-    case 'aristotelian':
-      // syllogism positions 0/1/2 → major/minor/conclusion; proposition → single.
-      return formalization.ast.formula;
+    case 'aristotelian': {
+      const f = formalization.ast.formula;
+      if (f.kind === 'proposition') return f;
+      // Map each clause to its own proposition: conclusion by role, the two
+      // premises by position (0 → major, 1 → minor). Returning the whole
+      // syllogism made every row render the conclusion, because renderFormula
+      // collapses a syllogism to its conclusion proposition.
+      const s = f.syllogism;
+      const proposition =
+        clause.role === 'conclusion' ? s.conclusion
+        : clause.position === 0 ? s.major
+        : clause.position === 1 ? s.minor
+        : s.conclusion;
+      return { kind: 'proposition', proposition };
+    }
     case 'dialogical':
       return null;
     default:
