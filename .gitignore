@@ -17,3 +17,6 @@ obj/
 # Lean (packages/lean lake package)
 packages/lean/.lake/
 packages/lean/.scratch/
+
+# Playwright validation run artifacts (pw-validate)
+.pw-out/
