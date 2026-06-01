@@ -14,9 +14,9 @@ import {
 } from '../aristotelian-immediate';
 import { SectionHeading, ImportToggle } from './shared';
 
-export default function AristotelianLab({ system }: { system: LogicSystem }) {
+export default function AristotelianLab({ system, initialDsl }: { system: LogicSystem; initialDsl?: string }) {
   const initial = system.examples[0]!;
-  const [src, setSrc] = useState<string>(initial.dsl);
+  const [src, setSrc] = useState<string>(initialDsl ?? initial.dsl);
   const [importSetting, setImportSetting] = useState<ImportSetting>('traditional');
 
   function runCommand(slug: string) {

@@ -1,6 +1,6 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, type ComponentType } from 'react';
 import { createLazyRoute, Link } from '@tanstack/react-router';
-import { findLogicSystem } from '../data/logic-systems';
+import { findLogicSystem, type LogicSystem } from '../data/logic-systems';
 
 // Each lab system is its own async chunk — only loads when that system is visited.
 // To add a new system: create `src/logic/labs/YourLab.tsx` (default export),
@@ -31,6 +31,7 @@ export const Route = createLazyRoute('/logic/$system')({
 
 function LogicSystemPage() {
   const { system: slug } = Route.useParams();
+  const { dsl } = Route.useSearch() as { dsl?: string };
   const system = findLogicSystem(slug);
 
   if (!system) {
@@ -84,9 +85,13 @@ function LogicSystemPage() {
     slug === 'temporal-ctl' ? TemporalCtlLab :
     PeirceEgLab;
 
+  // Labs accept an optional initialDsl (Phase 1: modern-fol / natural-deduction /
+  // aristotelian read it); others harmlessly ignore the extra prop.
+  const LabComponent = Lab as ComponentType<{ system: LogicSystem; initialDsl?: string }>;
+
   return (
     <Suspense fallback={<LabLoadingShell />}>
-      <Lab system={system} />
+      <LabComponent system={system} initialDsl={dsl} />
     </Suspense>
   );
 }

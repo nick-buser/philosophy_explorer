@@ -4,6 +4,10 @@ import { Link } from '@tanstack/react-router';
 import { renderUnicode } from '../logic/fol-render';
 import type { FolFormula } from '../logic/fol-types';
 import type { AristotelianFormula, CategoricalProposition } from '../logic/aristotelian-types';
+import { FolVisualization } from '../logic/FolVisualization';
+import { AristotelianRenderer } from '../logic/AristotelianRenderer';
+import { FitchProofView } from '../logic/FitchProof';
+import { formalizationToDsl } from '../lib/argument-dsl';
 import {
   clauseFormula,
   isDialogueAct,
@@ -202,6 +206,74 @@ function GenericFormalizationView({
   );
 }
 
+// ── Visualization + DSL (fol / nd / aristotelian) ──────────────────────────
+
+function VizLabel({ children }: { children: React.ReactNode }) {
+  return <span className="text-[10px] uppercase tracking-wider text-gray-600">{children}</span>;
+}
+
+// The rendered visualization for a formalization, reusing the Logic Lab
+// renderers fed the argument's stored AST: FOL → semantic tableau / truth table
+// (+ validity verdict), nd → Fitch proof, aristotelian → Venn diagram.
+function FormalizationVisual({ formalization }: { formalization: Formalization }) {
+  switch (formalization.formalism) {
+    case 'fol':
+      return (
+        <div className="space-y-2">
+          <VizLabel>Visualization</VizLabel>
+          <FolVisualization formula={formalization.ast.formula} />
+        </div>
+      );
+    case 'nd':
+      return formalization.ast.proof ? (
+        <div className="space-y-2">
+          <VizLabel>Visualization · Fitch proof</VizLabel>
+          <FitchProofView proof={formalization.ast.proof} />
+        </div>
+      ) : null;
+    case 'aristotelian':
+      return (
+        <div className="space-y-2">
+          <VizLabel>Visualization · Venn diagram</VizLabel>
+          <div className="flex justify-center rounded-lg border border-gray-800 bg-gray-950/40 p-4">
+            <AristotelianRenderer formula={formalization.ast.formula} className="max-h-[320px]" />
+          </div>
+        </div>
+      );
+    default:
+      return null;
+  }
+}
+
+// The argument's formula as Logic Lab DSL — copyable, and a deep link that
+// opens the matching lab pre-loaded with it (?dsl=). Null for formalisms
+// without a wired serializer (those keep the generic AST view).
+function FormalizationDsl({ formalization }: { formalization: Formalization }) {
+  const dsl = formalizationToDsl(formalization);
+  if (dsl === null) return null;
+  const labSlug = FORMALISM_LAB_SLUG[formalization.formalism];
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-3">
+        <VizLabel>DSL · {formalismLabel(formalization.formalism)}</VizLabel>
+        {labSlug && (
+          <Link
+            to="/logic/$system"
+            params={{ system: labSlug }}
+            search={{ dsl }}
+            className="text-xs text-gray-400 hover:text-white transition-colors"
+          >
+            Open in Logic Lab →
+          </Link>
+        )}
+      </div>
+      <pre className="text-xs text-gray-200 font-mono bg-gray-950/60 border border-gray-800 rounded p-3 overflow-x-auto whitespace-pre-wrap">
+        {dsl}
+      </pre>
+    </div>
+  );
+}
+
 // ── Card ──────────────────────────────────────────────────────────────────
 
 export function ArgumentCard({ argumentId }: { argumentId: string }) {
@@ -283,6 +355,10 @@ export function ArgumentCard({ argumentId }: { argumentId: string }) {
           formalization={active as Extract<Formalization, { ast: Record<string, unknown> }>}
         />
       )}
+
+      {/* Rendered visualization + copyable DSL (with lab prefill) */}
+      <FormalizationVisual formalization={active} />
+      <FormalizationDsl formalization={active} />
 
       {/* Context (collapsible) */}
       <button
