@@ -22,9 +22,9 @@ import {
 import { intuitionisticAxiomVerdicts } from '../intuitionistic-axioms';
 import { SectionHeading } from './shared';
 
-export default function IntuitionisticLab({ system }: { system: LogicSystem }) {
+export default function IntuitionisticLab({ system, initialDsl }: { system: LogicSystem; initialDsl?: string }) {
   const initial = system.examples[0]!;
-  const [src, setSrc] = useState<string>(initial.dsl);
+  const [src, setSrc] = useState<string>(initialDsl ?? initial.dsl);
   const [exampleSlug, setExampleSlug] = useState<string>(initial.slug);
   const [liveModel, setLiveModel] = useState<KripkeModel | undefined>(initial.model);
 

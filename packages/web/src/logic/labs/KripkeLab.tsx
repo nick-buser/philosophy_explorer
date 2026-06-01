@@ -37,15 +37,18 @@ type Props = {
   // Slug-prefixed lookup that mirrors `findKripkeCommand` for the active
   // command set. Required when `commands` is overridden.
   findCommand?: (slug: string) => SlashCommand | undefined;
+  // Prefill the editor — an argument's "Open in Logic Lab" passes ?dsl=.
+  initialDsl?: string;
 };
 
 export default function KripkeLab({
   system,
   commands = KRIPKE_COMMANDS,
   findCommand = findKripkeCommand,
+  initialDsl,
 }: Props) {
   const initial = system.examples[0]!;
-  const [src, setSrc] = useState<string>(initial.dsl);
+  const [src, setSrc] = useState<string>(initialDsl ?? initial.dsl);
   const [exampleSlug, setExampleSlug] = useState<string>(initial.slug);
   const frameOptions: FrameClass[] = system.frameClasses ?? ALL_FRAMES;
   const [frameSlug, setFrameSlug] = useState<FrameClassSlug>(

@@ -12,6 +12,10 @@ import type { Argument as NdArgument, FitchProof } from '../logic/nd-types';
 import type { AristotelianFormula } from '../logic/aristotelian-types';
 import type { BoolFormula } from '../logic/boolean-types';
 import type { Inference } from '../logic/indian-types';
+import type { ModalFormula, KripkeModel } from '../logic/kripke-types';
+import type { CtlFormula, KripkeModel as CtlKripkeModel } from '../logic/ctl-types';
+import type { EpistemicFormula, EpistemicModel } from '../logic/epistemic-types';
+import type { TemporalFormula, Trace } from '../logic/temporal-types';
 
 export type ClauseRole = 'premise' | 'conclusion' | 'lemma' | 'claim' | 'composite';
 
@@ -30,6 +34,12 @@ export type NdAst = { argument: NdArgument; proof: FitchProof | null };
 export type AristotelianAst = { formula: AristotelianFormula };
 export type BooleanAst = { formula: BoolFormula };
 export type IndianAst = { inference: Inference };
+// Modal formalisms carry a hand-authored model (or trace) alongside the formula.
+export type KripkeAst = { formula: ModalFormula; model: KripkeModel };
+export type CtlAst = { formula: CtlFormula; model: CtlKripkeModel };
+export type IntuitionisticAst = { formula: ModalFormula; model: KripkeModel };
+export type EpistemicAst = { formula: EpistemicFormula; model: EpistemicModel };
+export type TemporalAst = { formula: TemporalFormula; trace: Trace };
 
 // dialogical has no Logic Lab AST yet — it's first-party in claim_extractor.
 // Mirror its v1 shape here until/unless it gets a dialogical-types.ts.
@@ -150,7 +160,18 @@ export type Formalization =
   | (FormalizationBase & { formalism: 'dialogical'; ast: DialogicalAst })
   | (FormalizationBase & { formalism: 'boolean'; ast: BooleanAst })
   | (FormalizationBase & { formalism: 'indian'; ast: IndianAst })
-  | (FormalizationBase & { formalism: Exclude<Formalism, WiredFormalism | 'boolean' | 'indian'>; ast: GenericAst });
+  | (FormalizationBase & { formalism: 'kripke'; ast: KripkeAst })
+  | (FormalizationBase & { formalism: 'ctl'; ast: CtlAst })
+  | (FormalizationBase & { formalism: 'intuitionistic'; ast: IntuitionisticAst })
+  | (FormalizationBase & { formalism: 'epistemic'; ast: EpistemicAst })
+  | (FormalizationBase & { formalism: 'temporal'; ast: TemporalAst })
+  | (FormalizationBase & {
+      formalism: Exclude<
+        Formalism,
+        WiredFormalism | 'boolean' | 'indian' | 'kripke' | 'ctl' | 'intuitionistic' | 'epistemic' | 'temporal'
+      >;
+      ast: GenericAst;
+    });
 
 export type ArgumentAssessment = {
   formalism: string;
