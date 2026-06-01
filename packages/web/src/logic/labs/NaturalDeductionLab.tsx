@@ -44,9 +44,9 @@ function useLeanVerification(proof: FitchProof | null, mode: Mode) {
   });
 }
 
-export default function NaturalDeductionLab({ system }: { system: LogicSystem }) {
+export default function NaturalDeductionLab({ system, initialDsl }: { system: LogicSystem; initialDsl?: string }) {
   const initial = system.examples[0]!;
-  const [src, setSrc] = useState<string>(initial.dsl);
+  const [src, setSrc] = useState<string>(initialDsl ?? initial.dsl);
   const [mode, setMode] = useState<Mode>('classical');
 
   function runCommand(slug: string) {

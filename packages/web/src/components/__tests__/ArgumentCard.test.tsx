@@ -185,7 +185,8 @@ describe('ArgumentCard', () => {
 
     // The formula renders in the symbolic column, and — since this clause has
     // no human verbalization — the verbal column auto-renders the same formula.
-    expect(screen.getAllByText(/∀x\./)).toHaveLength(2);
+    // A third occurrence comes from the copyable DSL block below the diagram.
+    expect(screen.getAllByText(/∀x\./)).toHaveLength(3);
     expect(screen.getByText('auto')).toBeInTheDocument();
   });
 
