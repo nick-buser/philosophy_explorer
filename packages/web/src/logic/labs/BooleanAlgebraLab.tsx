@@ -16,9 +16,9 @@ import { KarnaughMap } from '../KarnaughMap';
 import { HasseDiagram } from '../HasseDiagram';
 import { SectionHeading } from './shared';
 
-export default function BooleanAlgebraLab({ system }: { system: LogicSystem }) {
+export default function BooleanAlgebraLab({ system, initialDsl }: { system: LogicSystem; initialDsl?: string }) {
   const initial = system.examples[0]!;
-  const [src, setSrc] = useState<string>(initial.dsl);
+  const [src, setSrc] = useState<string>(initialDsl ?? initial.dsl);
 
   function runCommand(slug: string) {
     if (slug.startsWith('example.')) {

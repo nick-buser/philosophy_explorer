@@ -1,6 +1,10 @@
 import { renderUnicode } from '../logic/fol-render';
+import { renderUnicode as renderBoolUnicode } from '../logic/boolean-render';
+import { formatInference } from '../logic/indian-parser';
 import type { CategoricalProposition } from '../logic/aristotelian-types';
-import type { Formalization, FolAst, NdAst, AristotelianAst } from './argument-types';
+import type {
+  Formalization, FolAst, NdAst, AristotelianAst, BooleanAst, IndianAst,
+} from './argument-types';
 
 // AST → the Logic Lab DSL source text, for the formalisms whose lab parses a
 // round-trippable string. This is what powers the copyable "DSL" block on an
@@ -32,6 +36,16 @@ export function aristotelianToDsl(ast: AristotelianAst): string {
   ].join('\n');
 }
 
+export function booleanToDsl(ast: BooleanAst): string {
+  // boolean-parser accepts ∨ ∧ ¬ (and +/·/~ aliases) that renderUnicode emits.
+  return renderBoolUnicode(ast.formula);
+}
+
+export function indianToDsl(ast: IndianAst): string {
+  // indian-parser round-trips its own formatInference output.
+  return formatInference(ast.inference);
+}
+
 function propositionProse(p: CategoricalProposition): string {
   switch (p.form) {
     case 'A': return `All ${p.subject} are ${p.predicate}`;
@@ -49,6 +63,8 @@ export function formalizationToDsl(f: Formalization): string | null {
     case 'fol': return folToDsl(f.ast);
     case 'nd': return ndToDsl(f.ast);
     case 'aristotelian': return aristotelianToDsl(f.ast);
+    case 'boolean': return booleanToDsl(f.ast);
+    case 'indian': return indianToDsl(f.ast);
     default: return null;
   }
 }

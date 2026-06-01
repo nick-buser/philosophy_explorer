@@ -10,6 +10,8 @@
 import type { FolFormula } from '../logic/fol-types';
 import type { Argument as NdArgument, FitchProof } from '../logic/nd-types';
 import type { AristotelianFormula } from '../logic/aristotelian-types';
+import type { BoolFormula } from '../logic/boolean-types';
+import type { Inference } from '../logic/indian-types';
 
 export type ClauseRole = 'premise' | 'conclusion' | 'lemma' | 'claim' | 'composite';
 
@@ -26,6 +28,8 @@ export type ArgumentClause = {
 export type FolAst = { formula: FolFormula };
 export type NdAst = { argument: NdArgument; proof: FitchProof | null };
 export type AristotelianAst = { formula: AristotelianFormula };
+export type BooleanAst = { formula: BoolFormula };
+export type IndianAst = { inference: Inference };
 
 // dialogical has no Logic Lab AST yet — it's first-party in claim_extractor.
 // Mirror its v1 shape here until/unless it gets a dialogical-types.ts.
@@ -144,7 +148,9 @@ export type Formalization =
   | (FormalizationBase & { formalism: 'nd'; ast: NdAst })
   | (FormalizationBase & { formalism: 'aristotelian'; ast: AristotelianAst })
   | (FormalizationBase & { formalism: 'dialogical'; ast: DialogicalAst })
-  | (FormalizationBase & { formalism: Exclude<Formalism, WiredFormalism>; ast: GenericAst });
+  | (FormalizationBase & { formalism: 'boolean'; ast: BooleanAst })
+  | (FormalizationBase & { formalism: 'indian'; ast: IndianAst })
+  | (FormalizationBase & { formalism: Exclude<Formalism, WiredFormalism | 'boolean' | 'indian'>; ast: GenericAst });
 
 export type ArgumentAssessment = {
   formalism: string;

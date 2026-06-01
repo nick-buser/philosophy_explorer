@@ -2,8 +2,13 @@ import { describe, it, expect } from 'vitest';
 import { parseFol } from '../../logic/fol-parser';
 import { parseArgument } from '../../logic/nd-parser';
 import { parseAristotelian } from '../../logic/aristotelian-parser';
+import { parseBool } from '../../logic/boolean-parser';
+import { parseInference } from '../../logic/indian-parser';
 import { renderUnicode } from '../../logic/fol-render';
-import { folToDsl, ndToDsl, aristotelianToDsl, formalizationToDsl } from '../argument-dsl';
+import { renderUnicode as renderBoolUnicode } from '../../logic/boolean-render';
+import {
+  folToDsl, ndToDsl, aristotelianToDsl, booleanToDsl, indianToDsl, formalizationToDsl,
+} from '../argument-dsl';
 import type { Formalization } from '../argument-types';
 
 const base = { id: 'f1', isPrimary: true, fitScore: null, reason: null, distortionRisk: null } as const;
@@ -59,6 +64,28 @@ describe('argument-dsl serializers round-trip through their parsers', () => {
     if (!p.ok) return;
     const dsl = aristotelianToDsl({ formula: p.formula });
     expect(parseAristotelian(dsl)).toEqual(p);
+  });
+
+  it('boolean: serialized DSL re-parses to the same formula', () => {
+    const p = parseBool('P + ~P');
+    expect(p.ok).toBe(true);
+    if (!p.ok) return;
+    const dsl = booleanToDsl({ formula: p.formula });
+    const p2 = parseBool(dsl);
+    expect(p2.ok).toBe(true);
+    if (!p2.ok) return;
+    expect(renderBoolUnicode(p2.formula)).toBe(renderBoolUnicode(p.formula));
+  });
+
+  it('indian: serialized inference re-parses to the same inference', () => {
+    const p = parseInference('paksha: the mountain\nsadhya: fire\nhetu: smoke\nsapaksha: kitchen\nvipaksha: lake');
+    expect(p.ok).toBe(true);
+    if (!p.ok) return;
+    const dsl = indianToDsl({ inference: p.inference });
+    const p2 = parseInference(dsl);
+    expect(p2.ok).toBe(true);
+    if (!p2.ok) return;
+    expect(p2.inference).toEqual(p.inference);
   });
 });
 
