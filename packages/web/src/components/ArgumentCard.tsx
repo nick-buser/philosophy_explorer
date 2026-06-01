@@ -7,6 +7,9 @@ import type { AristotelianFormula, CategoricalProposition } from '../logic/arist
 import { FolVisualization } from '../logic/FolVisualization';
 import { AristotelianRenderer } from '../logic/AristotelianRenderer';
 import { FitchProofView } from '../logic/FitchProof';
+import { BooleanVisualization } from '../logic/BooleanVisualization';
+import { FiveStepView } from '../logic/FiveStepView';
+import { fiveSteps } from '../logic/indian-render';
 import { formalizationToDsl } from '../lib/argument-dsl';
 import {
   clauseFormula,
@@ -240,10 +243,28 @@ function FormalizationVisual({ formalization }: { formalization: Formalization }
           </div>
         </div>
       );
+    case 'boolean':
+      return (
+        <div className="space-y-2">
+          <VizLabel>Visualization · Karnaugh map</VizLabel>
+          <BooleanVisualization formula={formalization.ast.formula} />
+        </div>
+      );
+    case 'indian':
+      return (
+        <div className="space-y-2">
+          <VizLabel>Visualization · five-membered inference</VizLabel>
+          <FiveStepView steps={fiveSteps(formalization.ast.inference)} />
+        </div>
+      );
     default:
       return null;
   }
 }
+
+// Formalisms whose only rendering is the FormalizationVisual above — no clause
+// table, and no raw-AST generic fallback.
+const VISUAL_ONLY_FORMALISMS = new Set<string>(['boolean', 'indian']);
 
 // The argument's formula as Logic Lab DSL — copyable, and a deep link that
 // opens the matching lab pre-loaded with it (?dsl=). Null for formalisms
@@ -350,7 +371,7 @@ export function ArgumentCard({ argumentId }: { argumentId: string }) {
             <ClauseRow key={c.id} clause={c} formalization={active} />
           ))}
         </div>
-      ) : (
+      ) : VISUAL_ONLY_FORMALISMS.has(active.formalism) ? null : (
         <GenericFormalizationView
           formalization={active as Extract<Formalization, { ast: Record<string, unknown> }>}
         />
