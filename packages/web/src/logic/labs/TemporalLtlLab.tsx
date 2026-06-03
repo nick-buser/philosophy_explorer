@@ -16,9 +16,9 @@ import { ltlAxiomVerdicts } from '../temporal-axioms';
 import type { TemporalFormula, Trace } from '../temporal-types';
 import { SectionHeading } from './shared';
 
-export default function TemporalLtlLab({ system }: { system: LogicSystem }) {
+export default function TemporalLtlLab({ system, initialDsl }: { system: LogicSystem; initialDsl?: string }) {
   const initial = system.examples[0]!;
-  const [src, setSrc] = useState<string>(initial.dsl);
+  const [src, setSrc] = useState<string>(initialDsl ?? initial.dsl);
   const [exampleSlug, setExampleSlug] = useState<string>(initial.slug);
 
   const activeExample = useMemo(

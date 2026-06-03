@@ -10,6 +10,7 @@ import { FitchProofView } from '../logic/FitchProof';
 import { BooleanVisualization } from '../logic/BooleanVisualization';
 import { FiveStepView } from '../logic/FiveStepView';
 import { fiveSteps } from '../logic/indian-render';
+import { ModalArgumentViz } from '../logic/ModalArgumentViz';
 import { formalizationToDsl } from '../lib/argument-dsl';
 import {
   clauseFormula,
@@ -257,6 +258,33 @@ function FormalizationVisual({ formalization }: { formalization: Formalization }
           <FiveStepView steps={fiveSteps(formalization.ast.inference)} />
         </div>
       );
+    case 'kripke':
+    case 'intuitionistic':
+    case 'ctl':
+    case 'epistemic':
+      return (
+        <div className="space-y-2">
+          <VizLabel>Visualization · {formalismLabel(formalization.formalism)} model</VizLabel>
+          <ModalArgumentViz
+            formalism={formalization.formalism}
+            formula={formalization.ast.formula}
+            model={formalization.ast.model}
+            labSlug={FORMALISM_LAB_SLUG[formalization.formalism]}
+          />
+        </div>
+      );
+    case 'temporal':
+      return (
+        <div className="space-y-2">
+          <VizLabel>Visualization · LTL trace</VizLabel>
+          <ModalArgumentViz
+            formalism="temporal"
+            formula={formalization.ast.formula}
+            model={formalization.ast.trace}
+            labSlug={FORMALISM_LAB_SLUG.temporal}
+          />
+        </div>
+      );
     default:
       return null;
   }
@@ -264,7 +292,9 @@ function FormalizationVisual({ formalization }: { formalization: Formalization }
 
 // Formalisms whose only rendering is the FormalizationVisual above — no clause
 // table, and no raw-AST generic fallback.
-const VISUAL_ONLY_FORMALISMS = new Set<string>(['boolean', 'indian']);
+const VISUAL_ONLY_FORMALISMS = new Set<string>([
+  'boolean', 'indian', 'kripke', 'ctl', 'intuitionistic', 'epistemic', 'temporal',
+]);
 
 // The argument's formula as Logic Lab DSL — copyable, and a deep link that
 // opens the matching lab pre-loaded with it (?dsl=). Null for formalisms

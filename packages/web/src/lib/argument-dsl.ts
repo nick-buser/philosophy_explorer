@@ -1,9 +1,14 @@
 import { renderUnicode } from '../logic/fol-render';
 import { renderUnicode as renderBoolUnicode } from '../logic/boolean-render';
+import { renderUnicode as renderModalUnicode } from '../logic/kripke-render';
+import { renderUnicodeCtl } from '../logic/ctl-render';
+import { renderUnicodeE } from '../logic/epistemic-render';
+import { renderUnicodeT } from '../logic/temporal-render';
 import { formatInference } from '../logic/indian-parser';
 import type { CategoricalProposition } from '../logic/aristotelian-types';
 import type {
   Formalization, FolAst, NdAst, AristotelianAst, BooleanAst, IndianAst,
+  KripkeAst, CtlAst, IntuitionisticAst, EpistemicAst, TemporalAst,
 } from './argument-types';
 
 // AST → the Logic Lab DSL source text, for the formalisms whose lab parses a
@@ -46,6 +51,15 @@ export function indianToDsl(ast: IndianAst): string {
   return formatInference(ast.inference);
 }
 
+// Modal formalisms: the DSL is the formula source (the lab gets the formula;
+// the model/trace lives in the argument). Each renderer's Unicode output is
+// accepted by the matching parser.
+export function kripkeToDsl(ast: KripkeAst): string { return renderModalUnicode(ast.formula); }
+export function intuitionisticToDsl(ast: IntuitionisticAst): string { return renderModalUnicode(ast.formula); }
+export function ctlToDsl(ast: CtlAst): string { return renderUnicodeCtl(ast.formula); }
+export function epistemicToDsl(ast: EpistemicAst): string { return renderUnicodeE(ast.formula); }
+export function temporalToDsl(ast: TemporalAst): string { return renderUnicodeT(ast.formula); }
+
 function propositionProse(p: CategoricalProposition): string {
   switch (p.form) {
     case 'A': return `All ${p.subject} are ${p.predicate}`;
@@ -65,6 +79,11 @@ export function formalizationToDsl(f: Formalization): string | null {
     case 'aristotelian': return aristotelianToDsl(f.ast);
     case 'boolean': return booleanToDsl(f.ast);
     case 'indian': return indianToDsl(f.ast);
+    case 'kripke': return kripkeToDsl(f.ast);
+    case 'intuitionistic': return intuitionisticToDsl(f.ast);
+    case 'ctl': return ctlToDsl(f.ast);
+    case 'epistemic': return epistemicToDsl(f.ast);
+    case 'temporal': return temporalToDsl(f.ast);
     default: return null;
   }
 }
