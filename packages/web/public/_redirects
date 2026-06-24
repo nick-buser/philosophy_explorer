@@ -1,0 +1,4 @@
+# SPA fallback for client-side routing (TanStack Router, HTML5 history).
+# Cloudflare Pages serves existing static assets first; any unmatched path
+# returns index.html with a 200 so deep links / refresh don't 404.
+/*  /index.html  200
