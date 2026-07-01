@@ -20,3 +20,6 @@ packages/lean/.scratch/
 
 # Playwright validation run artifacts (pw-validate)
 .pw-out/
+
+# wrangler pages dev local cache
+.wrangler/
