@@ -8,8 +8,9 @@ import {
   type Provenance,
   type WriteArgumentInput,
 } from '../lib/argument-types';
+import { apiBaseUrl } from '../lib/api';
 
-const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
+const API = apiBaseUrl;
 
 const CLAUSE_ROLES = ['premise', 'conclusion', 'claim', 'lemma', 'composite'];
 const PROVENANCES: Provenance[] = ['hand_written', 'sanity_checked', 'auto'];

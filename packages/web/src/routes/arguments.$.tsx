@@ -4,8 +4,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { argumentsRoute } from './arguments';
 import { ArgumentCard } from '../components/ArgumentCard';
 import { ArgumentEditor } from '../components/ArgumentEditor';
+import { apiBaseUrl } from '../lib/api';
 
-const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
+const API = apiBaseUrl;
 
 // Splat route: argument ids carry the claim_extractor extraction_id verbatim
 // (author/work/slug), which contains slashes — so `_splat` holds the full id.

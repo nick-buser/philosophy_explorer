@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { rootRoute } from './__root';
 import { LOGIC_SYSTEMS } from '../data/logic-systems';
+import { apiBaseUrl } from '../lib/api';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 // Mirrors the API response shape from GET /api/philosophers/:slug.
@@ -73,7 +74,7 @@ export const philosopherDetailRoute = createRoute({
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
+const API_BASE = apiBaseUrl;
 
 function formatYear(year: number | null, certainty: string): string {
   if (year === null) return 'unknown';

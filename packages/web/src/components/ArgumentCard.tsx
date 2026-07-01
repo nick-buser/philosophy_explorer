@@ -24,8 +24,9 @@ import {
   type ArgumentClause,
   type Provenance,
 } from '../lib/argument-types';
+import { apiBaseUrl } from '../lib/api';
 
-const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
+const API = apiBaseUrl;
 
 const WIRED = new Set<string>(WIRED_FORMALISMS);
 

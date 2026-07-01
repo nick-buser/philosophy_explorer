@@ -3,8 +3,9 @@ import { createRoute, Link, Outlet } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { rootRoute } from './__root';
 import { formalismLabel, type ArgumentSummary } from '../lib/argument-types';
+import { apiBaseUrl } from '../lib/api';
 
-const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
+const API = apiBaseUrl;
 
 // Layout parent for /arguments/*. It renders nothing but an <Outlet/> so the
 // index (list), the `$` splat (detail), and `new` (editor) are siblings under
