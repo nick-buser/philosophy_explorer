@@ -1,6 +1,7 @@
 import { createRoute, Link } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { rootRoute } from './__root';
+import { apiBaseUrl } from '../lib/api';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -16,7 +17,7 @@ type SchoolDetail = {
   }>;
 };
 
-const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
+const API = apiBaseUrl;
 
 export const schoolDetailRoute = createRoute({
   getParentRoute: () => rootRoute,

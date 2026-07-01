@@ -15,12 +15,13 @@ import { FitchProofView } from '../FitchProof';
 import { GentzenTreeView } from '../GentzenTree';
 import { SectionHeading } from './shared';
 import type { components } from '../../lib/api-types';
+import { apiBaseUrl } from '../../lib/api';
 
 type Mode = 'classical' | 'intuitionistic';
 
 type VerifyResponse = components['schemas']['VerifyResponseDto'];
 
-const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
+const API_BASE = apiBaseUrl;
 
 // Ship the prover's FitchProof to POST /api/verify so Lean's kernel
 // type-checks it against the ND embedding. Keyed on the proof's content —

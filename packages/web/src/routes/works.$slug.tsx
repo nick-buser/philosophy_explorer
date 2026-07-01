@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { rootRoute } from './__root';
 import { ArgumentCard } from '../components/ArgumentCard';
 import type { ArgumentSummary } from '../lib/argument-types';
+import { apiBaseUrl } from '../lib/api';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -18,7 +19,7 @@ type WorkDetail = {
   }>;
 };
 
-const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
+const API = apiBaseUrl;
 
 export const workDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
