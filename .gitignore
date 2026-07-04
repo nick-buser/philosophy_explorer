@@ -23,3 +23,6 @@ packages/lean/.scratch/
 
 # wrangler pages dev local cache
 .wrangler/
+
+# Claude Code local settings (machine-specific; .claude/settings.json is shared, keep tracked)
+.claude/settings.local.json

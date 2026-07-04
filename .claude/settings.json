@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tea pr list *)",
+      "Bash(tea pulls list *)",
+      "Bash(tea logins list *)",
+      "Bash(tea login list *)",
+      "Bash(tea repos list *)",
+      "Bash(ioreg *)",
+      "Bash(curl -sSfL --max-time *)",
+      "Bash(ping *)"
+    ]
+  }
+}
